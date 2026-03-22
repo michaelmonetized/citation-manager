@@ -1,0 +1,9 @@
+[build]
+target = "browser"
+minify = { syntax = true, whitespace = true }
+
+[dev]
+hot = true
+
+[packages]
+"@convex-dev/cli" = "*"
