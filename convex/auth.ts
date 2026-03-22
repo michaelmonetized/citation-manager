@@ -1,3 +1,4 @@
+import { query } from "./_generated/server";
 import { QueryCtx } from "./_generated/server";
 
 /**
@@ -16,3 +17,12 @@ export const getUserFromAuth = async (ctx: QueryCtx) => {
 
   return user;
 };
+
+/**
+ * Get current authenticated user
+ */
+export const getCurrentUser = query({
+  handler: async (ctx) => {
+    return await getUserFromAuth(ctx);
+  },
+});
