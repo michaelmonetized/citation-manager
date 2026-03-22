@@ -3,19 +3,15 @@ import { v } from "convex/values";
 
 export default defineSchema({
   users: defineTable({
-    clerkId: v.string(),
     email: v.string(),
-    name: v.optional(v.string()),
-    organizationName: v.optional(v.string()),
     plan: v.union(v.literal("free"), v.literal("pro"), v.literal("enterprise")),
     createdAt: v.number(),
     updatedAt: v.number(),
   })
-    .index("by_clerkId", ["clerkId"])
     .index("by_email", ["email"]),
 
   locations: defineTable({
-    clerkId: v.string(),
+    userEmail: v.string(),
     businessName: v.string(),
     address: v.string(),
     phone: v.string(),
@@ -26,7 +22,7 @@ export default defineSchema({
     createdAt: v.number(),
     updatedAt: v.number(),
   })
-    .index("by_clerkId", ["clerkId"])
+    .index("by_userEmail", ["userEmail"])
     .index("by_businessName", ["businessName"]),
 
   directories: defineTable({

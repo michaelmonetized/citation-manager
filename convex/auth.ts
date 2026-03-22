@@ -1,18 +1,18 @@
 import { QueryCtx } from "./_generated/server";
 
-export const getAuthUserId = async (ctx: QueryCtx) => {
+/**
+ * Helper to get current user from auth context
+ * For use in mutations/queries
+ */
+export const getUserFromAuth = async (ctx: QueryCtx) => {
   const identity = await ctx.auth.getUserIdentity();
-  if (!identity) return null;
-  return identity.subject;
-};
+  if (!identity || !identity.email) return null;
 
-export const getAuthUser = async (ctx: QueryCtx) => {
-  const identity = await ctx.auth.getUserIdentity();
-  if (!identity) return null;
+  // Find user by email
+  const user = await ctx.db
+    .query("users")
+    .filter((q) => q.eq(q.field("email"), identity.email || ""))
+    .first();
 
-  return {
-    id: identity.subject,
-    email: identity.email,
-    name: identity.name,
-  };
+  return user;
 };

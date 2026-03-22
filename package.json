@@ -13,12 +13,10 @@
     "convex:deploy": "convex deploy"
   },
   "dependencies": {
+    "convex": "latest",
     "next": "^16.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "@clerk/clerk-react": "^5.0.0",
-    "@clerk/nextjs": "^5.0.0",
-    "convex": "latest",
     "tailwindcss": "^4.0.0"
   },
   "devDependencies": {

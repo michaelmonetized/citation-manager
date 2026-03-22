@@ -1,10 +1,11 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import Link from "next/link";
 
 export default function DashboardPage() {
-  const { user } = useUser();
+  const user = useQuery(api.auth.getCurrentUser);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -15,7 +16,7 @@ export default function DashboardPage() {
               <h1 className="text-2xl font-bold">Citation Manager</h1>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-gray-600">{user?.primaryEmailAddress?.emailAddress}</span>
+              <span className="text-gray-600">{user?.email}</span>
             </div>
           </div>
         </div>

@@ -2,21 +2,22 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useUser } from "@clerk/nextjs";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 export default function HomePage() {
   const router = useRouter();
-  const { isLoaded, isSignedIn } = useUser();
+  const user = useQuery(api.auth.getCurrentUser);
 
   useEffect(() => {
-    if (isLoaded) {
-      if (isSignedIn) {
+    if (user !== undefined) {
+      if (user) {
         router.push("/dashboard");
       } else {
-        router.push("/sign-in");
+        router.push("/auth");
       }
     }
-  }, [isLoaded, isSignedIn, router]);
+  }, [user, router]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">
