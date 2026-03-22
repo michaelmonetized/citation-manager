@@ -22,7 +22,7 @@ export const getUserFromAuth = async (ctx: QueryCtx) => {
  * Get current authenticated user
  */
 export const getCurrentUser = query({
-  handler: async (ctx) => {
+  handler: async (ctx: QueryCtx) => {
     return await getUserFromAuth(ctx);
   },
 });

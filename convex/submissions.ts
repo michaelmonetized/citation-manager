@@ -1,4 +1,5 @@
 import { mutation, query } from "./_generated/server";
+import { MutationCtx, QueryCtx } from "./_generated/server";
 import { v } from "convex/values";
 import { getUserFromAuth } from "./auth";
 
@@ -12,21 +13,27 @@ export const bulkSubmit = mutation({
     locationId: v.id("locations"),
     directoryIds: v.array(v.id("directories")),
   },
-  handler: async (ctx, args) => {
+  handler: async (
+    ctx: MutationCtx,
+    args: {
+      locationId: string;
+      directoryIds: string[];
+    }
+  ) => {
     const user = await getUserFromAuth(ctx);
     if (!user) throw new Error("Not authenticated");
 
     // Verify user owns this location
-    const location = await ctx.db.get(args.locationId);
+    const location = await ctx.db.get(args.locationId as any);
     if (!location) throw new Error("Location not found");
-    if (location.userEmail !== user.email) throw new Error("Unauthorized");
+    if ((location as any).userEmail !== user.email) throw new Error("Unauthorized");
 
     // Create submission records for each directory
     const submissionIds: string[] = [];
     for (const directoryId of args.directoryIds) {
       const submissionId = await ctx.db.insert("submissions", {
-        locationId: args.locationId,
-        directoryId,
+        locationId: args.locationId as any,
+        directoryId: directoryId as any,
         status: "pending",
         createdAt: Date.now(),
       });
@@ -42,18 +49,18 @@ export const bulkSubmit = mutation({
  */
 export const getLocationSubmissions = query({
   args: { locationId: v.id("locations") },
-  handler: async (ctx, args) => {
+  handler: async (ctx: QueryCtx, args: { locationId: string }) => {
     const user = await getUserFromAuth(ctx);
     if (!user) throw new Error("Not authenticated");
 
     // Verify user owns this location
-    const location = await ctx.db.get(args.locationId);
+    const location = await ctx.db.get(args.locationId as any);
     if (!location) throw new Error("Location not found");
-    if (location.userEmail !== user.email) throw new Error("Unauthorized");
+    if ((location as any).userEmail !== user.email) throw new Error("Unauthorized");
 
     return await ctx.db
       .query("submissions")
-      .withIndex("by_locationId", (q) => q.eq("locationId", args.locationId))
+      .withIndex("by_locationId", (q) => q.eq("locationId", args.locationId as any))
       .collect();
   },
 });
@@ -63,29 +70,32 @@ export const getLocationSubmissions = query({
  */
 export const getSubmissionStatus = query({
   args: { locationId: v.id("locations") },
-  handler: async (ctx, args) => {
+  handler: async (ctx: QueryCtx, args: { locationId: string }) => {
     const user = await getUserFromAuth(ctx);
     if (!user) throw new Error("Not authenticated");
 
     // Verify user owns this location
-    const location = await ctx.db.get(args.locationId);
+    const location = await ctx.db.get(args.locationId as any);
     if (!location) throw new Error("Location not found");
-    if (location.userEmail !== user.email) throw new Error("Unauthorized");
+    if ((location as any).userEmail !== user.email) throw new Error("Unauthorized");
 
     const submissions = await ctx.db
       .query("submissions")
-      .withIndex("by_locationId", (q) => q.eq("locationId", args.locationId))
+      .withIndex("by_locationId", (q) => q.eq("locationId", args.locationId as any))
       .collect();
 
-    const statusCounts = {
+    const statusCounts: Record<string, number> = {
       pending: 0,
       submitted: 0,
       verified: 0,
       failed: 0,
     };
 
-    submissions.forEach((sub) => {
-      statusCounts[sub.status]++;
+    submissions.forEach((sub: any) => {
+      const status = sub.status as string;
+      if (status in statusCounts) {
+        statusCounts[status]++;
+      }
     });
 
     return {
@@ -114,8 +124,15 @@ export const updateSubmissionStatus = mutation({
     ),
     errorMessage: v.optional(v.string()),
   },
-  handler: async (ctx, args) => {
-    const submission = await ctx.db.get(args.submissionId);
+  handler: async (
+    ctx: MutationCtx,
+    args: {
+      submissionId: string;
+      status: "pending" | "submitted" | "verified" | "failed";
+      errorMessage?: string;
+    }
+  ) => {
+    const submission = await ctx.db.get(args.submissionId as any);
     if (!submission) throw new Error("Submission not found");
 
     const updateData: Record<string, unknown> = {
@@ -133,7 +150,7 @@ export const updateSubmissionStatus = mutation({
       updateData.errorMessage = args.errorMessage;
     }
 
-    await ctx.db.patch(args.submissionId, updateData);
+    await ctx.db.patch(args.submissionId as any, updateData);
     return { success: true };
   },
 });
@@ -143,18 +160,18 @@ export const updateSubmissionStatus = mutation({
  */
 export const getSubmissionDetail = query({
   args: { submissionId: v.id("submissions") },
-  handler: async (ctx, args) => {
+  handler: async (ctx: QueryCtx, args: { submissionId: string }) => {
     const user = await getUserFromAuth(ctx);
     if (!user) throw new Error("Not authenticated");
 
-    const submission = await ctx.db.get(args.submissionId);
+    const submission = await ctx.db.get(args.submissionId as any);
     if (!submission) throw new Error("Submission not found");
 
-    const location = await ctx.db.get(submission.locationId);
+    const location = await ctx.db.get((submission as any).locationId as any);
     if (!location) throw new Error("Location not found");
-    if (location.userEmail !== user.email) throw new Error("Unauthorized");
+    if ((location as any).userEmail !== user.email) throw new Error("Unauthorized");
 
-    const directory = await ctx.db.get(submission.directoryId);
+    const directory = await ctx.db.get((submission as any).directoryId as any);
 
     return {
       submission,

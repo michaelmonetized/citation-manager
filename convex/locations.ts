@@ -1,10 +1,11 @@
 import { query, mutation } from "./_generated/server";
+import { QueryCtx, MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
 import { getUserFromAuth } from "./auth";
 
 export const listLocations = query({
   args: {},
-  handler: async (ctx) => {
+  handler: async (ctx: QueryCtx) => {
     const user = await getUserFromAuth(ctx);
     if (!user) throw new Error("Not authenticated");
 
@@ -25,7 +26,18 @@ export const createLocation = mutation({
     state: v.string(),
     zipCode: v.string(),
   },
-  handler: async (ctx, args) => {
+  handler: async (
+    ctx: MutationCtx,
+    args: {
+      businessName: string;
+      address: string;
+      phone: string;
+      website?: string;
+      city: string;
+      state: string;
+      zipCode: string;
+    }
+  ) => {
     const user = await getUserFromAuth(ctx);
     if (!user) throw new Error("Not authenticated");
 
@@ -48,13 +60,13 @@ export const createLocation = mutation({
 
 export const getLocation = query({
   args: { locationId: v.id("locations") },
-  handler: async (ctx, args) => {
+  handler: async (ctx: QueryCtx, args: { locationId: string }) => {
     const user = await getUserFromAuth(ctx);
     if (!user) throw new Error("Not authenticated");
 
-    const location = await ctx.db.get(args.locationId);
+    const location = await ctx.db.get(args.locationId as any);
     if (!location) throw new Error("Location not found");
-    if (location.userEmail !== user.email) throw new Error("Unauthorized");
+    if ((location as any).userEmail !== user.email) throw new Error("Unauthorized");
 
     return location;
   },
@@ -62,15 +74,15 @@ export const getLocation = query({
 
 export const deleteLocation = mutation({
   args: { locationId: v.id("locations") },
-  handler: async (ctx, args) => {
+  handler: async (ctx: MutationCtx, args: { locationId: string }) => {
     const user = await getUserFromAuth(ctx);
     if (!user) throw new Error("Not authenticated");
 
-    const location = await ctx.db.get(args.locationId);
+    const location = await ctx.db.get(args.locationId as any);
     if (!location) throw new Error("Location not found");
-    if (location.userEmail !== user.email) throw new Error("Unauthorized");
+    if ((location as any).userEmail !== user.email) throw new Error("Unauthorized");
 
-    await ctx.db.delete(args.locationId);
+    await ctx.db.delete(args.locationId as any);
     return { success: true };
   },
 });

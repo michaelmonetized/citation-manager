@@ -1,4 +1,5 @@
 import { mutation, query } from "./_generated/server";
+import { MutationCtx, QueryCtx } from "./_generated/server";
 import { v } from "convex/values";
 
 /**
@@ -9,7 +10,13 @@ export const createUser = mutation({
     email: v.string(),
     password: v.string(),
   },
-  handler: async (ctx, args) => {
+  handler: async (
+    ctx: MutationCtx,
+    args: {
+      email: string;
+      password: string;
+    }
+  ) => {
     // Check if user already exists
     const existing = await ctx.db
       .query("users")
@@ -40,7 +47,7 @@ export const getUserByEmail = query({
   args: {
     email: v.string(),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx: QueryCtx, args: { email: string }) => {
     return await ctx.db
       .query("users")
       .filter((q) => q.eq(q.field("email"), args.email))
@@ -55,8 +62,8 @@ export const getUser = query({
   args: {
     userId: v.id("users"),
   },
-  handler: async (ctx, args) => {
-    return await ctx.db.get(args.userId);
+  handler: async (ctx: QueryCtx, args: { userId: string }) => {
+    return await ctx.db.get(args.userId as any);
   },
 });
 
@@ -68,8 +75,14 @@ export const updatePlan = mutation({
     userId: v.id("users"),
     plan: v.union(v.literal("free"), v.literal("pro"), v.literal("enterprise")),
   },
-  handler: async (ctx, args) => {
-    await ctx.db.patch(args.userId, {
+  handler: async (
+    ctx: MutationCtx,
+    args: {
+      userId: string;
+      plan: "free" | "pro" | "enterprise";
+    }
+  ) => {
+    await ctx.db.patch(args.userId as any, {
       plan: args.plan,
       updatedAt: Date.now(),
     });

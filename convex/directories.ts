@@ -1,4 +1,5 @@
 import { query } from "./_generated/server";
+import { QueryCtx } from "./_generated/server";
 import { v } from "convex/values";
 
 export const listDirectories = query({
@@ -7,7 +8,14 @@ export const listDirectories = query({
     onlyFree: v.optional(v.boolean()),
     limit: v.optional(v.number()),
   },
-  handler: async (ctx, args) => {
+  handler: async (
+    ctx: QueryCtx,
+    args: {
+      category?: string;
+      onlyFree?: boolean;
+      limit?: number;
+    }
+  ) => {
     const allDirs = await ctx.db.query("directories").collect();
 
     let filtered = allDirs;
@@ -30,16 +38,16 @@ export const listDirectories = query({
 
 export const getDirectory = query({
   args: { directoryId: v.id("directories") },
-  handler: async (ctx, args) => {
-    return await ctx.db.get(args.directoryId);
+  handler: async (ctx: QueryCtx, args: { directoryId: string }) => {
+    return await ctx.db.get(args.directoryId as any);
   },
 });
 
 export const listTopDirectories = query({
   args: { limit: v.optional(v.number()) },
-  handler: async (ctx, args) => {
+  handler: async (ctx: QueryCtx, args: { limit?: number }) => {
     const limit = args.limit ?? 50;
     const allDirs = await ctx.db.query("directories").collect();
-    return allDirs.sort((a, b) => a.rank - b.rank).slice(0, limit);
+    return allDirs.sort((a, b) => (a.rank ?? 999) - (b.rank ?? 999)).slice(0, limit);
   },
 });
