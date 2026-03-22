@@ -27,9 +27,9 @@ export default function LocationsPage() {
           <h2 className="text-2xl font-bold">Your Locations</h2>
           <Link
             href="/locations/new"
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 font-medium"
           >
-            Add Location
+            + Add Location
           </Link>
         </div>
 
@@ -39,10 +39,10 @@ export default function LocationsPage() {
 
         {locations && locations.length === 0 && (
           <div className="bg-white rounded-lg shadow p-8 text-center">
-            <p className="text-gray-600 mb-4">No locations yet</p>
+            <p className="text-lg text-gray-600 mb-4">No business locations yet</p>
             <Link
               href="/locations/new"
-              className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              className="inline-block bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 font-medium"
             >
               Create Your First Location
             </Link>
@@ -52,11 +52,20 @@ export default function LocationsPage() {
         {locations && locations.length > 0 && (
           <div className="grid grid-cols-1 gap-4">
             {locations.map((location: typeof locations[0]) => (
-              <div key={location._id} className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-lg font-semibold">{location.businessName}</h3>
+              <div key={location._id} className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-lg font-semibold">{location.businessName}</h3>
+                  <Link
+                    href={`/locations/${location._id}/edit`}
+                    className="text-sm text-blue-600 hover:text-blue-700"
+                  >
+                    Edit
+                  </Link>
+                </div>
                 <p className="text-gray-600">{location.address}</p>
                 <p className="text-gray-600">{location.city}, {location.state} {location.zipCode}</p>
-                <p className="text-gray-600">{location.phone}</p>
+                <p className="text-gray-600 font-medium">{location.phone}</p>
+                {location.website && <p className="text-blue-600 text-sm">{location.website}</p>}
               </div>
             ))}
           </div>
