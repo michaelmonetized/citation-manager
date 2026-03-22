@@ -1,25 +1,18 @@
-import type { Metadata } from "next";
+"use client";
+
+import type { ReactNode } from "react";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ConvexClientProvider } from "./providers";
 import "./globals.css";
 
-export const metadata: Metadata = {
-  title: "Citation Manager",
-  description: "Manage business citations across 1000+ directories",
-};
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <ClerkProvider>
-      <ConvexClientProvider>
-        <html lang="en">
-          <body>{children}</body>
-        </html>
-      </ConvexClientProvider>
-    </ClerkProvider>
+    <html lang="en">
+      <body>
+        <ClerkProvider>
+          <ConvexClientProvider>{children}</ConvexClientProvider>
+        </ClerkProvider>
+      </body>
+    </html>
   );
 }
