@@ -8,8 +8,7 @@
     "apiDocsUrl": "https://developers.google.com/my-business/",
     "category": "search_aggregator",
     "isFree": true,
-    "estimatedMonthlyViews": 1000000,
-    "notes": "Primary directory for local search. Google Business API available."
+    "estimatedMonthlyViews": 1000000
   },
   {
     "rank": 2,
@@ -20,8 +19,7 @@
     "apiDocsUrl": "https://www.yelp.com/developers",
     "category": "review_platform",
     "isFree": false,
-    "estimatedMonthlyViews": 500000,
-    "notes": "Major review platform. Business API available."
+    "estimatedMonthlyViews": 500000
   },
   {
     "rank": 3,
@@ -31,8 +29,7 @@
     "apiAvailable": false,
     "category": "search_aggregator",
     "isFree": true,
-    "estimatedMonthlyViews": 300000,
-    "notes": "Integrated with iOS/macOS. Form submission via Maps.app."
+    "estimatedMonthlyViews": 300000
   },
   {
     "rank": 4,
@@ -43,8 +40,7 @@
     "apiDocsUrl": "https://developers.facebook.com/docs/graph-api",
     "category": "social_media",
     "isFree": true,
-    "estimatedMonthlyViews": 400000,
-    "notes": "Facebook and Instagram locations. Graph API available."
+    "estimatedMonthlyViews": 400000
   },
   {
     "rank": 5,
@@ -54,19 +50,17 @@
     "apiAvailable": false,
     "category": "professional_network",
     "isFree": true,
-    "estimatedMonthlyViews": 200000,
-    "notes": "Company profile. B2B audience."
+    "estimatedMonthlyViews": 200000
   },
   {
     "rank": 6,
-    "name": "Better Business Bureau (BBB)",
+    "name": "Better Business Bureau",
     "url": "https://www.bbb.org",
     "submissionMethod": "form",
     "apiAvailable": false,
     "category": "business_registry",
     "isFree": false,
-    "estimatedMonthlyViews": 150000,
-    "notes": "Trust/credibility directory. Requires business verification."
+    "estimatedMonthlyViews": 150000
   },
   {
     "rank": 7,
@@ -77,8 +71,7 @@
     "apiDocsUrl": "https://www.brightlocal.com/api-documentation",
     "category": "citation_aggregator",
     "isFree": false,
-    "estimatedMonthlyViews": 50000,
-    "notes": "Citation aggregator and rank tracking tool."
+    "estimatedMonthlyViews": 50000
   },
   {
     "rank": 8,
@@ -89,8 +82,7 @@
     "apiDocsUrl": "https://moz.com/api",
     "category": "citation_aggregator",
     "isFree": false,
-    "estimatedMonthlyViews": 40000,
-    "notes": "SEO metrics + citation tracking."
+    "estimatedMonthlyViews": 40000
   },
   {
     "rank": 9,
@@ -101,8 +93,7 @@
     "apiDocsUrl": "https://www.uberall.com/api",
     "category": "citation_aggregator",
     "isFree": false,
-    "estimatedMonthlyViews": 30000,
-    "notes": "Multi-location citation management. Our primary competitor."
+    "estimatedMonthlyViews": 30000
   },
   {
     "rank": 10,
@@ -112,119 +103,318 @@
     "apiAvailable": false,
     "category": "business_directory",
     "isFree": false,
-    "estimatedMonthlyViews": 200000,
-    "notes": "Legacy business directory. Still high traffic."
+    "estimatedMonthlyViews": 200000
   },
   {
-    "rank": 11,
-    "name": "Merchant Circle",
-    "url": "https://www.merchantcircle.com",
-    "submissionMethod": "form",
-    "apiAvailable": false,
-    "category": "business_directory",
-    "isFree": true,
-    "estimatedMonthlyViews": 80000,
-    "notes": "Free business directory."
-  },
-  {
-    "rank": 12,
-    "name": "Bing Places for Business",
-    "url": "https://www.bingplaces.com",
-    "submissionMethod": "form",
-    "apiAvailable": false,
-    "category": "search_aggregator",
-    "isFree": true,
-    "estimatedMonthlyViews": 150000,
-    "notes": "Bing's local search. Connected to Maps."
-  },
-  {
-    "rank": 13,
-    "name": "Manta",
-    "url": "https://www.manta.com",
-    "submissionMethod": "form",
-    "apiAvailable": false,
-    "category": "business_directory",
-    "isFree": false,
-    "estimatedMonthlyViews": 100000,
-    "notes": "B2B business directory."
-  },
-  {
-    "rank": 14,
-    "name": "Dun & Bradstreet",
-    "url": "https://www.dnb.com",
-    "submissionMethod": "form",
-    "apiAvailable": true,
-    "apiDocsUrl": "https://www.dnb.com/en_us/business-directory.html",
-    "category": "business_registry",
-    "isFree": false,
-    "estimatedMonthlyViews": 120000,
-    "notes": "Business credit + company data."
-  },
-  {
-    "rank": 15,
-    "name": "Foursquare/Swarm",
-    "url": "https://foursquare.com",
-    "submissionMethod": "form",
-    "apiAvailable": true,
-    "apiDocsUrl": "https://developer.foursquare.com",
-    "category": "location_social",
-    "isFree": true,
-    "estimatedMonthlyViews": 100000,
-    "notes": "Location check-in platform."
-  },
-  {
-    "rank": 16,
-    "name": "Waze",
-    "url": "https://www.waze.com",
-    "submissionMethod": "form",
-    "apiAvailable": false,
-    "category": "search_aggregator",
-    "isFree": true,
-    "estimatedMonthlyViews": 250000,
-    "notes": "Navigation app with business listings."
-  },
-  {
-    "rank": 17,
-    "name": "Trustpilot",
-    "url": "https://www.trustpilot.com",
+    "rank": 21,
+    "name": "Angi",
+    "url": "https://www.angi.com",
     "submissionMethod": "form",
     "apiAvailable": false,
     "category": "review_platform",
-    "isFree": true,
-    "estimatedMonthlyViews": 150000,
-    "notes": "Review platform. Growing influence."
+    "isFree": false,
+    "estimatedMonthlyViews": 200000
   },
   {
-    "rank": 18,
-    "name": "Nextdoor",
-    "url": "https://nextdoor.com",
+    "rank": 22,
+    "name": "Glassdoor",
+    "url": "https://www.glassdoor.com",
     "submissionMethod": "form",
     "apiAvailable": false,
-    "category": "social_network",
+    "category": "employer_review",
     "isFree": true,
-    "estimatedMonthlyViews": 100000,
-    "notes": "Neighborhood social network."
+    "estimatedMonthlyViews": 300000
   },
   {
-    "rank": 19,
-    "name": "CitySearch",
-    "url": "https://www.citysearch.com",
+    "rank": 23,
+    "name": "Indeed Company Pages",
+    "url": "https://www.indeed.com",
     "submissionMethod": "form",
     "apiAvailable": false,
-    "category": "business_directory",
+    "category": "employer_directory",
     "isFree": true,
-    "estimatedMonthlyViews": 80000,
-    "notes": "Local business directory (legacy)."
+    "estimatedMonthlyViews": 500000
   },
   {
-    "rank": 20,
-    "name": "SuperPages",
-    "url": "https://www.superpages.com",
+    "rank": 24,
+    "name": "ZoomInfo",
+    "url": "https://www.zoominfo.com",
     "submissionMethod": "form",
     "apiAvailable": false,
-    "category": "business_directory",
+    "category": "b2b_database",
+    "isFree": false,
+    "estimatedMonthlyViews": 100000
+  },
+  {
+    "rank": 25,
+    "name": "Apollo",
+    "url": "https://www.apollo.io",
+    "submissionMethod": "api",
+    "apiAvailable": true,
+    "apiDocsUrl": "https://apolloapi.docs",
+    "category": "b2b_database",
     "isFree": true,
-    "estimatedMonthlyViews": 50000,
-    "notes": "Free business directory."
+    "estimatedMonthlyViews": 50000
+  },
+  {
+    "rank": 26,
+    "name": "Google Maps",
+    "url": "https://maps.google.com",
+    "submissionMethod": "form",
+    "apiAvailable": false,
+    "category": "search_aggregator",
+    "isFree": true,
+    "estimatedMonthlyViews": 1000000
+  },
+  {
+    "rank": 27,
+    "name": "Mapquest",
+    "url": "https://www.mapquest.com",
+    "submissionMethod": "form",
+    "apiAvailable": false,
+    "category": "maps",
+    "isFree": true,
+    "estimatedMonthlyViews": 100000
+  },
+  {
+    "rank": 28,
+    "name": "Here WeGo",
+    "url": "https://wego.here.com",
+    "submissionMethod": "form",
+    "apiAvailable": false,
+    "category": "maps",
+    "isFree": true,
+    "estimatedMonthlyViews": 50000
+  },
+  {
+    "rank": 29,
+    "name": "TomTom Maps",
+    "url": "https://www.tomtom.com",
+    "submissionMethod": "form",
+    "apiAvailable": false,
+    "category": "maps",
+    "isFree": false,
+    "estimatedMonthlyViews": 30000
+  },
+  {
+    "rank": 30,
+    "name": "OpenStreetMap",
+    "url": "https://www.openstreetmap.org",
+    "submissionMethod": "manual",
+    "apiAvailable": true,
+    "apiDocsUrl": "https://wiki.openstreetmap.org/wiki/API",
+    "category": "maps",
+    "isFree": true,
+    "estimatedMonthlyViews": 200000
+  },
+  {
+    "rank": 31,
+    "name": "Angies List",
+    "url": "https://www.angieslist.com",
+    "submissionMethod": "form",
+    "apiAvailable": false,
+    "category": "local_services",
+    "isFree": false,
+    "estimatedMonthlyViews": 150000
+  },
+  {
+    "rank": 32,
+    "name": "Thumbtack",
+    "url": "https://www.thumbtack.com",
+    "submissionMethod": "form",
+    "apiAvailable": false,
+    "category": "local_services",
+    "isFree": true,
+    "estimatedMonthlyViews": 200000
+  },
+  {
+    "rank": 33,
+    "name": "ServiceTitan Directory",
+    "url": "https://www.servicetitan.com",
+    "submissionMethod": "form",
+    "apiAvailable": false,
+    "category": "service_professionals",
+    "isFree": false,
+    "estimatedMonthlyViews": 50000
+  },
+  {
+    "rank": 34,
+    "name": "Care.com",
+    "url": "https://www.care.com",
+    "submissionMethod": "form",
+    "apiAvailable": false,
+    "category": "care_services",
+    "isFree": true,
+    "estimatedMonthlyViews": 300000
+  },
+  {
+    "rank": 35,
+    "name": "TaskRabbit",
+    "url": "https://www.taskrabbit.com",
+    "submissionMethod": "form",
+    "apiAvailable": false,
+    "category": "local_services",
+    "isFree": true,
+    "estimatedMonthlyViews": 150000
+  },
+  {
+    "rank": 36,
+    "name": "Airbnb",
+    "url": "https://www.airbnb.com",
+    "submissionMethod": "form",
+    "apiAvailable": true,
+    "apiDocsUrl": "https://www.airbnb.com/api",
+    "category": "accommodation",
+    "isFree": true,
+    "estimatedMonthlyViews": 1000000
+  },
+  {
+    "rank": 37,
+    "name": "Booking.com",
+    "url": "https://www.booking.com",
+    "submissionMethod": "form",
+    "apiAvailable": true,
+    "apiDocsUrl": "https://www.booking.com/connectivity",
+    "category": "accommodation",
+    "isFree": false,
+    "estimatedMonthlyViews": 500000
+  },
+  {
+    "rank": 38,
+    "name": "Expedia",
+    "url": "https://www.expedia.com",
+    "submissionMethod": "form",
+    "apiAvailable": false,
+    "category": "travel_aggregator",
+    "isFree": false,
+    "estimatedMonthlyViews": 400000
+  },
+  {
+    "rank": 39,
+    "name": "TripAdvisor",
+    "url": "https://www.tripadvisor.com",
+    "submissionMethod": "form",
+    "apiAvailable": false,
+    "category": "travel_reviews",
+    "isFree": true,
+    "estimatedMonthlyViews": 500000
+  },
+  {
+    "rank": 40,
+    "name": "Hotels.com",
+    "url": "https://www.hotels.com",
+    "submissionMethod": "form",
+    "apiAvailable": false,
+    "category": "accommodation",
+    "isFree": false,
+    "estimatedMonthlyViews": 300000
+  },
+  {
+    "rank": 41,
+    "name": "OpenTable",
+    "url": "https://www.opentable.com",
+    "submissionMethod": "form",
+    "apiAvailable": true,
+    "apiDocsUrl": "https://platform.opentable.com",
+    "category": "restaurant_reservations",
+    "isFree": false,
+    "estimatedMonthlyViews": 300000
+  },
+  {
+    "rank": 42,
+    "name": "Resy",
+    "url": "https://resy.com",
+    "submissionMethod": "form",
+    "apiAvailable": true,
+    "apiDocsUrl": "https://dev.resy.com",
+    "category": "restaurant_reservations",
+    "isFree": false,
+    "estimatedMonthlyViews": 100000
+  },
+  {
+    "rank": 43,
+    "name": "DoorDash",
+    "url": "https://www.doordash.com",
+    "submissionMethod": "form",
+    "apiAvailable": true,
+    "apiDocsUrl": "https://developer.doordash.com",
+    "category": "food_delivery",
+    "isFree": false,
+    "estimatedMonthlyViews": 200000
+  },
+  {
+    "rank": 44,
+    "name": "Uber Eats",
+    "url": "https://www.ubereats.com",
+    "submissionMethod": "form",
+    "apiAvailable": true,
+    "apiDocsUrl": "https://developer.uber.com",
+    "category": "food_delivery",
+    "isFree": false,
+    "estimatedMonthlyViews": 200000
+  },
+  {
+    "rank": 45,
+    "name": "Grubhub",
+    "url": "https://www.grubhub.com",
+    "submissionMethod": "form",
+    "apiAvailable": true,
+    "apiDocsUrl": "https://developer.grubhub.com",
+    "category": "food_delivery",
+    "isFree": false,
+    "estimatedMonthlyViews": 200000
+  },
+  {
+    "rank": 46,
+    "name": "LinkedIn Company Pages",
+    "url": "https://www.linkedin.com/company",
+    "submissionMethod": "form",
+    "apiAvailable": true,
+    "apiDocsUrl": "https://linkedin.com/developers",
+    "category": "professional_network",
+    "isFree": true,
+    "estimatedMonthlyViews": 300000
+  },
+  {
+    "rank": 47,
+    "name": "Crunchbase",
+    "url": "https://www.crunchbase.com",
+    "submissionMethod": "form",
+    "apiAvailable": true,
+    "apiDocsUrl": "https://data.crunchbase.com/docs",
+    "category": "company_database",
+    "isFree": true,
+    "estimatedMonthlyViews": 100000
+  },
+  {
+    "rank": 48,
+    "name": "PitchBook",
+    "url": "https://pitchbook.com",
+    "submissionMethod": "form",
+    "apiAvailable": false,
+    "category": "financial_data",
+    "isFree": false,
+    "estimatedMonthlyViews": 20000
+  },
+  {
+    "rank": 49,
+    "name": "CB Insights",
+    "url": "https://www.cbinsights.com",
+    "submissionMethod": "form",
+    "apiAvailable": false,
+    "category": "market_intelligence",
+    "isFree": false,
+    "estimatedMonthlyViews": 50000
+  },
+  {
+    "rank": 50,
+    "name": "Hunter.io",
+    "url": "https://hunter.io",
+    "submissionMethod": "api",
+    "apiAvailable": true,
+    "apiDocsUrl": "https://hunter.io/api",
+    "category": "b2b_email_database",
+    "isFree": true,
+    "estimatedMonthlyViews": 100000
   }
 ]
