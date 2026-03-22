@@ -8,19 +8,14 @@ export const listDirectories = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    let q = ctx.db.query("directories");
+    const allDirs = await ctx.db.query("directories").collect();
 
+    let filtered = allDirs;
+    
     if (args.category) {
-      q = q.withIndex("by_category", (query) =>
-        query.eq("category", args.category)
-      );
-    } else {
-      q = q.withIndex("by_rank", (query) => query.gte("rank", 0));
+      filtered = filtered.filter((d) => d.category === args.category);
     }
-
-    const dirs = await q.collect();
-
-    let filtered = dirs;
+    
     if (args.onlyFree) {
       filtered = filtered.filter((d) => d.isFree);
     }
@@ -44,9 +39,7 @@ export const listTopDirectories = query({
   args: { limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
     const limit = args.limit ?? 50;
-    return await ctx.db
-      .query("directories")
-      .withIndex("by_rank", (q) => q.gte("rank", 0))
-      .take(limit);
+    const allDirs = await ctx.db.query("directories").collect();
+    return allDirs.sort((a, b) => a.rank - b.rank).slice(0, limit);
   },
 });

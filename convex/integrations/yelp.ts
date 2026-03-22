@@ -58,9 +58,9 @@ export const mapLocationToYelpFormat = (locationData: {
  * Search for existing Yelp business to link/update
  */
 export const searchYelpBusiness = async (
-  businessName: string,
-  city: string,
-  apiKey: string
+  _businessName: string,
+  _city: string,
+  _apiKey: string
 ): Promise<string | null> => {
   // TODO: Call Yelp Search API
   // GET https://api.yelp.com/v3/businesses/search
@@ -72,8 +72,8 @@ export const searchYelpBusiness = async (
  * Update or create Yelp business listing
  */
 export const submitYelpBusiness = async (
-  businessData: YelpBusinessData,
-  apiKey: string
+  _businessData: YelpBusinessData,
+  _apiKey: string
 ): Promise<{ yelpId: string; success: boolean }> => {
   // TODO: Call Yelp Business API to create/update
   // POST https://api.yelp.com/v3/businesses/{id}/update
@@ -84,8 +84,8 @@ export const submitYelpBusiness = async (
  * Verify submission via Yelp API
  */
 export const verifyYelpSubmission = async (
-  yelpId: string,
-  apiKey: string
+  _yelpId: string,
+  _apiKey: string
 ): Promise<boolean> => {
   // TODO: Call Yelp API to check if listing is live
   // GET https://api.yelp.com/v3/businesses/{id}

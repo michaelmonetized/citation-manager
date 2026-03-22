@@ -86,8 +86,8 @@ export const mapLocationToGoogleFormat = (locationData: {
  * Poll to check if location is verified
  */
 export const verifyGoogleBusinessSubmission = async (
-  locationId: string,
-  accessToken: string
+  _locationId: string,
+  _accessToken: string
 ): Promise<boolean> => {
   // TODO: Call Google API to check verification status
   // GET https://mybusiness.googleapis.com/v4/accounts/{accountId}/locations/{locationId}

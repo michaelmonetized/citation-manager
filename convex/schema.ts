@@ -15,7 +15,7 @@ export default defineSchema({
     .index("by_email", ["email"]),
 
   locations: defineTable({
-    userId: v.id("users"),
+    clerkId: v.string(),
     businessName: v.string(),
     address: v.string(),
     phone: v.string(),
@@ -26,7 +26,7 @@ export default defineSchema({
     createdAt: v.number(),
     updatedAt: v.number(),
   })
-    .index("by_userId", ["userId"])
+    .index("by_clerkId", ["clerkId"])
     .index("by_businessName", ["businessName"]),
 
   directories: defineTable({

@@ -13,13 +13,13 @@ export const bulkSubmit = mutation({
     directoryIds: v.array(v.id("directories")),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    const clerkId = await getAuthUserId(ctx);
+    if (!clerkId) throw new Error("Not authenticated");
 
     // Verify user owns this location
     const location = await ctx.db.get(args.locationId);
     if (!location) throw new Error("Location not found");
-    if (location.userId !== userId) throw new Error("Unauthorized");
+    if (location.clerkId !== clerkId) throw new Error("Unauthorized");
 
     // Create submission records for each directory
     const submissionIds: string[] = [];
@@ -43,13 +43,13 @@ export const bulkSubmit = mutation({
 export const getLocationSubmissions = query({
   args: { locationId: v.id("locations") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    const clerkId = await getAuthUserId(ctx);
+    if (!clerkId) throw new Error("Not authenticated");
 
     // Verify user owns this location
     const location = await ctx.db.get(args.locationId);
     if (!location) throw new Error("Location not found");
-    if (location.userId !== userId) throw new Error("Unauthorized");
+    if (location.clerkId !== clerkId) throw new Error("Unauthorized");
 
     return await ctx.db
       .query("submissions")
@@ -64,13 +64,13 @@ export const getLocationSubmissions = query({
 export const getSubmissionStatus = query({
   args: { locationId: v.id("locations") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    const clerkId = await getAuthUserId(ctx);
+    if (!clerkId) throw new Error("Not authenticated");
 
     // Verify user owns this location
     const location = await ctx.db.get(args.locationId);
     if (!location) throw new Error("Location not found");
-    if (location.userId !== userId) throw new Error("Unauthorized");
+    if (location.clerkId !== clerkId) throw new Error("Unauthorized");
 
     const submissions = await ctx.db
       .query("submissions")
@@ -144,15 +144,15 @@ export const updateSubmissionStatus = mutation({
 export const getSubmissionDetail = query({
   args: { submissionId: v.id("submissions") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    const clerkId = await getAuthUserId(ctx);
+    if (!clerkId) throw new Error("Not authenticated");
 
     const submission = await ctx.db.get(args.submissionId);
     if (!submission) throw new Error("Submission not found");
 
     const location = await ctx.db.get(submission.locationId);
     if (!location) throw new Error("Location not found");
-    if (location.userId !== userId) throw new Error("Unauthorized");
+    if (location.clerkId !== clerkId) throw new Error("Unauthorized");
 
     const directory = await ctx.db.get(submission.directoryId);
 

@@ -51,7 +51,7 @@ export default function LocationsPage() {
 
         {locations && locations.length > 0 && (
           <div className="grid grid-cols-1 gap-4">
-            {locations.map((location) => (
+            {locations.map((location: typeof locations[0]) => (
               <div key={location._id} className="bg-white rounded-lg shadow p-6">
                 <h3 className="text-lg font-semibold">{location.businessName}</h3>
                 <p className="text-gray-600">{location.address}</p>

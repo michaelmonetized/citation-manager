@@ -37,7 +37,7 @@ export default function DirectoriesPage() {
 
         {directories && directories.length > 0 && (
           <div className="grid grid-cols-1 gap-4">
-            {directories.map((dir) => (
+            {directories.map((dir: typeof directories[0]) => (
               <div key={dir._id} className="bg-white rounded-lg shadow p-6">
                 <div className="flex justify-between items-start">
                   <div>

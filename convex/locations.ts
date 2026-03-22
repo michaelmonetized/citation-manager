@@ -5,12 +5,12 @@ import { getAuthUserId } from "./auth";
 export const listLocations = query({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    const clerkId = await getAuthUserId(ctx);
+    if (!clerkId) throw new Error("Not authenticated");
 
     return await ctx.db
       .query("locations")
-      .withIndex("by_userId", (q) => q.eq("userId", userId))
+      .withIndex("by_clerkId", (q) => q.eq("clerkId", clerkId))
       .collect();
   },
 });
@@ -26,11 +26,11 @@ export const createLocation = mutation({
     zipCode: v.string(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    const clerkId = await getAuthUserId(ctx);
+    if (!clerkId) throw new Error("Not authenticated");
 
     const locationId = await ctx.db.insert("locations", {
-      userId,
+      clerkId,
       businessName: args.businessName,
       address: args.address,
       phone: args.phone,
@@ -49,12 +49,12 @@ export const createLocation = mutation({
 export const getLocation = query({
   args: { locationId: v.id("locations") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    const clerkId = await getAuthUserId(ctx);
+    if (!clerkId) throw new Error("Not authenticated");
 
     const location = await ctx.db.get(args.locationId);
     if (!location) throw new Error("Location not found");
-    if (location.userId !== userId) throw new Error("Unauthorized");
+    if (location.clerkId !== clerkId) throw new Error("Unauthorized");
 
     return location;
   },
@@ -63,12 +63,12 @@ export const getLocation = query({
 export const deleteLocation = mutation({
   args: { locationId: v.id("locations") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    const clerkId = await getAuthUserId(ctx);
+    if (!clerkId) throw new Error("Not authenticated");
 
     const location = await ctx.db.get(args.locationId);
     if (!location) throw new Error("Location not found");
-    if (location.userId !== userId) throw new Error("Unauthorized");
+    if (location.clerkId !== clerkId) throw new Error("Unauthorized");
 
     await ctx.db.delete(args.locationId);
     return { success: true };

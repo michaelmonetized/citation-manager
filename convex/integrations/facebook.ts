@@ -40,7 +40,8 @@ export const mapLocationToFacebookFormat = (locationData: {
   state: string;
   zipCode: string;
 }): FacebookPageData => {
-  const [street, ...rest] = locationData.address.split(",");
+  const addressParts = locationData.address.split(",");
+  const street = addressParts[0];
 
   return {
     name: locationData.businessName,
@@ -58,9 +59,9 @@ export const mapLocationToFacebookFormat = (locationData: {
  * Search for existing Facebook Page
  */
 export const searchFacebookPage = async (
-  businessName: string,
-  city: string,
-  accessToken: string
+  _businessName: string,
+  _city: string,
+  _accessToken: string
 ): Promise<string | null> => {
   // TODO: Call Graph API to search for page
   // GET https://graph.facebook.com/v18.0/search?q=...&type=page&access_token=...
@@ -71,8 +72,8 @@ export const searchFacebookPage = async (
  * Create or update Facebook Page
  */
 export const submitFacebookPage = async (
-  pageData: FacebookPageData,
-  accessToken: string
+  _pageData: FacebookPageData,
+  _accessToken: string
 ): Promise<{ facebookPageId: string; success: boolean }> => {
   // TODO: Call Graph API to create/update page
   // POST https://graph.facebook.com/v18.0/{page-id}
@@ -83,8 +84,8 @@ export const submitFacebookPage = async (
  * Verify submission via Facebook API
  */
 export const verifyFacebookSubmission = async (
-  facebookPageId: string,
-  accessToken: string
+  _facebookPageId: string,
+  _accessToken: string
 ): Promise<boolean> => {
   // TODO: Call Graph API to check page status
   // GET https://graph.facebook.com/v18.0/{page-id}
@@ -95,8 +96,8 @@ export const verifyFacebookSubmission = async (
  * Sync Instagram Business Account (linked to Facebook Page)
  */
 export const syncInstagramBusiness = async (
-  facebookPageId: string,
-  accessToken: string
+  _facebookPageId: string,
+  _accessToken: string
 ): Promise<string | null> => {
   // TODO: Get linked Instagram business account
   // GET https://graph.facebook.com/v18.0/{page-id}/instagram_business_account
