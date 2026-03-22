@@ -15,6 +15,7 @@ import type * as integrations_googleBusiness from "../integrations/googleBusines
 import type * as integrations_yelp from "../integrations/yelp.js";
 import type * as locations from "../locations.js";
 import type * as submissions from "../submissions.js";
+import type * as submitGoogle from "../submitGoogle.js";
 import type * as users from "../users.js";
 
 import type {
@@ -31,6 +32,7 @@ declare const fullApi: ApiFromModules<{
   "integrations/yelp": typeof integrations_yelp;
   locations: typeof locations;
   submissions: typeof submissions;
+  submitGoogle: typeof submitGoogle;
   users: typeof users;
 }>;
 

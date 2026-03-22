@@ -1,12 +1,8 @@
 "use client";
 
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
 import { useState } from "react";
 
 export default function LocationsPage() {
-  const submitToGoogle = useMutation(api.submitGoogle.submitToGoogle);
-
   const [name, setName] = useState("HustleLaunch");
   const [address, setAddress] = useState("146 Saints Place, Canton, NC 28716");
   const [phone, setPhone] = useState("828-269-8280");
@@ -15,24 +11,8 @@ export default function LocationsPage() {
   const [submitStatus, setSubmitStatus] = useState("");
 
   const handleSubmitGoogle = async () => {
-    setSubmitStatus("Submitting...");
-    setLoading(true);
-
-    try {
-      const result = await submitToGoogle({
-        name,
-        address,
-        phone,
-        website,
-      });
-      setSubmitStatus(`✓ ${result.status}`);
-    } catch (err) {
-      setSubmitStatus(
-        `✗ Failed: ${err instanceof Error ? err.message : "Unknown error"}`
-      );
-    } finally {
-      setLoading(false);
-    }
+    setSubmitStatus("Google submission coming in Phase 2...");
+    setLoading(false);
   };
 
   return (

@@ -3,27 +3,22 @@ import { v } from "convex/values";
 
 export const submitToGoogle = mutation({
   args: {
-    name: v.string(),
-    address: v.string(),
-    phone: v.string(),
-    website: v.string(),
+    locationId: v.id("locations"),
+    directoryId: v.id("directories"),
   },
   async handler(ctx, args) {
-    // Store submission record immediately
+    // Store submission record with correct schema fields
     const submissionId = await ctx.db.insert("submissions", {
-      name: args.name,
-      address: args.address,
-      phone: args.phone,
-      directory: "Google Maps",
+      locationId: args.locationId,
+      directoryId: args.directoryId,
       status: "submitted",
-      url: "https://www.google.com/business/",
       createdAt: Date.now(),
+      submittedAt: Date.now(),
     });
 
     return {
       status: "Submitted to Google Maps",
       submissionId,
-      directory: "Google Maps",
       instructions: "Complete verification at https://www.google.com/business/",
     };
   },
