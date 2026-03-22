@@ -1,75 +1,120 @@
 "use client";
 
-import { useQuery } from "convex/react";
+import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import Link from "next/link";
+import { useState } from "react";
 
 export default function LocationsPage() {
-  const locations = useQuery(api.locations.listLocations);
+  const submitToGoogle = useMutation(api.submitGoogle.submitToGoogle);
+
+  const [name, setName] = useState("HustleLaunch");
+  const [address, setAddress] = useState("146 Saints Place, Canton, NC 28716");
+  const [phone, setPhone] = useState("828-269-8280");
+  const [website, setWebsite] = useState("https://www.hustlelaunch.com");
+  const [loading, setLoading] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState("");
+
+  const handleSubmitGoogle = async () => {
+    setSubmitStatus("Submitting...");
+    setLoading(true);
+
+    try {
+      const result = await submitToGoogle({
+        name,
+        address,
+        phone,
+        website,
+      });
+      setSubmitStatus(`✓ ${result.status}`);
+    } catch (err) {
+      setSubmitStatus(
+        `✗ Failed: ${err instanceof Error ? err.message : "Unknown error"}`
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center gap-8">
-              <h1 className="text-xl font-bold">Citation Manager</h1>
-              <Link href="/dashboard" className="text-gray-600 hover:text-gray-900">
-                Dashboard
-              </Link>
-            </div>
-          </div>
+    <div className="min-h-screen bg-slate-50">
+      <nav className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <h1 className="text-2xl font-bold text-slate-900">
+            Citation Manager
+          </h1>
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl font-bold">Your Locations</h2>
-          <Link
-            href="/locations/new"
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 font-medium"
+      <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="bg-white rounded-lg shadow p-6">
+          <h2 className="text-xl font-bold text-slate-900 mb-6">
+            Submit Location
+          </h2>
+
+          <div className="space-y-4 mb-6">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Business Name
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Address
+              </label>
+              <input
+                type="text"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Phone
+              </label>
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Website
+              </label>
+              <input
+                type="url"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+
+          <button
+            onClick={handleSubmitGoogle}
+            disabled={loading}
+            className="w-full px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-slate-400 text-white font-semibold rounded-lg transition"
           >
-            + Add Location
-          </Link>
+            {loading ? "Submitting..." : "Submit to Google Maps"}
+          </button>
+
+          {submitStatus && (
+            <p className="mt-4 text-sm font-medium text-slate-700">
+              {submitStatus}
+            </p>
+          )}
         </div>
-
-        {locations === undefined && (
-          <div className="text-gray-600">Loading...</div>
-        )}
-
-        {locations && locations.length === 0 && (
-          <div className="bg-white rounded-lg shadow p-8 text-center">
-            <p className="text-lg text-gray-600 mb-4">No business locations yet</p>
-            <Link
-              href="/locations/new"
-              className="inline-block bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 font-medium"
-            >
-              Create Your First Location
-            </Link>
-          </div>
-        )}
-
-        {locations && locations.length > 0 && (
-          <div className="grid grid-cols-1 gap-4">
-            {locations.map((location: typeof locations[0]) => (
-              <div key={location._id} className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-lg font-semibold">{location.businessName}</h3>
-                  <Link
-                    href={`/locations/${location._id}/edit`}
-                    className="text-sm text-blue-600 hover:text-blue-700"
-                  >
-                    Edit
-                  </Link>
-                </div>
-                <p className="text-gray-600">{location.address}</p>
-                <p className="text-gray-600">{location.city}, {location.state} {location.zipCode}</p>
-                <p className="text-gray-600 font-medium">{location.phone}</p>
-                {location.website && <p className="text-blue-600 text-sm">{location.website}</p>}
-              </div>
-            ))}
-          </div>
-        )}
       </main>
     </div>
   );
