@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint --max-warnings=0",
+    "lint": "bun x oxlint",
+    "lint:fix": "bun x oxlint --fix",
     "type-check": "tsc --noEmit",
     "convex:dev": "convex dev",
     "convex:deploy": "convex deploy"
@@ -21,13 +22,14 @@
     "tailwindcss": "^4.0.0"
   },
   "devDependencies": {
-    "typescript": "^5.9.0",
     "@types/node": "^20.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "eslint": "^9.0.0",
-    "eslint-config-next": "^16.0.0"
+    "eslint-config-next": "^16.0.0",
+    "oxlint": "^1.56.0",
+    "typescript": "^5.9.0"
   }
 }
