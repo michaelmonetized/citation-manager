@@ -3,6 +3,8 @@
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 export default function DashboardPage() {
   const { user } = useUser();
 

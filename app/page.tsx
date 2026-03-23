@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 
+export const dynamic = "force-dynamic";
+
 export default function HomePage() {
   const router = useRouter();
   const { user, isLoaded } = useUser();
