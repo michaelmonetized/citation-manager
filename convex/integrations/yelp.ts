@@ -5,7 +5,7 @@ import { v } from "convex/values";
  * Documentation: https://www.yelp.com/developers
  *
  * Prerequisites:
- * 1. Yelp API key from developer account
+ * 1. Yelp API key from developer account (YELP_API_KEY env var)
  * 2. Yelp Business ID (obtainable via Yelp Search API)
  */
 
@@ -21,12 +21,16 @@ interface YelpBusinessData {
   country: string;
   website?: string;
   categories?: Array<{ alias: string }>;
-  hours?: Array<{
-    day: number;
-    start: string;
-    end: string;
-    is_overnight: boolean;
-  }>;
+}
+
+interface YelpSearchResult {
+  businesses: Array<{ id: string; name: string }>;
+}
+
+interface YelpBusiness {
+  id: string;
+  name: string;
+  is_claimed: boolean;
 }
 
 /**
@@ -58,38 +62,83 @@ export const mapLocationToYelpFormat = (locationData: {
  * Search for existing Yelp business to link/update
  */
 export const searchYelpBusiness = async (
-  _businessName: string,
-  _city: string,
-  _apiKey: string
+  businessName: string,
+  city: string,
+  apiKey: string
 ): Promise<string | null> => {
-  // TODO: Call Yelp Search API
-  // GET https://api.yelp.com/v3/businesses/search
-  // Returns business_id if found
-  throw new Error("Not implemented: Yelp search");
+  const params = new URLSearchParams({
+    term: businessName,
+    location: city,
+    limit: "5",
+  });
+
+  const response = await fetch(`https://api.yelp.com/v3/businesses/search?${params}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Yelp search failed: ${response.statusText}`);
+  }
+
+  const data = (await response.json()) as YelpSearchResult;
+  return data.businesses.length > 0 ? data.businesses[0].id : null;
 };
 
 /**
- * Update or create Yelp business listing
+ * Claim or update Yelp business listing
  */
 export const submitYelpBusiness = async (
-  _businessData: YelpBusinessData,
-  _apiKey: string
+  businessData: YelpBusinessData,
+  apiKey: string
 ): Promise<{ yelpId: string; success: boolean }> => {
-  // TODO: Call Yelp Business API to create/update
-  // POST https://api.yelp.com/v3/businesses/{id}/update
-  throw new Error("Not implemented: Yelp submission");
+  // First, search for existing business
+  const yelpId = await searchYelpBusiness(businessData.name, businessData.city, apiKey);
+
+  if (!yelpId) {
+    throw new Error("Yelp business not found. Create via Yelp website first.");
+  }
+
+  // Update business info
+  const response = await fetch(`https://api.yelp.com/v3/businesses/${yelpId}/update`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(businessData),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Yelp submission failed: ${error}`);
+  }
+
+  return { yelpId, success: true };
 };
 
 /**
  * Verify submission via Yelp API
  */
 export const verifyYelpSubmission = async (
-  _yelpId: string,
-  _apiKey: string
+  yelpId: string,
+  apiKey: string
 ): Promise<boolean> => {
-  // TODO: Call Yelp API to check if listing is live
-  // GET https://api.yelp.com/v3/businesses/{id}
-  throw new Error("Not implemented: Yelp verification");
+  const response = await fetch(`https://api.yelp.com/v3/businesses/${yelpId}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  });
+
+  if (!response.ok) {
+    return false;
+  }
+
+  const business = (await response.json()) as YelpBusiness;
+  return business.is_claimed;
 };
 
 /**

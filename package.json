@@ -13,7 +13,7 @@
     "convex:deploy": "convex deploy"
   },
   "dependencies": {
-    "convex": "latest",
+    "convex": "^1.34.0",
     "next": "^16.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
