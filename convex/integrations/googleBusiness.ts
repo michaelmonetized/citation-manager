@@ -8,6 +8,7 @@ import { v } from "convex/values";
  * 1. Google Cloud Project with My Business API enabled
  * 2. Service account credentials (JSON key file)
  * 3. Grant service account access to Google Business locations
+ * 4. GOOGLE_ACCESS_TOKEN env var with valid OAuth token
  */
 
 interface GoogleBusinessLocation {
@@ -28,61 +29,19 @@ interface GoogleBusinessLocation {
   };
 }
 
-interface GoogleAuthToken {
-  access_token: string;
-  expires_in: number;
-  token_type: string;
-}
-
 /**
- * Generate JWT for service account authentication
- * Requires GOOGLE_SERVICE_ACCOUNT_EMAIL and GOOGLE_SERVICE_ACCOUNT_KEY env vars
+ * Get pre-configured Google access token from env
+ * In production, this would be refreshed periodically
  */
-const generateJWT = (): string => {
-  const now = Math.floor(Date.now() / 1000);
-  const header = { alg: "RS256", typ: "JWT" };
-  const payload = {
-    iss: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-    scope: "https://www.googleapis.com/auth/business.manage",
-    aud: "https://oauth2.googleapis.com/token",
-    exp: now + 3600,
-    iat: now,
-  };
-
-  // Note: In production, you'd need to properly sign this with RS256.
-  // For now, this shows the structure.
-  const headerEncoded = btoa(JSON.stringify(header))
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=/g, "");
-  const payloadEncoded = btoa(JSON.stringify(payload))
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=/g, "");
-
-  return `${headerEncoded}.${payloadEncoded}.signature_placeholder`;
-};
-
-/**
- * Authenticate with Google using service account credentials
- */
-export const authenticateGoogle = async (): Promise<GoogleAuthToken> => {
-  const jwt = generateJWT();
-
-  const response = await fetch("https://oauth2.googleapis.com/token", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({
-      grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
-      assertion: jwt,
-    }).toString(),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Google auth failed: ${response.statusText}`);
+const getGoogleAccessToken = (): string => {
+  const token = process.env.GOOGLE_ACCESS_TOKEN;
+  if (!token) {
+    throw new Error(
+      "GOOGLE_ACCESS_TOKEN environment variable not set. " +
+      "Obtain a token via OAuth2 service account flow and set as env var."
+    );
   }
-
-  return await response.json();
+  return token;
 };
 
 /**
@@ -125,9 +84,9 @@ export const submitGoogleBusiness = async (
     city: string;
     state: string;
     zipCode: string;
-  },
-  accessToken: string
+  }
 ): Promise<{ googleLocationId: string; success: boolean }> => {
+  const accessToken = getGoogleAccessToken();
   const formattedData = mapLocationToGoogleFormat(locationData);
 
   const response = await fetch(
@@ -158,9 +117,9 @@ export const submitGoogleBusiness = async (
  */
 export const verifyGoogleBusinessSubmission = async (
   accountId: string,
-  googleLocationId: string,
-  accessToken: string
+  googleLocationId: string
 ): Promise<boolean> => {
+  const accessToken = getGoogleAccessToken();
   const response = await fetch(
     `https://mybusiness.googleapis.com/v4/accounts/${accountId}/locations/${googleLocationId}`,
     {
