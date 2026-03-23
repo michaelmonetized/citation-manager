@@ -7,11 +7,14 @@ import { searchFacebookPage, submitFacebookPage, verifyFacebookSubmission } from
 /**
  * Internal action to submit a location to a specific directory API
  * Called asynchronously from submissions.bulkSubmit
+ *
+ * Uses stable directoryKey (not display name) to route to correct API.
+ * Supported keys: "google", "yelp", "facebook"
  */
 export const submitToDirectory = internalAction({
   args: {
     submissionId: v.id("submissions"),
-    directoryName: v.string(),
+    directoryKey: v.string(), // Stable key: "google", "yelp", "facebook"
     locationData: v.object({
       businessName: v.string(),
       address: v.string(),
@@ -24,15 +27,18 @@ export const submitToDirectory = internalAction({
   },
   handler: async (_ctx, args) => {
     try {
-      let result = { success: false, directoryId: "", apiId: "" };
+      let result = { success: false, directoryKey: "", apiId: "" };
 
-      if (args.directoryName === "Google Business Profile") {
+      if (args.directoryKey === "google") {
         // Google Business Profile submission
-        const googleAccountId = process.env.GOOGLE_BUSINESS_ACCOUNT_ID || "";
+        const googleAccountId =
+          process.env.GOOGLE_ACCOUNT_ID ||
+          process.env.GOOGLE_BUSINESS_ACCOUNT_ID ||
+          "";
 
         if (!googleAccountId) {
           throw new Error(
-            "GOOGLE_BUSINESS_ACCOUNT_ID not configured. Set in env vars."
+            "GOOGLE_ACCOUNT_ID or GOOGLE_BUSINESS_ACCOUNT_ID not configured"
           );
         }
 
@@ -43,10 +49,10 @@ export const submitToDirectory = internalAction({
 
         result = {
           success: true,
-          directoryId: "google",
+          directoryKey: "google",
           apiId: submission.googleLocationId,
         };
-      } else if (args.directoryName === "Yelp") {
+      } else if (args.directoryKey === "yelp") {
         // Yelp submission
         const yelpApiKey = process.env.YELP_API_KEY;
         if (!yelpApiKey) {
@@ -70,10 +76,10 @@ export const submitToDirectory = internalAction({
 
         result = {
           success: true,
-          directoryId: "yelp",
+          directoryKey: "yelp",
           apiId: submission.yelpId,
         };
-      } else if (args.directoryName === "Facebook Business") {
+      } else if (args.directoryKey === "facebook") {
         // Facebook submission
         const facebookToken = process.env.FACEBOOK_ACCESS_TOKEN;
         if (!facebookToken) {
@@ -109,16 +115,14 @@ export const submitToDirectory = internalAction({
 
         result = {
           success: true,
-          directoryId: "facebook",
+          directoryKey: "facebook",
           apiId: submission.facebookPageId,
         };
       } else {
-        // For non-API directories, mark as submitted manually
-        result = {
-          success: true,
-          directoryId: args.directoryName.toLowerCase(),
-          apiId: "",
-        };
+        // Unknown directory key - skip (caller should validate)
+        throw new Error(
+          `Unknown directory key: ${args.directoryKey}. Must be "google", "yelp", or "facebook".`
+        );
       }
 
       return result;
@@ -136,30 +140,41 @@ export const submitToDirectory = internalAction({
 
 /**
  * Internal action to verify submission status via API
+ * Uses stable directoryKey to route verification requests
  */
 export const verifySubmissionStatus = internalAction({
   args: {
     submissionId: v.id("submissions"),
-    directoryName: v.string(),
+    directoryKey: v.string(), // Stable key: "google", "yelp", "facebook"
     apiId: v.string(),
   },
   handler: async (_ctx, args) => {
     try {
       let verified = false;
 
-      if (args.directoryName === "Google Business Profile") {
-        const googleAccountId = process.env.GOOGLE_BUSINESS_ACCOUNT_ID || "";
+      if (args.directoryKey === "google") {
+        const googleAccountId =
+          process.env.GOOGLE_ACCOUNT_ID ||
+          process.env.GOOGLE_BUSINESS_ACCOUNT_ID ||
+          "";
+
+        if (!googleAccountId) {
+          throw new Error(
+            "GOOGLE_ACCOUNT_ID or GOOGLE_BUSINESS_ACCOUNT_ID not configured"
+          );
+        }
+
         verified = await verifyGoogleBusinessSubmission(
           googleAccountId,
           args.apiId
         );
-      } else if (args.directoryName === "Yelp") {
+      } else if (args.directoryKey === "yelp") {
         const yelpApiKey = process.env.YELP_API_KEY;
         if (!yelpApiKey) {
           throw new Error("YELP_API_KEY not configured");
         }
         verified = await verifyYelpSubmission(args.apiId, yelpApiKey);
-      } else if (args.directoryName === "Facebook Business") {
+      } else if (args.directoryKey === "facebook") {
         const facebookToken = process.env.FACEBOOK_ACCESS_TOKEN;
         if (!facebookToken) {
           throw new Error("FACEBOOK_ACCESS_TOKEN not configured");
@@ -167,6 +182,10 @@ export const verifySubmissionStatus = internalAction({
         verified = await verifyFacebookSubmission(
           args.apiId,
           facebookToken
+        );
+      } else {
+        throw new Error(
+          `Unknown directory key: ${args.directoryKey}. Must be "google", "yelp", or "facebook".`
         );
       }
 

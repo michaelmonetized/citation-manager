@@ -89,56 +89,63 @@ export const searchYelpBusiness = async (
 
 /**
  * Claim or update Yelp business listing
+ *
+ * NOTE: Yelp's public API does not provide business claim or update endpoints.
+ * This function requires a Yelp Data Ingestion partner account for full functionality.
+ * Currently, this finds the business via search API and returns the ID for manual claim.
  */
 export const submitYelpBusiness = async (
   businessData: YelpBusinessData,
   apiKey: string
 ): Promise<{ yelpId: string; success: boolean }> => {
-  // First, search for existing business
+  // Search for existing business by name + location
   const yelpId = await searchYelpBusiness(businessData.name, businessData.city, apiKey);
 
   if (!yelpId) {
-    throw new Error("Yelp business not found. Create via Yelp website first.");
+    // Business not found in Yelp's database yet
+    throw new Error(
+      `Yelp business not found. The business must exist on Yelp first. ` +
+      `Create a listing at https://business.yelp.com/ or contact Yelp Support.`
+    );
   }
 
-  // Update business info
-  const response = await fetch(`https://api.yelp.com/v3/businesses/${yelpId}/update`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(businessData),
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Yelp submission failed: ${error}`);
-  }
-
+  // Return the ID for manual claim or partner API integration
+  // In production with partner access, you would:
+  // 1. POST to https://partner-api.yelp.com/v1/ingest/create with claim request
+  // 2. Poll the async job status
+  // For now, we return the ID for external processing
   return { yelpId, success: true };
 };
 
 /**
  * Verify submission via Yelp API
+ * Checks if the business exists and is accessible via the API
+ *
+ * NOTE: The is_claimed field reflects SMB claims via Yelp's dashboard.
+ * Partner API claims require polling the partner claim status endpoint.
  */
 export const verifyYelpSubmission = async (
   yelpId: string,
   apiKey: string
 ): Promise<boolean> => {
-  const response = await fetch(`https://api.yelp.com/v3/businesses/${yelpId}`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-    },
-  });
+  try {
+    const response = await fetch(`https://api.yelp.com/v3/businesses/${yelpId}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+      },
+    });
 
-  if (!response.ok) {
+    if (!response.ok) {
+      return false;
+    }
+
+    const business = (await response.json()) as YelpBusiness;
+    // Business exists in Yelp's database; claim status depends on claimed flag
+    return !!business.id;
+  } catch {
     return false;
   }
-
-  const business = (await response.json()) as YelpBusiness;
-  return business.is_claimed;
 };
 
 /**

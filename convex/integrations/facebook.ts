@@ -124,29 +124,49 @@ export const submitFacebookPage = async (
 
 /**
  * Verify submission via Facebook API
+ * Checks that the page exists and verify at least one metadata field was updated
  */
 export const verifyFacebookSubmission = async (
   facebookPageId: string,
   accessToken: string
 ): Promise<boolean> => {
-  const params = new URLSearchParams({
-    fields: "id,name,access_token",
-    access_token: accessToken,
-  });
+  try {
+    const params = new URLSearchParams({
+      fields: "id,name,phone,website,about,email",
+      access_token: accessToken,
+    });
 
-  const response = await fetch(
-    `https://graph.facebook.com/v18.0/${facebookPageId}?${params}`,
-    {
-      method: "GET",
+    const response = await fetch(
+      `https://graph.facebook.com/v18.0/${facebookPageId}?${params}`,
+      {
+        method: "GET",
+      }
+    );
+
+    if (!response.ok) {
+      return false;
     }
-  );
 
-  if (!response.ok) {
+    const page = (await response.json()) as FacebookPage & {
+      phone?: string;
+      website?: string;
+      about?: string;
+      email?: string;
+    };
+
+    // Page must exist and have at least one contact field populated
+    if (!page.id) {
+      return false;
+    }
+
+    // Verify at least one business data field is present
+    const hasContactInfo =
+      !!page.phone || !!page.website || !!page.about || !!page.email;
+
+    return hasContactInfo;
+  } catch {
     return false;
   }
-
-  const page = (await response.json()) as FacebookPage;
-  return !!page.id;
 };
 
 /**
