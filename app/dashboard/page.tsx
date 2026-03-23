@@ -1,12 +1,27 @@
 "use client";
 
+import { useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-export const dynamic = "force-dynamic";
-
 export default function DashboardPage() {
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isLoaded && !user) {
+      router.push("/sign-in");
+    }
+  }, [isLoaded, user, router]);
+
+  if (!isLoaded || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-600">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -17,7 +32,9 @@ export default function DashboardPage() {
               <h1 className="text-2xl font-bold">Citation Manager</h1>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-gray-600">{user?.email}</span>
+              <span className="text-gray-600">
+                {user?.primaryEmailAddress?.emailAddress}
+              </span>
             </div>
           </div>
         </div>
@@ -38,7 +55,7 @@ export default function DashboardPage() {
           <Link href="/submit" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition">
             <h2 className="text-xl font-semibold mb-4">📤 Submit to Directories</h2>
             <p className="text-gray-600 mb-4">
-              Submit your business to 50+ directories instantly.
+              Submit your business to 100+ directories instantly.
             </p>
             <span className="inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
               Start Submitting →
@@ -48,7 +65,7 @@ export default function DashboardPage() {
           <Link href="/directories" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition">
             <h2 className="text-xl font-semibold mb-4">📚 Browse Directories</h2>
             <p className="text-gray-600 mb-4">
-              Explore 50+ business directories for your industry.
+              Explore 100+ business directories for your industry.
             </p>
             <span className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
               View Directories →
