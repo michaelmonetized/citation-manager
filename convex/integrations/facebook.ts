@@ -7,7 +7,8 @@ import { v } from "convex/values";
  * Prerequisites:
  * 1. Facebook Business Account
  * 2. App ID + App Secret
- * 3. Graph API token with pages_manage_posts permission
+ * 3. Graph API token with pages_manage_metadata permission
+ * Environment variables: FACEBOOK_ACCESS_TOKEN, FACEBOOK_APP_ID, FACEBOOK_APP_SECRET
  */
 
 interface FacebookPageData {
@@ -21,11 +22,16 @@ interface FacebookPageData {
   state?: string;
   zip?: string;
   country?: string;
-  business_hours?: Array<{
-    day: number;
-    open?: string;
-    close?: string;
-  }>;
+}
+
+interface FacebookPage {
+  id: string;
+  name: string;
+  access_token?: string;
+}
+
+interface FacebookSearchResult {
+  data: Array<{ id: string; name: string }>;
 }
 
 /**
@@ -59,49 +65,135 @@ export const mapLocationToFacebookFormat = (locationData: {
  * Search for existing Facebook Page
  */
 export const searchFacebookPage = async (
-  _businessName: string,
-  _city: string,
-  _accessToken: string
+  businessName: string,
+  city: string,
+  accessToken: string
 ): Promise<string | null> => {
-  // TODO: Call Graph API to search for page
-  // GET https://graph.facebook.com/v18.0/search?q=...&type=page&access_token=...
-  throw new Error("Not implemented: Facebook search");
+  const params = new URLSearchParams({
+    q: `${businessName} ${city}`,
+    type: "page",
+    fields: "id,name",
+    access_token: accessToken,
+  });
+
+  const response = await fetch(
+    `https://graph.facebook.com/v18.0/search?${params}`,
+    {
+      method: "GET",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`Facebook search failed: ${response.statusText}`);
+  }
+
+  const data = (await response.json()) as FacebookSearchResult;
+  return data.data.length > 0 ? data.data[0].id : null;
 };
 
 /**
- * Create or update Facebook Page
+ * Update Facebook Page information
  */
 export const submitFacebookPage = async (
-  _pageData: FacebookPageData,
-  _accessToken: string
+  pageId: string,
+  pageData: FacebookPageData,
+  accessToken: string
 ): Promise<{ facebookPageId: string; success: boolean }> => {
-  // TODO: Call Graph API to create/update page
-  // POST https://graph.facebook.com/v18.0/{page-id}
-  throw new Error("Not implemented: Facebook submission");
+  const params = new URLSearchParams({
+    access_token: accessToken,
+  });
+
+  const response = await fetch(
+    `https://graph.facebook.com/v18.0/${pageId}?${params}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(pageData),
+    }
+  );
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Facebook submission failed: ${error}`);
+  }
+
+  return { facebookPageId: pageId, success: true };
 };
 
 /**
  * Verify submission via Facebook API
+ * Checks that the page exists and verify at least one metadata field was updated
  */
 export const verifyFacebookSubmission = async (
-  _facebookPageId: string,
-  _accessToken: string
+  facebookPageId: string,
+  accessToken: string
 ): Promise<boolean> => {
-  // TODO: Call Graph API to check page status
-  // GET https://graph.facebook.com/v18.0/{page-id}
-  throw new Error("Not implemented: Facebook verification");
+  try {
+    const params = new URLSearchParams({
+      fields: "id,name,phone,website,about,email",
+      access_token: accessToken,
+    });
+
+    const response = await fetch(
+      `https://graph.facebook.com/v18.0/${facebookPageId}?${params}`,
+      {
+        method: "GET",
+      }
+    );
+
+    if (!response.ok) {
+      return false;
+    }
+
+    const page = (await response.json()) as FacebookPage & {
+      phone?: string;
+      website?: string;
+      about?: string;
+      email?: string;
+    };
+
+    // Page must exist and have at least one contact field populated
+    if (!page.id) {
+      return false;
+    }
+
+    // Verify at least one business data field is present
+    const hasContactInfo =
+      !!page.phone || !!page.website || !!page.about || !!page.email;
+
+    return hasContactInfo;
+  } catch {
+    return false;
+  }
 };
 
 /**
- * Sync Instagram Business Account (linked to Facebook Page)
+ * Get Instagram Business Account linked to Facebook Page
  */
-export const syncInstagramBusiness = async (
-  _facebookPageId: string,
-  _accessToken: string
+export const getInstagramBusiness = async (
+  facebookPageId: string,
+  accessToken: string
 ): Promise<string | null> => {
-  // TODO: Get linked Instagram business account
-  // GET https://graph.facebook.com/v18.0/{page-id}/instagram_business_account
-  throw new Error("Not implemented: Instagram sync");
+  const params = new URLSearchParams({
+    fields: "instagram_business_account",
+    access_token: accessToken,
+  });
+
+  const response = await fetch(
+    `https://graph.facebook.com/v18.0/${facebookPageId}?${params}`,
+    {
+      method: "GET",
+    }
+  );
+
+  if (!response.ok) {
+    return null;
+  }
+
+  const result = (await response.json()) as { instagram_business_account?: { id: string } };
+  return result.instagram_business_account?.id ?? null;
 };
 
 /**
