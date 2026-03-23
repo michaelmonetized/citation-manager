@@ -1,11 +1,10 @@
 "use client";
 
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
 
 export default function DashboardPage() {
-  const user = useQuery(api.auth.getCurrentUser);
+  const { user } = useUser();
 
   return (
     <div className="min-h-screen bg-gray-50">
