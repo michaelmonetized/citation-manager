@@ -1,22 +1,15 @@
 import { mutation, query } from "./_generated/server";
-import { MutationCtx, QueryCtx } from "./_generated/server";
 import { v } from "convex/values";
 
 /**
- * Create a new user (signup)
+ * Create a new user account
  */
-export const createUser = mutation({
+export const signupUser = mutation({
   args: {
     email: v.string(),
-    password: v.string(),
+    password: v.string(), // In production, hash this before storing
   },
-  handler: async (
-    ctx: MutationCtx,
-    args: {
-      email: string;
-      password: string;
-    }
-  ) => {
+  handler: async (ctx, args) => {
     // Check if user already exists
     const existing = await ctx.db
       .query("users")
@@ -28,65 +21,39 @@ export const createUser = mutation({
     }
 
     // Create new user
-    // In production: hash password with bcrypt before storing
     const userId = await ctx.db.insert("users", {
       email: args.email,
-      plan: "free",
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
+      password: args.password, // TODO: Hash password in production
+      createdAt: new Date().toISOString(),
+      company: null,
     });
 
-    return { userId, email: args.email, plan: "free" };
+    return { userId, email: args.email };
   },
 });
 
 /**
- * Get user by email (login verification)
+ * Verify user login
  */
-export const getUserByEmail = query({
+export const loginUser = query({
   args: {
     email: v.string(),
+    password: v.string(),
   },
-  handler: async (ctx: QueryCtx, args: { email: string }) => {
-    return await ctx.db
+  handler: async (ctx, args) => {
+    const user = await ctx.db
       .query("users")
       .filter((q) => q.eq(q.field("email"), args.email))
       .first();
-  },
-});
 
-/**
- * Get user by ID
- */
-export const getUser = query({
-  args: {
-    userId: v.id("users"),
-  },
-  handler: async (ctx: QueryCtx, args: { userId: string }) => {
-    return await ctx.db.get(args.userId as any);
-  },
-});
-
-/**
- * Update user plan (free → pro → enterprise)
- */
-export const updatePlan = mutation({
-  args: {
-    userId: v.id("users"),
-    plan: v.union(v.literal("free"), v.literal("pro"), v.literal("enterprise")),
-  },
-  handler: async (
-    ctx: MutationCtx,
-    args: {
-      userId: string;
-      plan: "free" | "pro" | "enterprise";
+    if (!user) {
+      throw new Error("User not found");
     }
-  ) => {
-    await ctx.db.patch(args.userId as any, {
-      plan: args.plan,
-      updatedAt: Date.now(),
-    });
 
-    return { success: true, plan: args.plan };
+    if (user.password !== args.password) {
+      throw new Error("Invalid password");
+    }
+
+    return { userId: user._id, email: user.email };
   },
 });

@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { ConvexHttpClient } from "convex/browser";
+
+const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL || "");
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,20 +14,44 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // For MVP: just validate email exists in form
-    // In production: call Convex mutations via HTTP
     if (mode === "signup") {
-      // Create new user (would call Convex mutation)
-      return NextResponse.json(
-        { success: true, message: "Signup successful" },
-        { status: 200 }
-      );
+      try {
+        const result = await convex.mutation("users:signupUser", {
+          email,
+          password,
+        });
+        return NextResponse.json(
+          { success: true, message: "Signup successful", userId: result.userId },
+          { status: 200 }
+        );
+      } catch (error) {
+        return NextResponse.json(
+          {
+            error:
+              error instanceof Error ? error.message : "Signup failed",
+          },
+          { status: 400 }
+        );
+      }
     } else if (mode === "login") {
-      // Verify user (would call Convex query)
-      return NextResponse.json(
-        { success: true, message: "Login successful" },
-        { status: 200 }
-      );
+      try {
+        const result = await convex.query("users:loginUser", {
+          email,
+          password,
+        });
+        return NextResponse.json(
+          { success: true, message: "Login successful", userId: result.userId },
+          { status: 200 }
+        );
+      } catch (error) {
+        return NextResponse.json(
+          {
+            error:
+              error instanceof Error ? error.message : "Login failed",
+          },
+          { status: 401 }
+        );
+      }
     } else {
       return NextResponse.json(
         { error: "Invalid mode (signup or login)" },
