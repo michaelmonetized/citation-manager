@@ -4,26 +4,15 @@ import { ReactNode } from "react";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ConvexProvider, ConvexReactClient } from "convex/react";
 
-const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
+const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL ?? "https://dusty-mongoose-599.convex.cloud";
 const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
-// Validate required environment variables at initialization
-const missingVars = [];
-if (!convexUrl) {
-  missingVars.push("NEXT_PUBLIC_CONVEX_URL");
-}
+// Validate Clerk key (required, must throw if missing)
 if (!clerkKey) {
-  missingVars.push("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY");
-}
-
-if (missingVars.length > 0) {
-  const message = `Missing required environment variables: ${missingVars.join(
-    ", "
-  )}. Please check your .env.local file.`;
-  if (typeof window === "undefined") {
-    console.error(message);
-  }
-  throw new Error(message);
+  throw new Error(
+    "Missing NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY environment variable. " +
+    "Please set it in your .env.local file."
+  );
 }
 
 const convex = new ConvexReactClient(convexUrl);
