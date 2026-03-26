@@ -1,10 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ConvexHttpClient } from "convex/browser";
+import { api } from "@/convex/_generated/api";
 
-const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL || "");
+function getConvexClient() {
+  const url = process.env.NEXT_PUBLIC_CONVEX_URL;
+  if (!url) {
+    throw new Error("NEXT_PUBLIC_CONVEX_URL environment variable is not set");
+  }
+  return new ConvexHttpClient(url);
+}
 
 export async function POST(request: NextRequest) {
   try {
+    const convex = getConvexClient();
     const { email, password, mode } = await request.json();
 
     if (!email || !password) {
@@ -16,7 +24,7 @@ export async function POST(request: NextRequest) {
 
     if (mode === "signup") {
       try {
-        const result = await convex.mutation("users:signupUser", {
+        const result = await convex.mutation(api.users.signupUser, {
           email,
           password,
         });
@@ -35,7 +43,7 @@ export async function POST(request: NextRequest) {
       }
     } else if (mode === "login") {
       try {
-        const result = await convex.query("users:loginUser", {
+        const result = await convex.query(api.users.loginUser, {
           email,
           password,
         });
