@@ -1,13 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
 
 export default function HomePage() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(true);
   
   // Try to check if user is authenticated via stored session
   useEffect(() => {
@@ -22,8 +19,6 @@ export default function HomePage() {
       } catch (error) {
         console.error("Auth check error:", error);
         router.push("/sign-in");
-      } finally {
-        setIsLoading(false);
       }
     };
     
