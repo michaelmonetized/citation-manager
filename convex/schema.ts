@@ -4,9 +4,11 @@ import { v } from "convex/values";
 export default defineSchema({
   users: defineTable({
     email: v.string(),
-    plan: v.union(v.literal("free"), v.literal("pro"), v.literal("enterprise")),
+    password: v.string(), // TODO: Hash password in production
+    plan: v.optional(v.union(v.literal("free"), v.literal("pro"), v.literal("enterprise"))),
+    company: v.optional(v.string()),
     createdAt: v.number(),
-    updatedAt: v.number(),
+    updatedAt: v.optional(v.number()),
   })
     .index("by_email", ["email"]),
 

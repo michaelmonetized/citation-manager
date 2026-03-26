@@ -24,8 +24,7 @@ export const signupUser = mutation({
     const userId = await ctx.db.insert("users", {
       email: args.email,
       password: args.password, // TODO: Hash password in production
-      createdAt: new Date().toISOString(),
-      company: null,
+      createdAt: Date.now(),
     });
 
     return { userId, email: args.email };

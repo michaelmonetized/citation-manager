@@ -3,7 +3,13 @@ import { api } from "@/convex/_generated/api";
 import fs from "fs";
 import path from "path";
 
-const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+function getConvexClient() {
+  const url = process.env.NEXT_PUBLIC_CONVEX_URL;
+  if (!url) {
+    throw new Error("NEXT_PUBLIC_CONVEX_URL environment variable is not set");
+  }
+  return new ConvexHttpClient(url);
+}
 
 /**
  * POST /api/seed-directories
@@ -19,6 +25,8 @@ const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
  */
 export async function POST(request: Request) {
   try {
+    const convex = getConvexClient();
+    
     // Read directories.json
     const dataDir = path.join(process.cwd(), "data");
     const filePath = path.join(dataDir, "directories.json");
