@@ -1,21 +1,42 @@
 "use client";
 
-import { useEffect } from "react";
-import { useUser } from "@clerk/nextjs";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
+interface User {
+  email: string;
+}
+
 export default function DashboardPage() {
-  const { user, isLoaded } = useUser();
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    if (isLoaded && !user) {
-      router.push("/sign-in");
-    }
-  }, [isLoaded, user, router]);
+    const checkAuth = async () => {
+      try {
+        const token = localStorage.getItem("convex_auth_token");
+        const userEmail = localStorage.getItem("convex_user_email");
+        
+        if (!token || !userEmail) {
+          router.push("/sign-in");
+          return;
+        }
+        
+        setUser({ email: userEmail });
+      } catch (error) {
+        console.error("Auth check error:", error);
+        router.push("/sign-in");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    checkAuth();
+  }, [router]);
 
-  if (!isLoaded || !user) {
+  if (isLoading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p className="text-gray-600">Loading...</p>
@@ -33,7 +54,7 @@ export default function DashboardPage() {
             </div>
             <div className="flex items-center gap-4">
               <span className="text-gray-600">
-                {user?.primaryEmailAddress?.emailAddress}
+                {user.email}
               </span>
             </div>
           </div>
