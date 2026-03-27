@@ -1,15 +1,26 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import { hash, verify } from "argon2";
 
 /**
- * Create a new user account
+ * Create a new user account with securely hashed password
  */
 export const signupUser = mutation({
   args: {
     email: v.string(),
-    password: v.string(), // In production, hash this before storing
+    password: v.string(),
   },
   handler: async (ctx, args) => {
+    // Validate email format
+    if (!args.email.includes("@")) {
+      throw new Error("Invalid email format");
+    }
+
+    // Validate password strength (minimum 8 characters)
+    if (args.password.length < 8) {
+      throw new Error("Password must be at least 8 characters");
+    }
+
     // Check if user already exists
     const existing = await ctx.db
       .query("users")
@@ -20,10 +31,13 @@ export const signupUser = mutation({
       throw new Error("User already exists");
     }
 
+    // Hash password using Argon2id (secure password hashing)
+    const hashedPassword = await hash(args.password);
+
     // Create new user
     const userId = await ctx.db.insert("users", {
       email: args.email,
-      password: args.password, // TODO: Hash password in production
+      password: hashedPassword, // Securely hashed password
       createdAt: Date.now(),
     });
 
@@ -32,7 +46,7 @@ export const signupUser = mutation({
 });
 
 /**
- * Verify user login
+ * Verify user login with secure password comparison
  */
 export const loginUser = query({
   args: {
@@ -49,7 +63,9 @@ export const loginUser = query({
       throw new Error("User not found");
     }
 
-    if (user.password !== args.password) {
+    // Use Argon2 verification for timing-safe password comparison
+    const isValid = await verify(user.password, args.password);
+    if (!isValid) {
       throw new Error("Invalid password");
     }
 
