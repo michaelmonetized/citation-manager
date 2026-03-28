@@ -33,6 +33,11 @@ export default function AuthPage() {
         throw new Error(data.error || "Authentication failed");
       }
 
+      // Store auth token in localStorage
+      const data = await response.json();
+      localStorage.setItem("convex_auth_token", data.token);
+      localStorage.setItem("convex_user_email", email);
+
       // Redirect to dashboard after successful auth
       router.push("/dashboard");
     } catch (err) {

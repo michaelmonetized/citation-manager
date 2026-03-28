@@ -14,11 +14,11 @@ export default function HomePage() {
         if (token) {
           router.push("/dashboard");
         } else {
-          router.push("/sign-in");
+          router.push("/auth");
         }
       } catch (error) {
         console.error("Auth check error:", error);
-        router.push("/sign-in");
+        router.push("/auth");
       }
     };
     

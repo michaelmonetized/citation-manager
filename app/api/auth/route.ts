@@ -28,8 +28,10 @@ export async function POST(request: NextRequest) {
           email,
           password,
         });
+        // Create a simple token (in production, use JWT)
+        const token = Buffer.from(JSON.stringify({ userId: result.userId, email, timestamp: Date.now() })).toString('base64');
         return NextResponse.json(
-          { success: true, message: "Signup successful", userId: result.userId },
+          { success: true, message: "Signup successful", userId: result.userId, token },
           { status: 200 }
         );
       } catch (error) {
@@ -47,8 +49,10 @@ export async function POST(request: NextRequest) {
           email,
           password,
         });
+        // Create a simple token (in production, use JWT)
+        const token = Buffer.from(JSON.stringify({ userId: result.userId, email, timestamp: Date.now() })).toString('base64');
         return NextResponse.json(
-          { success: true, message: "Login successful", userId: result.userId },
+          { success: true, message: "Login successful", userId: result.userId, token },
           { status: 200 }
         );
       } catch (error) {
