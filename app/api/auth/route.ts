@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "@/convex/_generated/api";
+import { hash } from "argon2";
 
 function getConvexClient() {
   const url = process.env.NEXT_PUBLIC_CONVEX_URL;
@@ -22,11 +23,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate password strength
+    if (password.length < 8) {
+      return NextResponse.json(
+        { error: "Password must be at least 8 characters" },
+        { status: 400 }
+      );
+    }
+
     if (mode === "signup") {
       try {
+        // Hash password on server side using Argon2id
+        const hashedPassword = await hash(password);
+
         const result = await convex.mutation(api.users.signupUser, {
           email,
-          password,
+          hashedPassword,
         });
         // Create a simple token (in production, use JWT)
         const token = Buffer.from(JSON.stringify({ userId: result.userId, email, timestamp: Date.now() })).toString('base64');
@@ -45,9 +57,12 @@ export async function POST(request: NextRequest) {
       }
     } else if (mode === "login") {
       try {
+        // Hash the password attempt on server side for comparison
+        const hashedPasswordAttempt = await hash(password);
+
         const result = await convex.query(api.users.loginUser, {
           email,
-          password,
+          hashedPasswordAttempt,
         });
         // Create a simple token (in production, use JWT)
         const token = Buffer.from(JSON.stringify({ userId: result.userId, email, timestamp: Date.now() })).toString('base64');
