@@ -15,6 +15,8 @@ export default function SubmitPage() {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
   const [error, setError] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showAll, setShowAll] = useState(false);
 
   const handleDirToggle = (dirId: string) => {
     const newSet = new Set(selectedDirs);
@@ -25,6 +27,11 @@ export default function SubmitPage() {
     }
     setSelectedDirs(newSet);
   };
+
+  const filteredDirectories = directories?.filter(
+    (dir: Exclude<typeof directories[0], undefined>) =>
+      dir.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,24 +101,48 @@ export default function SubmitPage() {
 
           {/* Directories */}
           <div className="mb-8">
-            <h2 className="text-lg font-semibold mb-4">Top 50 Directories</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto p-4 border rounded-md">
-              {directories?.map((dir: Exclude<typeof directories[0], undefined>) => (
-                <label key={dir._id} className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={selectedDirs.has(dir._id)}
-                    onChange={() => handleDirToggle(dir._id)}
-                    className="rounded"
-                  />
-                  <span className="text-sm">
-                    {dir.name}
-                    <span className="text-gray-500 text-xs ml-1">
-                      (#{dir.rank})
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold">Top 50 Directories</h2>
+              <button
+                type="button"
+                onClick={() => setShowAll(!showAll)}
+                className="text-sm text-blue-600 hover:text-blue-700"
+              >
+                {showAll ? "Show Top 50" : "View All 958"}
+              </button>
+            </div>
+
+            {/* Search */}
+            <input
+              type="text"
+              placeholder="Filter directories by name..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 mb-4"
+            />
+
+            {/* Directory List */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto p-4 border rounded-md bg-gray-50">
+              {filteredDirectories && filteredDirectories.length > 0 ? (
+                filteredDirectories.map((dir: Exclude<typeof directories[0], undefined>) => (
+                  <label key={dir._id} className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={selectedDirs.has(dir._id)}
+                      onChange={() => handleDirToggle(dir._id)}
+                      className="rounded"
+                    />
+                    <span className="text-sm">
+                      {dir.name}
+                      <span className="text-gray-500 text-xs ml-1">
+                        (#{dir.rank})
+                      </span>
                     </span>
-                  </span>
-                </label>
-              ))}
+                  </label>
+                ))
+              ) : (
+                <p className="col-span-2 text-gray-500 text-sm">No directories match your search</p>
+              )}
             </div>
             <p className="text-sm text-gray-600 mt-2">
               Selected: {selectedDirs.size} director{selectedDirs.size !== 1 ? "ies" : "y"}
