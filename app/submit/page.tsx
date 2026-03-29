@@ -6,8 +6,9 @@ import { api } from "@/convex/_generated/api";
 import Link from "next/link";
 
 export default function SubmitPage() {
+  const [showAll, setShowAll] = useState(false);
   const locations = useQuery(api.locations.listLocations);
-  const directories = useQuery(api.directories.listTopDirectories, { limit: 50 });
+  const directories = useQuery(api.directories.listTopDirectories, { limit: showAll ? 1000 : 50 });
   const bulkSubmit = useMutation(api.submissions.bulkSubmit);
 
   const [selectedLocationId, setSelectedLocationId] = useState<string>("");
@@ -16,7 +17,6 @@ export default function SubmitPage() {
   const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [showAll, setShowAll] = useState(false);
 
   const handleDirToggle = (dirId: string) => {
     const newSet = new Set(selectedDirs);
@@ -102,7 +102,9 @@ export default function SubmitPage() {
           {/* Directories */}
           <div className="mb-8">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold">Top 50 Directories</h2>
+              <h2 className="text-lg font-semibold">
+                {showAll ? "All 958 Directories" : "Top 50 Directories"}
+              </h2>
               <button
                 type="button"
                 onClick={() => setShowAll(!showAll)}
@@ -118,6 +120,7 @@ export default function SubmitPage() {
               placeholder="Filter directories by name..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              aria-label="Filter directories by name"
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 mb-4"
             />
 
