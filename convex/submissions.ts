@@ -280,8 +280,9 @@ export const approveSubmission = mutation({
         url: (submission as any).directoryUrl,
         category: (submission as any).category,
         isFree: (submission as any).isFree,
-        createdAt: Date.now(),
-        source: "user-submission",
+        rank: 999, // User-submitted directories start with lowest rank
+        submissionMethod: "manual", // Default submission method for user submissions
+        apiAvailable: false, // User submissions assumed no API initially
       });
       updateData.approvedDirectoryId = directoryId;
     }

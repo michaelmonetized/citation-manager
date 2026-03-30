@@ -71,4 +71,24 @@ export default defineSchema({
     verifiedAt: v.number(),
     proofUrl: v.optional(v.string()),
   }).index("by_submissionId", ["submissionId"]),
+
+  directorySubmissions: defineTable({
+    directoryName: v.string(),
+    directoryUrl: v.string(),
+    category: v.string(),
+    isFree: v.boolean(),
+    submittedBy: v.string(),
+    status: v.union(
+      v.literal("pending"),
+      v.literal("approved"),
+      v.literal("rejected")
+    ),
+    rejectionReason: v.optional(v.string()),
+    reviewedBy: v.optional(v.string()),
+    reviewedAt: v.optional(v.number()),
+    approvedDirectoryId: v.optional(v.id("directories")),
+    createdAt: v.number(),
+  })
+    .index("by_status", ["status"])
+    .index("by_submittedBy", ["submittedBy"]),
 });
