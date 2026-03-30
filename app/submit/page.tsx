@@ -10,6 +10,9 @@ export default function SubmitPage() {
   const locations = useQuery(api.locations.listLocations);
   const directories = useQuery(api.directories.listTopDirectories, { limit: showAll ? 1000 : 50 });
   const bulkSubmit = useMutation(api.submissions.bulkSubmit);
+  const submissions = useQuery(api.submissions.getLocationSubmissions, {
+    locationId: selectedLocationId ? (selectedLocationId as any) : undefined,
+  });
 
   const [selectedLocationId, setSelectedLocationId] = useState<string>("");
   const [selectedDirs, setSelectedDirs] = useState<Set<string>>(new Set());
@@ -17,6 +20,7 @@ export default function SubmitPage() {
   const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [submissionCount, setSubmissionCount] = useState(0);
 
   const handleDirToggle = (dirId: string) => {
     const newSet = new Set(selectedDirs);
@@ -46,14 +50,20 @@ export default function SubmitPage() {
 
     try {
       const dirIds = Array.from(selectedDirs) as any;
-      await bulkSubmit({
+      const result = await bulkSubmit({
         locationId: selectedLocationId as any,
         directoryIds: dirIds,
       });
 
+      setSubmissionCount(result.count);
       setStatus("success");
       setSelectedDirs(new Set());
-      setTimeout(() => setStatus("idle"), 3000);
+      setSearchTerm("");
+      setTimeout(() => {
+        setStatus("idle");
+        setSelectedLocationId("");
+        setSubmissionCount(0);
+      }, 5000);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Submission failed");
       setStatus("idle");
@@ -174,6 +184,60 @@ export default function SubmitPage() {
             {loading ? "Submitting..." : `Submit to ${selectedDirs.size} Directories`}
           </button>
         </form>
+
+        {/* Submissions Status Dashboard */}
+        {selectedLocationId && submissions && submissions.length > 0 && (
+          <div className="mt-12 bg-white rounded-lg shadow p-8">
+            <h2 className="text-lg font-semibold mb-6">Recent Submissions</h2>
+            
+            {/* Summary Stats */}
+            <div className="grid grid-cols-3 gap-4 mb-6">
+              <div className="bg-blue-50 rounded p-4">
+                <div className="text-2xl font-bold text-blue-600">{submissions.length}</div>
+                <div className="text-sm text-gray-600">Total Submissions</div>
+              </div>
+              <div className="bg-yellow-50 rounded p-4">
+                <div className="text-2xl font-bold text-yellow-600">
+                  {submissions.filter((s: any) => s.status === "pending").length}
+                </div>
+                <div className="text-sm text-gray-600">Pending</div>
+              </div>
+              <div className="bg-green-50 rounded p-4">
+                <div className="text-2xl font-bold text-green-600">
+                  {submissions.filter((s: any) => s.status === "submitted" || s.status === "verified").length}
+                </div>
+                <div className="text-sm text-gray-600">Submitted/Verified</div>
+              </div>
+            </div>
+
+            {/* Recent Submissions List */}
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {submissions.slice(0, 10).map((submission: any) => (
+                <div
+                  key={submission._id}
+                  className="flex items-center justify-between p-3 border rounded bg-gray-50"
+                >
+                  <span className="text-sm text-gray-700">
+                    {directories?.find((d: any) => d._id === submission.directoryId)?.name || `Directory ${submission.directoryId}`}
+                  </span>
+                  <span
+                    className={`px-2 py-1 text-xs rounded font-medium ${
+                      submission.status === "pending"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : submission.status === "verified"
+                          ? "bg-green-100 text-green-800"
+                          : submission.status === "error"
+                            ? "bg-red-100 text-red-800"
+                            : "bg-blue-100 text-blue-800"
+                    }`}
+                  >
+                    {submission.status.toUpperCase()}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
