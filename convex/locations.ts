@@ -86,3 +86,37 @@ export const deleteLocation = mutation({
     return { success: true };
   },
 });
+
+export const updateLocation = mutation({
+  args: {
+    locationId: v.id("locations"),
+    businessName: v.string(),
+    address: v.string(),
+    phone: v.string(),
+    website: v.optional(v.string()),
+    city: v.string(),
+    state: v.string(),
+    zipCode: v.string(),
+  },
+  handler: async (ctx: MutationCtx, args: any) => {
+    const user = await getUserFromAuth(ctx);
+    if (!user) throw new Error("Not authenticated");
+
+    const location = await ctx.db.get(args.locationId);
+    if (!location) throw new Error("Location not found");
+    if ((location as any).userEmail !== user.email) throw new Error("Unauthorized");
+
+    await ctx.db.patch(args.locationId, {
+      businessName: args.businessName,
+      address: args.address,
+      phone: args.phone,
+      website: args.website,
+      city: args.city,
+      state: args.state,
+      zipCode: args.zipCode,
+      updatedAt: Date.now(),
+    });
+
+    return { success: true };
+  },
+});
