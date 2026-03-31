@@ -194,17 +194,36 @@ export default function LocationsPage() {
                   <div className="text-sm text-slate-600">
                     {loc.phone} {loc.website && `• ${loc.website}`}
                   </div>
-                  <div className="mt-3">
+                  <div className="mt-3 flex gap-2 flex-wrap">
                     <Link
                       href={`/submit?location=${loc._id}`}
                       className="inline-block bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700 transition"
                     >
                       Submit to Directories →
                     </Link>
+                    <Link
+                      href={`/locations/${loc._id}/edit`}
+                      className="inline-block bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 transition"
+                    >
+                      Edit
+                    </Link>
                   </div>
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {locations && locations.length === 0 && (
+          <div className="bg-white rounded-lg shadow p-6 text-center">
+            <p className="text-slate-600 mb-4">No locations yet. Create one to get started!</p>
+            <Link
+              href="/locations/new"
+              className="inline-block bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
+            >
+              Create First Location →
+            </Link>
           </div>
         )}
       </main>
