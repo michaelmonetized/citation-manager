@@ -3,9 +3,11 @@
 Manage business citations across 958+ online directories. A modern, API-first alternative to Uberall, BrightLocal, and Yext.
 
 ## Status
-**Phase 1 MVP: 70% Complete** — Auth ✅, Locations ✅, Google Maps ✅ | Awaiting: Convex credentials, BrightLocal API key
+**Phase 2A: 100% Complete ✅** — API Integrations (Google, Yelp, Facebook) shipped with rate limiting, retry logic, and full test suite. 958-directory registry loaded. Ready for Phase 2B manual testing.
 
-See [GitHub Issues](https://github.com/michaelmonetized/citation-manager/issues) for detailed task breakdown.
+**Latest:** Phase 2A shipped 2026-04-01 ([Issue #12](https://github.com/michaelmonetized/citation-manager/issues/12), [Issue #15](https://github.com/michaelmonetized/citation-manager/issues/15))
+
+See [GitHub Issues](https://github.com/michaelmonetized/citation-manager/issues) and [Issue #17](https://github.com/michaelmonetized/citation-manager/issues/17) for status.
 
 ## Tech Stack
 - **Frontend:** Next.js 16, React 19, Tailwind v4
@@ -38,21 +40,38 @@ bun run dev
 
 ## Roadmap
 
-### Phase 1: MVP (70% Done)
+### Phase 1: MVP (100% Done ✅)
 - [x] Convex Auth (signup/login)
 - [x] Client dashboard + location CRUD
 - [x] Company profile form
 - [x] Submission tracking schema
-- [ ] Google Maps API integration (ready, needs credentials)
-- [ ] BrightLocal API integration (blocked: needs API key)
-- [ ] Directory registry (958 directories mapped)
+- [x] Google Business Profile integration
+- [x] Yelp Business API integration
+- [x] Facebook Graph API integration
+- [x] Directory registry (958 directories loaded)
 
-### Phase 2: Core Integrations (3-4 weeks)
-- [ ] Top 20 directory APIs (Google, Yelp, Facebook, LinkedIn, Bing, etc.)
+### Phase 2A: API Integrations (100% Done ✅ — 2026-04-01)
+- [x] Google Business Profile (auto-submit + verification polling)
+- [x] Yelp Business API (search + create/update)
+- [x] Facebook Graph API (page creation + Instagram linking)
+- [x] Rate limiting (10 req/min, exponential backoff)
+- [x] Retry logic (auto-recovery, 3 attempts)
+- [x] 958 directory registry (searchable, ranked by traffic)
+- [x] Comprehensive test suite (15 test cases)
+
+### Phase 2B: UI Wiring & Testing (Current — 2026-04-01 to 04-04)
+- [ ] Manual smoke test (5+ submissions per API)
+- [ ] Frontend integration (wire API routes to UI)
+- [ ] Staging environment validation
+- [ ] Production deploy readiness check
+
+### Phase 2C: Advanced Integrations (Planned — Week 2-3)
+- [ ] LinkedIn Company API
+- [ ] Bing Places API
+- [ ] Apple Maps Business Registration
 - [ ] Form automation for legacy directories (Playwright)
-- [ ] Real-time submission status tracking
+- [ ] Real-time submission status tracking (WebSocket)
 - [ ] NAP consistency auditing
-- [ ] Bulk import (CSV upload)
 
 ### Phase 3: Scale & Polish (2-3 weeks)
 - [ ] 100+ directory integrations
