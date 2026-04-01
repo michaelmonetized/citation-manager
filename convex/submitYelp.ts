@@ -1,6 +1,6 @@
 import { mutation } from "./_generated/server";
 import { v } from "convex/values";
-import { submitYelpBusiness, verifyYelpSubmission, searchYelpBusiness } from "./integrations/yelp";
+import { submitYelpBusiness, verifyYelpSubmission } from "./integrations/yelp";
 
 /**
  * Submit location to Yelp Business API

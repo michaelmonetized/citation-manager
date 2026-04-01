@@ -13,7 +13,9 @@ export default function EditLocationPage() {
   const locationId = params.id as string;
 
   const updateLocation = useMutation(api.locations.updateLocation);
-  const location = useQuery(api.locations.getLocation, { locationId: locationId as Id<"locations"> });
+  const location = useQuery(api.locations.getLocation, { 
+    locationId: locationId as Id<"locations"> 
+  }) as any;
 
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");

@@ -164,25 +164,28 @@ export const verifySubmissionStatus = internalAction({
           );
         }
 
-        verified = await verifyGoogleBusinessSubmission(
+        const googleResult = await verifyGoogleBusinessSubmission(
           googleAccountId,
           args.apiId
         );
+        verified = googleResult.verified;
       } else if (args.directoryKey === "yelp") {
         const yelpApiKey = process.env.YELP_API_KEY;
         if (!yelpApiKey) {
           throw new Error("YELP_API_KEY not configured");
         }
-        verified = await verifyYelpSubmission(args.apiId, yelpApiKey);
+        const yelpResult = await verifyYelpSubmission(args.apiId, yelpApiKey);
+        verified = yelpResult.verified;
       } else if (args.directoryKey === "facebook") {
         const facebookToken = process.env.FACEBOOK_ACCESS_TOKEN;
         if (!facebookToken) {
           throw new Error("FACEBOOK_ACCESS_TOKEN not configured");
         }
-        verified = await verifyFacebookSubmission(
+        const facebookResult = await verifyFacebookSubmission(
           args.apiId,
           facebookToken
         );
+        verified = facebookResult.verified;
       } else {
         throw new Error(
           `Unknown directory key: ${args.directoryKey}. Must be "google", "yelp", or "facebook".`
