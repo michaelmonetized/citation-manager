@@ -32,9 +32,9 @@ echo ""
 
 # Test 3: Get top directories from Convex
 echo "TEST 3: Querying directories from Convex..."
-DIRS_QUERY=$(npx convex run "directories:listTopDirectories" '{"limit":5}' 2>&1 | grep -o '\["[^"]*"' | head -1 || echo "")
-if [ -n "$DIRS_QUERY" ]; then
-  echo "✅ Directories query successful"
+DIRS_QUERY=$(npx convex run "directories:listTopDirectories" '{"limit":5}' 2>&1 | jq 'length' 2>/dev/null || echo "0")
+if [ "$DIRS_QUERY" -gt 0 ]; then
+  echo "✅ Directories query returned $DIRS_QUERY results"
 else
   echo "⚠️ Directories query returned no results"
 fi
@@ -49,7 +49,7 @@ echo ""
 
 # Test 5: Get first directory ID from Convex
 echo "TEST 5: Getting first directory ID..."
-FIRST_DIR=$(npx convex run "directories:listTopDirectories" '{"limit":1}' 2>&1 | grep -o '"_id":"[^"]*' | head -1 | cut -d'"' -f4)
+FIRST_DIR=$(npx convex run "directories:listTopDirectories" '{"limit":1}' 2>&1 | jq -r '.[0]._id' 2>/dev/null)
 if [ -z "$FIRST_DIR" ]; then
   echo "❌ Could not get directory ID"
   exit 1

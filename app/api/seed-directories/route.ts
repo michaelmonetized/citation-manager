@@ -1,76 +1,32 @@
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "@/convex/_generated/api";
-import fs from "fs";
-import path from "path";
-
-function getConvexClient() {
-  const url = process.env.NEXT_PUBLIC_CONVEX_URL;
-  if (!url) {
-    throw new Error("NEXT_PUBLIC_CONVEX_URL environment variable is not set");
-  }
-  return new ConvexHttpClient(url);
-}
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * POST /api/seed-directories
- * 
- * Loads directories.json into the Convex database
- * This endpoint should only be called once during initialization
- * 
- * Optional query params:
- * - clearExisting=true: Clear existing directories before seeding
- * 
- * Example:
- * curl -X POST http://localhost:3000/api/seed-directories?clearExisting=true
+ * Populates the directories table from data/directories.json
+ * Safe to call multiple times — skips duplicates
  */
-export async function POST(request: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const convex = getConvexClient();
-    
-    // Read directories.json
-    const dataDir = path.join(process.cwd(), "data");
-    const filePath = path.join(dataDir, "directories.json");
+    const client = new ConvexHttpClient(
+      process.env.NEXT_PUBLIC_CONVEX_URL || ""
+    );
 
-    if (!fs.existsSync(filePath)) {
-      return Response.json(
-        { error: "directories.json not found in data/ directory" },
-        { status: 404 }
-      );
-    }
-
-    const fileContent = fs.readFileSync(filePath, "utf-8");
-    const directories = JSON.parse(fileContent);
-
-    if (!Array.isArray(directories)) {
-      return Response.json(
-        { error: "directories.json must contain an array" },
-        { status: 400 }
-      );
-    }
-
-    // Get query params
-    const url = new URL(request.url);
-    const clearExisting = url.searchParams.get("clearExisting") === "true";
-
-    // Call Convex mutation
-    const result = await convex.mutation(api.directories.seedDirectories, {
-      directories,
-      clearExisting,
+    const result = await client.mutation(api.directories.seedFromFile, {
+      clearExisting: false,
     });
 
-    return Response.json({
+    return NextResponse.json({
       success: true,
-      message: `Seeded ${result.inserted} directories`,
       ...result,
     });
   } catch (error) {
-    console.error("Seeding error:", error);
-    return Response.json(
+    console.error("Seed error:", error);
+    return NextResponse.json(
       {
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to seed directories",
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }
     );
