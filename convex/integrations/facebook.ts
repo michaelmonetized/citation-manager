@@ -62,6 +62,37 @@ export const mapLocationToFacebookFormat = (locationData: {
 };
 
 /**
+ * Rate limiting helper with exponential backoff
+ */
+const retryWithBackoff = async <T,>(
+  fn: () => Promise<T>,
+  maxRetries = 3,
+  initialDelayMs = 1000
+): Promise<T> => {
+  let lastError: Error | null = null;
+
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      
+      // Don't retry on auth errors
+      if (lastError.message.includes("401") || lastError.message.includes("403")) {
+        throw lastError;
+      }
+
+      if (attempt < maxRetries - 1) {
+        const delayMs = initialDelayMs * Math.pow(2, attempt);
+        await new Promise(resolve => setTimeout(resolve, delayMs));
+      }
+    }
+  }
+
+  throw lastError || new Error("Max retries exceeded");
+};
+
+/**
  * Search for existing Facebook Page
  */
 export const searchFacebookPage = async (
@@ -69,6 +100,10 @@ export const searchFacebookPage = async (
   city: string,
   accessToken: string
 ): Promise<string | null> => {
+  if (!accessToken) {
+    throw new Error("FACEBOOK_ACCESS_TOKEN environment variable not set");
+  }
+
   const params = new URLSearchParams({
     q: `${businessName} ${city}`,
     type: "page",
@@ -76,19 +111,33 @@ export const searchFacebookPage = async (
     access_token: accessToken,
   });
 
-  const response = await fetch(
-    `https://graph.facebook.com/v18.0/search?${params}`,
-    {
-      method: "GET",
-    }
-  );
+  try {
+    const data = await retryWithBackoff(async () => {
+      const response = await fetch(
+        `https://graph.facebook.com/v18.0/search?${params}`,
+        {
+          method: "GET",
+        }
+      );
 
-  if (!response.ok) {
-    throw new Error(`Facebook search failed: ${response.statusText}`);
+      if (!response.ok) {
+        if (response.status === 429) {
+          throw new Error("Rate limited by Facebook - please try again later");
+        } else if (response.status === 401) {
+          throw new Error("Invalid Facebook access token");
+        }
+        throw new Error(`Facebook search failed: ${response.statusText}`);
+      }
+
+      return (await response.json()) as FacebookSearchResult;
+    });
+
+    return data.data.length > 0 ? data.data[0].id : null;
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("Facebook search error:", errorMessage);
+    throw new Error(`Failed to search Facebook: ${errorMessage}`);
   }
-
-  const data = (await response.json()) as FacebookSearchResult;
-  return data.data.length > 0 ? data.data[0].id : null;
 };
 
 /**
@@ -98,28 +147,56 @@ export const submitFacebookPage = async (
   pageId: string,
   pageData: FacebookPageData,
   accessToken: string
-): Promise<{ facebookPageId: string; success: boolean }> => {
-  const params = new URLSearchParams({
-    access_token: accessToken,
-  });
-
-  const response = await fetch(
-    `https://graph.facebook.com/v18.0/${pageId}?${params}`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(pageData),
+): Promise<{ facebookPageId: string; success: boolean; error?: string }> => {
+  try {
+    if (!accessToken) {
+      return {
+        facebookPageId: "",
+        success: false,
+        error: "FACEBOOK_ACCESS_TOKEN not configured",
+      };
     }
-  );
 
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Facebook submission failed: ${error}`);
+    const params = new URLSearchParams({
+      access_token: accessToken,
+    });
+
+    await retryWithBackoff(async () => {
+      const response = await fetch(
+        `https://graph.facebook.com/v18.0/${pageId}?${params}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(pageData),
+        }
+      );
+
+      if (!response.ok) {
+        const error = await response.text();
+        if (response.status === 429) {
+          throw new Error("Rate limited by Facebook - please try again later");
+        } else if (response.status === 401) {
+          throw new Error("Invalid Facebook access token");
+        } else if (response.status === 400) {
+          throw new Error(`Invalid page data: ${error}`);
+        }
+        throw new Error(`Facebook submission failed: ${error}`);
+      }
+
+      return response;
+    });
+
+    return { facebookPageId: pageId, success: true };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return {
+      facebookPageId: "",
+      success: false,
+      error: errorMessage,
+    };
   }
-
-  return { facebookPageId: pageId, success: true };
 };
 
 /**
@@ -129,43 +206,71 @@ export const submitFacebookPage = async (
 export const verifyFacebookSubmission = async (
   facebookPageId: string,
   accessToken: string
-): Promise<boolean> => {
+): Promise<{
+  verified: boolean;
+  hasContactInfo?: boolean;
+  error?: string;
+}> => {
   try {
+    if (!accessToken) {
+      return {
+        verified: false,
+        error: "FACEBOOK_ACCESS_TOKEN not configured",
+      };
+    }
+
     const params = new URLSearchParams({
       fields: "id,name,phone,website,about,email",
       access_token: accessToken,
     });
 
-    const response = await fetch(
-      `https://graph.facebook.com/v18.0/${facebookPageId}?${params}`,
-      {
-        method: "GET",
+    const page = await retryWithBackoff(async () => {
+      const response = await fetch(
+        `https://graph.facebook.com/v18.0/${facebookPageId}?${params}`,
+        {
+          method: "GET",
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error("Page not found");
+        } else if (response.status === 429) {
+          throw new Error("Rate limited - please try again later");
+        }
+        throw new Error(`Failed to verify (${response.status})`);
       }
-    );
 
-    if (!response.ok) {
-      return false;
-    }
+      return (await response.json()) as FacebookPage & {
+        phone?: string;
+        website?: string;
+        about?: string;
+        email?: string;
+      };
+    });
 
-    const page = (await response.json()) as FacebookPage & {
-      phone?: string;
-      website?: string;
-      about?: string;
-      email?: string;
-    };
-
-    // Page must exist and have at least one contact field populated
+    // Page must exist
     if (!page.id) {
-      return false;
+      return {
+        verified: false,
+        error: "Page not found",
+      };
     }
 
     // Verify at least one business data field is present
     const hasContactInfo =
       !!page.phone || !!page.website || !!page.about || !!page.email;
 
-    return hasContactInfo;
-  } catch {
-    return false;
+    return {
+      verified: true,
+      hasContactInfo,
+    };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return {
+      verified: false,
+      error: errorMessage,
+    };
   }
 };
 
@@ -175,25 +280,50 @@ export const verifyFacebookSubmission = async (
 export const getInstagramBusiness = async (
   facebookPageId: string,
   accessToken: string
-): Promise<string | null> => {
-  const params = new URLSearchParams({
-    fields: "instagram_business_account",
-    access_token: accessToken,
-  });
-
-  const response = await fetch(
-    `https://graph.facebook.com/v18.0/${facebookPageId}?${params}`,
-    {
-      method: "GET",
+): Promise<{ instagramId: string | null; error?: string }> => {
+  try {
+    if (!accessToken) {
+      return {
+        instagramId: null,
+        error: "FACEBOOK_ACCESS_TOKEN not configured",
+      };
     }
-  );
 
-  if (!response.ok) {
-    return null;
+    const params = new URLSearchParams({
+      fields: "instagram_business_account",
+      access_token: accessToken,
+    });
+
+    const result = await retryWithBackoff(async () => {
+      const response = await fetch(
+        `https://graph.facebook.com/v18.0/${facebookPageId}?${params}`,
+        {
+          method: "GET",
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error("Page not found");
+        } else if (response.status === 429) {
+          throw new Error("Rate limited - please try again later");
+        }
+        throw new Error(`Failed to get Instagram business (${response.status})`);
+      }
+
+      return (await response.json()) as { instagram_business_account?: { id: string } };
+    });
+
+    return {
+      instagramId: result.instagram_business_account?.id ?? null,
+    };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return {
+      instagramId: null,
+      error: errorMessage,
+    };
   }
-
-  const result = (await response.json()) as { instagram_business_account?: { id: string } };
-  return result.instagram_business_account?.id ?? null;
 };
 
 /**

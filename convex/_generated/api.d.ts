@@ -20,7 +20,9 @@ import type * as locations from "../locations.js";
 import type * as seed from "../seed.js";
 import type * as submissions from "../submissions.js";
 import type * as submitBrightLocal from "../submitBrightLocal.js";
+import type * as submitFacebook from "../submitFacebook.js";
 import type * as submitGoogle from "../submitGoogle.js";
+import type * as submitYelp from "../submitYelp.js";
 import type * as users from "../users.js";
 
 import type {
@@ -42,7 +44,9 @@ declare const fullApi: ApiFromModules<{
   seed: typeof seed;
   submissions: typeof submissions;
   submitBrightLocal: typeof submitBrightLocal;
+  submitFacebook: typeof submitFacebook;
   submitGoogle: typeof submitGoogle;
+  submitYelp: typeof submitYelp;
   users: typeof users;
 }>;
 

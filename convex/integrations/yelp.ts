@@ -59,6 +59,37 @@ export const mapLocationToYelpFormat = (locationData: {
 };
 
 /**
+ * Rate limiting helper with exponential backoff
+ */
+const retryWithBackoff = async <T,>(
+  fn: () => Promise<T>,
+  maxRetries = 3,
+  initialDelayMs = 1000
+): Promise<T> => {
+  let lastError: Error | null = null;
+
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      
+      // Don't retry on auth errors
+      if (lastError.message.includes("401") || lastError.message.includes("403")) {
+        throw lastError;
+      }
+
+      if (attempt < maxRetries - 1) {
+        const delayMs = initialDelayMs * Math.pow(2, attempt);
+        await new Promise(resolve => setTimeout(resolve, delayMs));
+      }
+    }
+  }
+
+  throw lastError || new Error("Max retries exceeded");
+};
+
+/**
  * Search for existing Yelp business to link/update
  */
 export const searchYelpBusiness = async (
@@ -66,25 +97,43 @@ export const searchYelpBusiness = async (
   city: string,
   apiKey: string
 ): Promise<string | null> => {
+  if (!apiKey) {
+    throw new Error("YELP_API_KEY environment variable not set");
+  }
+
   const params = new URLSearchParams({
     term: businessName,
     location: city,
     limit: "5",
   });
 
-  const response = await fetch(`https://api.yelp.com/v3/businesses/search?${params}`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-    },
-  });
+  try {
+    const data = await retryWithBackoff(async () => {
+      const response = await fetch(`https://api.yelp.com/v3/businesses/search?${params}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+        },
+      });
 
-  if (!response.ok) {
-    throw new Error(`Yelp search failed: ${response.statusText}`);
+      if (!response.ok) {
+        if (response.status === 429) {
+          throw new Error("Rate limited by Yelp API - please try again later");
+        } else if (response.status === 401) {
+          throw new Error("Invalid Yelp API key");
+        }
+        throw new Error(`Yelp search failed: ${response.statusText}`);
+      }
+
+      return (await response.json()) as YelpSearchResult;
+    });
+
+    return data.businesses.length > 0 ? data.businesses[0].id : null;
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("Yelp search error:", errorMessage);
+    throw new Error(`Failed to search Yelp: ${errorMessage}`);
   }
-
-  const data = (await response.json()) as YelpSearchResult;
-  return data.businesses.length > 0 ? data.businesses[0].id : null;
 };
 
 /**
@@ -97,24 +146,36 @@ export const searchYelpBusiness = async (
 export const submitYelpBusiness = async (
   businessData: YelpBusinessData,
   apiKey: string
-): Promise<{ yelpId: string; success: boolean }> => {
-  // Search for existing business by name + location
-  const yelpId = await searchYelpBusiness(businessData.name, businessData.city, apiKey);
+): Promise<{ yelpId: string; success: boolean; error?: string }> => {
+  try {
+    // Search for existing business by name + location
+    const yelpId = await searchYelpBusiness(businessData.name, businessData.city, apiKey);
 
-  if (!yelpId) {
-    // Business not found in Yelp's database yet
-    throw new Error(
-      `Yelp business not found. The business must exist on Yelp first. ` +
-      `Create a listing at https://business.yelp.com/ or contact Yelp Support.`
-    );
+    if (!yelpId) {
+      // Business not found in Yelp's database yet
+      const errorMsg = `Yelp business not found. The business must exist on Yelp first. ` +
+        `Create a listing at https://business.yelp.com/ or contact Yelp Support.`;
+      return {
+        yelpId: "",
+        success: false,
+        error: errorMsg,
+      };
+    }
+
+    // Return the ID for manual claim or partner API integration
+    // In production with partner access, you would:
+    // 1. POST to https://partner-api.yelp.com/v1/ingest/create with claim request
+    // 2. Poll the async job status
+    // For now, we return the ID for external processing
+    return { yelpId, success: true };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return {
+      yelpId: "",
+      success: false,
+      error: errorMessage,
+    };
   }
-
-  // Return the ID for manual claim or partner API integration
-  // In production with partner access, you would:
-  // 1. POST to https://partner-api.yelp.com/v1/ingest/create with claim request
-  // 2. Poll the async job status
-  // For now, we return the ID for external processing
-  return { yelpId, success: true };
 };
 
 /**
@@ -127,24 +188,50 @@ export const submitYelpBusiness = async (
 export const verifyYelpSubmission = async (
   yelpId: string,
   apiKey: string
-): Promise<boolean> => {
+): Promise<{
+  verified: boolean;
+  claimed?: boolean;
+  error?: string;
+}> => {
   try {
-    const response = await fetch(`https://api.yelp.com/v3/businesses/${yelpId}`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-      },
-    });
-
-    if (!response.ok) {
-      return false;
+    if (!apiKey) {
+      return {
+        verified: false,
+        error: "YELP_API_KEY not configured",
+      };
     }
 
-    const business = (await response.json()) as YelpBusiness;
-    // Business exists in Yelp's database; claim status depends on claimed flag
-    return !!business.id;
-  } catch {
-    return false;
+    const business = await retryWithBackoff(async () => {
+      const response = await fetch(`https://api.yelp.com/v3/businesses/${yelpId}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 429) {
+          throw new Error("Rate limited - please try again later");
+        } else if (response.status === 404) {
+          throw new Error("Business not found on Yelp");
+        }
+        throw new Error(`Failed to verify (${response.status})`);
+      }
+
+      return (await response.json()) as YelpBusiness;
+    });
+
+    // Business exists in Yelp's database
+    return {
+      verified: !!business.id,
+      claimed: business.is_claimed,
+    };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return {
+      verified: false,
+      error: errorMessage,
+    };
   }
 };
 
