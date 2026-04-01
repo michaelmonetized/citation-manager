@@ -1,6 +1,7 @@
 import { query, mutation } from "./_generated/server";
 import { QueryCtx, MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
+import directories from "../data/directories.json";
 
 export const listDirectories = query({
   args: {
@@ -123,5 +124,65 @@ export const seedDirectories = mutation({
     }
 
     return { inserted, total: args.directories.length };
+  },
+});
+
+/**
+ * Public mutation to seed directories from JSON file
+ * Safe to call multiple times; deduplicates by name
+ */
+export const seedFromFile = mutation({
+  args: { clearExisting: v.optional(v.boolean()) },
+  handler: async (
+    ctx: MutationCtx,
+    args: { clearExisting?: boolean }
+  ) => {
+    // Clear existing if requested
+    if (args.clearExisting) {
+      const existing = await ctx.db.query("directories").collect();
+      for (const dir of existing) {
+        await ctx.db.delete(dir._id);
+      }
+    }
+
+    // Get existing directory names to avoid duplicates
+    const existingDirs = await ctx.db.query("directories").collect();
+    const existingNames = new Set(existingDirs.map((d) => d.name));
+
+    let inserted = 0;
+    let skipped = 0;
+
+    // Insert directories from JSON file
+    for (const dir of directories) {
+      if (existingNames.has(dir.name)) {
+        skipped++;
+        continue;
+      }
+
+      await ctx.db.insert("directories", {
+        rank: dir.rank,
+        name: dir.name,
+        url: dir.url,
+        submissionMethod: dir.submissionMethod as
+          | "api"
+          | "form"
+          | "manual"
+          | "email"
+          | "phone",
+        apiAvailable: dir.apiAvailable,
+        apiDocsUrl: dir.apiDocsUrl,
+        category: dir.category,
+        isFree: dir.isFree,
+        estimatedMonthlyViews: dir.estimatedMonthlyViews,
+      });
+      inserted++;
+    }
+
+    return {
+      success: true,
+      inserted,
+      skipped,
+      total: inserted + skipped,
+    };
   },
 });
