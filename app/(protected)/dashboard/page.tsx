@@ -16,18 +16,31 @@ export default function DashboardPage() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        // Phase 2B: Allow bypass auth for testing
+        const bypassAuth = process.env.NEXT_PUBLIC_PHASE2B_BYPASS_AUTH === "true";
+        
         const token = localStorage.getItem("convex_auth_token");
         const userEmail = localStorage.getItem("convex_user_email");
         
         if (!token || !userEmail) {
-          router.push("/sign-in");
-          return;
+          if (bypassAuth) {
+            // Auto-login as test user in Phase 2B
+            const testEmail = "test@example.com";
+            localStorage.setItem("convex_auth_token", "phase2b-test-token");
+            localStorage.setItem("convex_user_email", testEmail);
+            setUser({ email: testEmail });
+          } else {
+            router.push("/sign-in");
+            return;
+          }
+        } else {
+          setUser({ email: userEmail });
         }
-        
-        setUser({ email: userEmail });
       } catch (error) {
         console.error("Auth check error:", error);
-        router.push("/sign-in");
+        if (process.env.NEXT_PUBLIC_PHASE2B_BYPASS_AUTH !== "true") {
+          router.push("/sign-in");
+        }
       } finally {
         setIsLoading(false);
       }
