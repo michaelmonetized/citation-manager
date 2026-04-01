@@ -17,6 +17,12 @@ export default function SubmitPage() {
   const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [submissionCount, setSubmissionCount] = useState(0);
+  
+  // Fetch submission status after submission
+  const submissionStatus = useQuery(api.submissions.getSubmissionStatus, 
+    selectedLocationId ? { locationId: selectedLocationId as any } : "skip"
+  );
 
   const handleDirToggle = (dirId: string) => {
     const newSet = new Set(selectedDirs);
@@ -28,10 +34,9 @@ export default function SubmitPage() {
     setSelectedDirs(newSet);
   };
 
-  const filteredDirectories = directories?.filter(
-    (dir: Exclude<typeof directories[0], undefined>) =>
-      dir.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredDirectories = directories?.filter((dir) =>
+    dir.name.toLowerCase().includes(searchTerm.toLowerCase())
+  ) || [];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,6 +48,7 @@ export default function SubmitPage() {
     setLoading(true);
     setStatus("submitting");
     setError("");
+    setSubmissionCount(selectedDirs.size);
 
     try {
       const dirIds = Array.from(selectedDirs) as any;
@@ -53,10 +59,14 @@ export default function SubmitPage() {
 
       setStatus("success");
       setSelectedDirs(new Set());
-      setTimeout(() => setStatus("idle"), 3000);
+      setTimeout(() => {
+        setStatus("idle");
+        setSubmissionCount(0);
+      }, 5000);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Submission failed");
       setStatus("idle");
+      setSubmissionCount(0);
     } finally {
       setLoading(false);
     }
@@ -91,7 +101,7 @@ export default function SubmitPage() {
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">-- Choose location --</option>
-              {locations?.map((loc: Exclude<typeof locations[0], undefined>) => (
+              {locations?.map((loc) => (
                 <option key={loc._id} value={loc._id}>
                   {loc.businessName} ({loc.city}, {loc.state})
                 </option>
@@ -127,7 +137,7 @@ export default function SubmitPage() {
             {/* Directory List */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto p-4 border rounded-md bg-gray-50">
               {filteredDirectories && filteredDirectories.length > 0 ? (
-                filteredDirectories.map((dir: Exclude<typeof directories[0], undefined>) => (
+                filteredDirectories.map((dir: any) => (
                   <label key={dir._id} className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
@@ -161,7 +171,41 @@ export default function SubmitPage() {
 
           {status === "success" && (
             <div className="p-3 bg-green-50 border border-green-200 rounded text-green-700 text-sm mb-4">
-              ✅ Submitted to {selectedDirs.size} directories!
+              ✅ Successfully submitted to {submissionCount} director{submissionCount !== 1 ? "ies" : "y"}!
+            </div>
+          )}
+
+          {/* Submission Status Overview */}
+          {selectedLocationId && submissionStatus && (
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded mb-6">
+              <h3 className="font-semibold text-blue-900 mb-2">Submission Status</h3>
+              <div className="grid grid-cols-4 gap-4 text-sm">
+                <div>
+                  <span className="text-blue-600 font-bold">{(submissionStatus as any).total}</span>
+                  <p className="text-blue-700">Total</p>
+                </div>
+                <div>
+                  <span className="text-yellow-600 font-bold">{(submissionStatus as any).pending}</span>
+                  <p className="text-yellow-700">Pending</p>
+                </div>
+                <div>
+                  <span className="text-blue-600 font-bold">{(submissionStatus as any).submitted}</span>
+                  <p className="text-blue-700">Submitted</p>
+                </div>
+                <div>
+                  <span className="text-green-600 font-bold">{(submissionStatus as any).verified}</span>
+                  <p className="text-green-700">Verified</p>
+                </div>
+              </div>
+              <div className="mt-3 bg-white rounded overflow-hidden">
+                <div 
+                  className="bg-green-500 h-2"
+                  style={{ width: `${(submissionStatus as any).completionPercentage}%` }}
+                />
+              </div>
+              <p className="text-xs text-blue-600 mt-2">
+                {(submissionStatus as any).completionPercentage}% complete
+              </p>
             </div>
           )}
 
