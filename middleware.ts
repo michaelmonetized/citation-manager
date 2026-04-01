@@ -1,4 +1,5 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextRequest, NextResponse } from "next/server";
 
 const isProtectedRoute = createRouteMatcher([
   "/submit(.*)",
@@ -9,11 +10,19 @@ const isProtectedRoute = createRouteMatcher([
   "/api/integrations(.*)",
 ]);
 
-export default clerkMiddleware(async (auth, req) => {
-  if (isProtectedRoute(req)) {
-    await auth.protect();
-  }
-});
+// PHASE 2B: Bypass Clerk entirely for testing
+// Remove this wrapper before production
+const bypassAuth = process.env.PHASE2B_BYPASS_AUTH === "true";
+
+const middleware = bypassAuth
+  ? (_req: NextRequest) => NextResponse.next()
+  : clerkMiddleware(async (auth, req) => {
+      if (isProtectedRoute(req)) {
+        await auth.protect();
+      }
+    });
+
+export default middleware;
 
 export const config = {
   matcher: [
