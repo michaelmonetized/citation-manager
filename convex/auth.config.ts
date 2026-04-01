@@ -1,8 +1,11 @@
 /**
  * Authentication Configuration
  * 
- * We use Clerk for authentication and authorization.
- * Convex queries/mutations use ctx.auth.getUserIdentity() to get the Clerk user.
- * 
- * Clerk tokens are automatically passed by the ConvexProvider when ClerkProvider wraps it.
+ * PHASE 2B: Auth is disabled for testing
+ * In production, this will use Clerk authentication
  */
+
+// Auth config for Convex - disabled for Phase 2B testing
+export default {
+  providers: [],
+};

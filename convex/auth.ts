@@ -12,10 +12,9 @@ export const getUserFromAuth = async (ctx: QueryCtx) => {
   const identity = await ctx.auth.getUserIdentity();
   let email = identity?.email;
 
-  // Development mode: allow testing without real auth
+  // Development/Phase 2B mode: allow testing without real auth
   if (!email && typeof process !== "undefined") {
-    // In dev, we can pass email via header or env
-    // For now, default to test user
+    // PHASE 2B: Use test user for all queries when auth is disabled
     email = process.env.DEV_USER_EMAIL || "test@example.com";
   }
 
@@ -26,6 +25,17 @@ export const getUserFromAuth = async (ctx: QueryCtx) => {
     .query("users")
     .filter((q) => q.eq(q.field("email"), email || ""))
     .first();
+
+  // PHASE 2B: If user not found in dev mode, create a default test user object
+  // This allows testing even if the user doesn't exist in the database
+  if (!user && !identity) {
+    return {
+      _id: "phase2b-test-user" as any,
+      email: email,
+      password: "phase2b-test-hash",
+      createdAt: Date.now(),
+    };
+  }
 
   return user || null;
 };
