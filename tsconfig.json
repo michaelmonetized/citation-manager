@@ -55,6 +55,9 @@
     "node_modules",
     ".next",
     "out",
-    "dist"
+    "dist",
+    "tests/**/*.ts",
+    "**/*.test.ts",
+    "**/*.spec.ts"
   ]
 }

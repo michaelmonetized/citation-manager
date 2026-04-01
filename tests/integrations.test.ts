@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from "@jest/globals";
+import { describe, it, expect } from "@jest/globals";
 import {
   submitGoogleBusiness,
   verifyGoogleBusinessSubmission,
@@ -95,7 +95,7 @@ describe("Yelp Business Integration", () => {
 
   it("handles search errors gracefully", async () => {
     try {
-      const result = await searchYelpBusiness(
+      await searchYelpBusiness(
         testLocation.businessName,
         testLocation.city,
         "invalid-key"
@@ -144,7 +144,7 @@ describe("Facebook Graph API Integration", () => {
 
   it("handles search errors gracefully", async () => {
     try {
-      const result = await searchFacebookPage(
+      await searchFacebookPage(
         testLocation.businessName,
         testLocation.city,
         "invalid-token"
@@ -177,9 +177,12 @@ describe("Integration Error Handling", () => {
       testLocation
     );
     if (!googleResult.success && googleResult.error) {
-      expect(googleResult.error).toContain(
-        "configured" || "failed" || "Rate"
-      );
+      const error = googleResult.error.toLowerCase();
+      expect(
+        error.includes("configured") ||
+          error.includes("failed") ||
+          error.includes("rate")
+      ).toBe(true);
     }
   });
 
