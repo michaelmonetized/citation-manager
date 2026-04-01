@@ -4,10 +4,15 @@ import { useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import Link from "next/link";
+import type { Id } from "@/convex/_generated/dataModel";
 
 export default function LocationsPage() {
   const createLocation = useMutation(api.locations.createLocation);
+  const deleteLocation = useMutation(api.locations.deleteLocation);
   const locations = useQuery(api.locations.listLocations);
+
+  const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState("");
 
   const [name, setName] = useState("HustleLaunch");
   const [address, setAddress] = useState("146 Saints Place");
@@ -43,6 +48,22 @@ export default function LocationsPage() {
       setSubmitStatus(`❌ Error: ${err instanceof Error ? err.message : "Failed to save"}`);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteLocation = async (locationId: Id<"locations">) => {
+    if (!confirm("Are you sure you want to delete this location? This action cannot be undone.")) {
+      return;
+    }
+
+    setDeleteLoading(locationId);
+    setDeleteError("");
+
+    try {
+      await deleteLocation({ locationId });
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : "Failed to delete location");
+      setDeleteLoading(null);
     }
   };
 
@@ -184,6 +205,11 @@ export default function LocationsPage() {
             <h2 className="text-lg font-bold text-slate-900 mb-4">
               📋 Your Locations ({locations.length})
             </h2>
+            {deleteError && (
+              <div className="mb-4 p-3 rounded-lg bg-red-50 text-red-700 border border-red-200 text-sm">
+                {deleteError}
+              </div>
+            )}
             <div className="space-y-4">
               {locations.map((loc: any) => (
                 <div key={loc._id} className="border border-slate-200 rounded-lg p-4">
@@ -194,13 +220,26 @@ export default function LocationsPage() {
                   <div className="text-sm text-slate-600">
                     {loc.phone} {loc.website && `• ${loc.website}`}
                   </div>
-                  <div className="mt-3">
+                  <div className="mt-3 flex gap-2">
                     <Link
                       href={`/submit?location=${loc._id}`}
-                      className="inline-block bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700 transition"
+                      className="flex-1 inline-block bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700 transition text-center"
                     >
                       Submit to Directories →
                     </Link>
+                    <Link
+                      href={`/locations/${loc._id}/edit`}
+                      className="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 transition"
+                    >
+                      Edit
+                    </Link>
+                    <button
+                      onClick={() => handleDeleteLocation(loc._id)}
+                      disabled={deleteLoading === loc._id}
+                      className="bg-red-600 text-white px-4 py-2 rounded text-sm hover:bg-red-700 transition disabled:opacity-50"
+                    >
+                      {deleteLoading === loc._id ? "Deleting..." : "Delete"}
+                    </button>
                   </div>
                 </div>
               ))}
