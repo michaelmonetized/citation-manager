@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+protected_ref='refs/heads/(main|master)$'
+while read -r local_ref _local_sha remote_ref _remote_sha; do
+  if [[ "$local_ref" =~ $protected_ref || "$remote_ref" =~ $protected_ref ]]; then
+    exec "$HOME/bin/freview"
+  fi
+done
