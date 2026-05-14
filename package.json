@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "bunx --bun @biomejs/biome lint . --only=correctness --diagnostic-level=error --max-diagnostics=200",
+    "lint": "bunx --bun oxlint . --quiet",
     "lint:fix": "bun x oxlint --fix",
     "type-check": "tsc --noEmit",
     "convex:dev": "convex dev",
