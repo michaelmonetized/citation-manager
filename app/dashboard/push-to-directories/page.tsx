@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useMutation, useQuery } from 'convex/react';
-import { api } from '@/convex/_generated/api';
-import { CheckCircle2, Clock, RefreshCw } from 'lucide-react';
+import { useMutation, useQuery } from "convex/react";
+import { CheckCircle2, Clock, RefreshCw } from "lucide-react";
+import { useState } from "react";
+import { api } from "@/convex/_generated/api";
 
 export default function PushToDirectoriesPage() {
-  const [locationId, setLocationId] = useState<string>('');
+  const [locationId, setLocationId] = useState<string>("");
   const [selectedDirectories, setSelectedDirectories] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Queries
-  const directories = useQuery(api.directories.listDirectories);
+  const directories = useQuery(api.directories.listDirectories, {});
   const submissions = useQuery(api.submissions.getLocationSubmissions, {
     locationId: locationId as any,
   });
@@ -24,7 +24,7 @@ export default function PushToDirectoriesPage() {
 
   const handleSubmit = async () => {
     if (!locationId || selectedDirectories.length === 0) {
-      alert('Please select a location and at least one directory');
+      alert("Please select a location and at least one directory");
       return;
     }
 
@@ -35,9 +35,9 @@ export default function PushToDirectoriesPage() {
         directoryIds: selectedDirectories as any,
       });
       setSelectedDirectories([]);
-      alert('Submissions queued successfully!');
+      alert("Submissions queued successfully!");
     } catch (error) {
-      console.error('Submission error:', error);
+      console.error("Submission error:", error);
       alert(`Error: ${error}`);
     } finally {
       setIsSubmitting(false);
@@ -65,7 +65,9 @@ export default function PushToDirectoriesPage() {
 
       {/* Step 2: Select Directories */}
       <div className="mb-6 border rounded p-6">
-        <h2 className="text-lg font-semibold mb-4">Step 2: Select Directories ({selectedDirectories.length})</h2>
+        <h2 className="text-lg font-semibold mb-4">
+          Step 2: Select Directories ({selectedDirectories.length})
+        </h2>
         <div className="grid grid-cols-2 gap-4 max-h-96 overflow-y-auto">
           {directories.map((dir: any) => (
             <label key={dir._id} className="flex items-center gap-2">
@@ -108,65 +110,65 @@ export default function PushToDirectoriesPage() {
           disabled={!locationId || selectedDirectories.length === 0 || isSubmitting}
           className="mb-6 px-6 py-2 bg-black text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isSubmitting ? 'Submitting...' : 'Push to All Selected Directories'}
+          {isSubmitting ? "Submitting..." : "Push to All Selected Directories"}
         </button>
 
-          {submissionStatus && (
-            <div className="grid grid-cols-4 gap-4 mb-6">
-              <div className="p-4 bg-blue-50 rounded">
-                <div className="text-2xl font-bold">{submissionStatus.total}</div>
-                <div className="text-sm text-gray-600">Total Submissions</div>
-              </div>
-              <div className="p-4 bg-yellow-50 rounded flex items-center gap-2">
-                <Clock className="w-5 h-5 text-yellow-600" />
-                <div>
-                  <div className="text-2xl font-bold">{submissionStatus.pending}</div>
-                  <div className="text-sm text-gray-600">Pending</div>
-                </div>
-              </div>
-              <div className="p-4 bg-orange-50 rounded flex items-center gap-2">
-                <RefreshCw className="w-5 h-5 text-orange-600" />
-                <div>
-                  <div className="text-2xl font-bold">{submissionStatus.submitted}</div>
-                  <div className="text-sm text-gray-600">Submitted</div>
-                </div>
-              </div>
-              <div className="p-4 bg-green-50 rounded flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-green-600" />
-                <div>
-                  <div className="text-2xl font-bold">{submissionStatus.verified}</div>
-                  <div className="text-sm text-gray-600">Verified</div>
-                </div>
+        {submissionStatus && (
+          <div className="grid grid-cols-4 gap-4 mb-6">
+            <div className="p-4 bg-blue-50 rounded">
+              <div className="text-2xl font-bold">{submissionStatus.total}</div>
+              <div className="text-sm text-gray-600">Total Submissions</div>
+            </div>
+            <div className="p-4 bg-yellow-50 rounded flex items-center gap-2">
+              <Clock className="w-5 h-5 text-yellow-600" />
+              <div>
+                <div className="text-2xl font-bold">{submissionStatus.pending}</div>
+                <div className="text-sm text-gray-600">Pending</div>
               </div>
             </div>
-          )}
+            <div className="p-4 bg-orange-50 rounded flex items-center gap-2">
+              <RefreshCw className="w-5 h-5 text-orange-600" />
+              <div>
+                <div className="text-2xl font-bold">{submissionStatus.submitted}</div>
+                <div className="text-sm text-gray-600">Submitted</div>
+              </div>
+            </div>
+            <div className="p-4 bg-green-50 rounded flex items-center gap-2">
+              <CheckCircle2 className="w-5 h-5 text-green-600" />
+              <div>
+                <div className="text-2xl font-bold">{submissionStatus.verified}</div>
+                <div className="text-sm text-gray-600">Verified</div>
+              </div>
+            </div>
+          </div>
+        )}
 
-          {submissions && submissions.length > 0 && (
-            <div>
-              <h3 className="font-semibold mb-3">Recent Submissions</h3>
-              <div className="space-y-2 max-h-64 overflow-y-auto">
-                {submissions.slice(0, 10).map((sub: any) => (
-                  <div key={sub._id} className="flex items-center justify-between p-2 border rounded">
-                    <span className="text-sm">{sub.directoryId}</span>
-                    <span
-                      className={`px-3 py-1 rounded text-xs font-semibold ${
-                        sub.status === 'verified'
-                          ? 'bg-green-100 text-green-800'
-                          : sub.status === 'submitted'
-                          ? 'bg-orange-100 text-orange-800'
-                          : sub.status === 'failed'
-                          ? 'bg-red-100 text-red-800'
-                          : 'bg-gray-100 text-gray-800'
-                      }`}
-                    >
-                      {sub.status}
-                    </span>
-                  </div>
-                ))}
-              </div>
+        {submissions && submissions.length > 0 && (
+          <div>
+            <h3 className="font-semibold mb-3">Recent Submissions</h3>
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {submissions.slice(0, 10).map((sub: any) => (
+                <div key={sub._id} className="flex items-center justify-between p-2 border rounded">
+                  <span className="text-sm">{sub.directoryId}</span>
+                  <span
+                    className={`px-3 py-1 rounded text-xs font-semibold ${
+                      sub.status === "verified"
+                        ? "bg-green-100 text-green-800"
+                        : sub.status === "submitted"
+                          ? "bg-orange-100 text-orange-800"
+                          : sub.status === "failed"
+                            ? "bg-red-100 text-red-800"
+                            : "bg-gray-100 text-gray-800"
+                    }`}
+                  >
+                    {sub.status}
+                  </span>
+                </div>
+              ))}
             </div>
-          )}
-        </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -15,3 +15,15 @@ Before any `git commit` or `git push`, run `fallow audit --format json --quiet -
 
 Audit defaults to `gate=new-only`: only findings introduced by the current changeset affect the verdict. Inherited findings on touched files are reported under `attribution` and annotated with `introduced: false`, but do not block the commit. Set `[audit] gate = "all"` in `fallow.toml` to gate every finding in changed files.
 <!-- fallow:setup-hooks:end -->
+
+## Next.js Bun Blacksmith Law
+
+When a Next.js project has both `bun.lock` and `.next/` at the project root:
+
+- Local preflight is `bun lint`, then `~/bin/freview`; `bun lint` is the canonical local gate and must run Biome format, Oxlint fix, and `tsgo --noEmit`.
+- Production CI must not run lint, typecheck, or freview; those are local pre-push gates.
+- Production Blacksmith/Vercel prebuilt CI installs with `bun install --production --frozen-lockfile`.
+- Any package needed by `vercel build --prod` must be in `dependencies`, not `devDependencies`.
+- Restore `~/.bun/install/cache` and `.next/cache` in CI before install/build.
+- Deploy only archived `.vercel/output` with `vercel deploy --prebuilt --archive=tgz`; do not prune `node_modules` after build.
+- Do not use `npm prune --production` or `bun prune --production` in Bun-managed Vercel prebuilt projects.

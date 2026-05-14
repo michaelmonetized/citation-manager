@@ -1,8 +1,8 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
 import Link from "next/link";
+import { api } from "@/convex/_generated/api";
 
 export default function DirectoriesPage() {
   const directories = useQuery(api.directories.listTopDirectories, { limit: 50 });
@@ -25,9 +25,7 @@ export default function DirectoriesPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h2 className="text-2xl font-bold mb-8">Top Directories</h2>
 
-        {directories === undefined && (
-          <div className="text-gray-600">Loading directories...</div>
-        )}
+        {directories === undefined && <div className="text-gray-600">Loading directories...</div>}
 
         {directories && directories.length === 0 && (
           <div className="bg-white rounded-lg shadow p-8 text-center">
@@ -37,16 +35,14 @@ export default function DirectoriesPage() {
 
         {directories && directories.length > 0 && (
           <div className="grid grid-cols-1 gap-4">
-            {directories.map((dir: typeof directories[0]) => (
+            {directories.map((dir: (typeof directories)[0]) => (
               <div key={dir._id} className="bg-white rounded-lg shadow p-6">
                 <div className="flex justify-between items-start">
                   <div>
                     <h3 className="text-lg font-semibold">{dir.name}</h3>
                     <p className="text-gray-600 text-sm">Rank: {dir.rank}</p>
                     <p className="text-gray-600 text-sm">Category: {dir.category}</p>
-                    <p className="text-gray-600 text-sm">
-                      Method: {dir.submissionMethod}
-                    </p>
+                    <p className="text-gray-600 text-sm">Method: {dir.submissionMethod}</p>
                   </div>
                   <div className="text-right">
                     {dir.isFree && (

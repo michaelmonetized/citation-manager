@@ -1,5 +1,5 @@
-import { internalMutation } from "./_generated/server";
 import directories from "../data/directories.json";
+import { internalMutation } from "./_generated/server";
 
 /**
  * Seed directories into the database (idempotent)
@@ -28,12 +28,7 @@ export const seedDirectories = internalMutation({
         url: dir.url,
         rank: dir.rank,
         category: dir.category,
-        submissionMethod: dir.submissionMethod as
-          | "api"
-          | "form"
-          | "manual"
-          | "email"
-          | "phone",
+        submissionMethod: dir.submissionMethod as "api" | "form" | "manual" | "email" | "phone",
         apiAvailable: dir.apiAvailable,
         apiDocsUrl: dir.apiDocsUrl,
         isFree: dir.isFree,

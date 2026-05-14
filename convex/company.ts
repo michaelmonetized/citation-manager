@@ -1,11 +1,10 @@
-import { query, mutation } from "./_generated/server";
-import { QueryCtx, MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
+import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
 import { getUserFromAuth } from "./auth";
 
 /**
  * SCHEMA (to add to convex.ts):
- * 
+ *
  * company: defineTable({
  *   userEmail: v.string(),
  *   name: v.string(),
@@ -14,7 +13,7 @@ import { getUserFromAuth } from "./auth";
  *   website: v.optional(v.string()),
  *   logoStorageId: v.optional(v.id("_storage")),
  * }).index("by_userEmail", ["userEmail"]),
- * 
+ *
  * address: defineTable({
  *   companyId: v.id("company"),
  *   street: v.string(),
@@ -24,7 +23,7 @@ import { getUserFromAuth } from "./auth";
  *   country: v.optional(v.string()),
  *   isPrimary: v.boolean(),
  * }).index("by_companyId", ["companyId"]),
- * 
+ *
  * serviceArea: defineTable({
  *   companyId: v.id("company"),
  *   city: v.optional(v.string()),

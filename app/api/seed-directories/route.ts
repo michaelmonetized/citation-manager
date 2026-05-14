@@ -1,7 +1,7 @@
+import fs from "node:fs";
+import path from "node:path";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "@/convex/_generated/api";
-import fs from "fs";
-import path from "path";
 
 function getConvexClient() {
   const url = process.env.NEXT_PUBLIC_CONVEX_URL;
@@ -13,20 +13,20 @@ function getConvexClient() {
 
 /**
  * POST /api/seed-directories
- * 
+ *
  * Loads directories.json into the Convex database
  * This endpoint should only be called once during initialization
- * 
+ *
  * Optional query params:
  * - clearExisting=true: Clear existing directories before seeding
- * 
+ *
  * Example:
  * curl -X POST http://localhost:3000/api/seed-directories?clearExisting=true
  */
 export async function POST(request: Request) {
   try {
     const convex = getConvexClient();
-    
+
     // Read directories.json
     const dataDir = path.join(process.cwd(), "data");
     const filePath = path.join(dataDir, "directories.json");
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
     if (!fs.existsSync(filePath)) {
       return Response.json(
         { error: "directories.json not found in data/ directory" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -42,10 +42,7 @@ export async function POST(request: Request) {
     const directories = JSON.parse(fileContent);
 
     if (!Array.isArray(directories)) {
-      return Response.json(
-        { error: "directories.json must contain an array" },
-        { status: 400 }
-      );
+      return Response.json({ error: "directories.json must contain an array" }, { status: 400 });
     }
 
     // Get query params
@@ -67,12 +64,9 @@ export async function POST(request: Request) {
     console.error("Seeding error:", error);
     return Response.json(
       {
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to seed directories",
+        error: error instanceof Error ? error.message : "Failed to seed directories",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -8,7 +8,11 @@ export function buildBiomeArgs(args) {
   return biomeArgs;
 }
 export async function runBiomeLint(args, spawnCommand = Bun.spawn) {
-  const proc = spawnCommand(["biome", ...buildBiomeArgs(args)], { stderr: "inherit", stdout: "inherit" });
+  const proc = spawnCommand(["biome", ...buildBiomeArgs(args)], {
+    stderr: "inherit",
+    stdout: "inherit",
+  });
   return proc.exited;
 }
-if (import.meta.url === `file://${process.argv[1]}`) process.exit(await runBiomeLint(process.argv.slice(2)));
+if (import.meta.url === `file://${process.argv[1]}`)
+  process.exit(await runBiomeLint(process.argv.slice(2)));

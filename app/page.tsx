@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function HomePage() {
   const router = useRouter();
-  
+
   // Try to check if user is authenticated via stored session
   useEffect(() => {
     const checkAuth = async () => {
@@ -21,7 +21,7 @@ export default function HomePage() {
         router.push("/auth");
       }
     };
-    
+
     checkAuth();
   }, [router]);
 

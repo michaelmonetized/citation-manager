@@ -38,7 +38,7 @@ const getGoogleAccessToken = (): string => {
   if (!token) {
     throw new Error(
       "GOOGLE_ACCESS_TOKEN environment variable not set. " +
-      "Obtain a token via OAuth2 service account flow and set as env var."
+        "Obtain a token via OAuth2 service account flow and set as env var.",
     );
   }
   return token;
@@ -84,7 +84,7 @@ export const submitGoogleBusiness = async (
     city: string;
     state: string;
     zipCode: string;
-  }
+  },
 ): Promise<{ googleLocationId: string; success: boolean }> => {
   const accessToken = getGoogleAccessToken();
   const formattedData = mapLocationToGoogleFormat(locationData);
@@ -98,7 +98,7 @@ export const submitGoogleBusiness = async (
         "Content-Type": "application/json",
       },
       body: JSON.stringify(formattedData),
-    }
+    },
   );
 
   if (!response.ok) {
@@ -118,7 +118,7 @@ export const submitGoogleBusiness = async (
  */
 export const verifyGoogleBusinessSubmission = async (
   accountId: string,
-  googleLocationId: string
+  googleLocationId: string,
 ): Promise<boolean> => {
   try {
     const accessToken = getGoogleAccessToken();
@@ -129,7 +129,7 @@ export const verifyGoogleBusinessSubmission = async (
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
-      }
+      },
     );
 
     if (!response.ok) {
@@ -161,11 +161,7 @@ export const verifyGoogleBusinessSubmission = async (
 export const GoogleSubmissionSchema = {
   googleAccountId: v.string(),
   googleLocationId: v.optional(v.string()),
-  verificationStatus: v.union(
-    v.literal("pending"),
-    v.literal("verified"),
-    v.literal("failed")
-  ),
+  verificationStatus: v.union(v.literal("pending"), v.literal("verified"), v.literal("failed")),
   lastSyncAt: v.number(),
   apiResponse: v.optional(v.object({})),
 };

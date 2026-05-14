@@ -67,7 +67,7 @@ export const mapLocationToFacebookFormat = (locationData: {
 export const searchFacebookPage = async (
   businessName: string,
   city: string,
-  accessToken: string
+  accessToken: string,
 ): Promise<string | null> => {
   const params = new URLSearchParams({
     q: `${businessName} ${city}`,
@@ -76,12 +76,9 @@ export const searchFacebookPage = async (
     access_token: accessToken,
   });
 
-  const response = await fetch(
-    `https://graph.facebook.com/v18.0/search?${params}`,
-    {
-      method: "GET",
-    }
-  );
+  const response = await fetch(`https://graph.facebook.com/v18.0/search?${params}`, {
+    method: "GET",
+  });
 
   if (!response.ok) {
     throw new Error(`Facebook search failed: ${response.statusText}`);
@@ -97,22 +94,19 @@ export const searchFacebookPage = async (
 export const submitFacebookPage = async (
   pageId: string,
   pageData: FacebookPageData,
-  accessToken: string
+  accessToken: string,
 ): Promise<{ facebookPageId: string; success: boolean }> => {
   const params = new URLSearchParams({
     access_token: accessToken,
   });
 
-  const response = await fetch(
-    `https://graph.facebook.com/v18.0/${pageId}?${params}`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(pageData),
-    }
-  );
+  const response = await fetch(`https://graph.facebook.com/v18.0/${pageId}?${params}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(pageData),
+  });
 
   if (!response.ok) {
     const error = await response.text();
@@ -128,7 +122,7 @@ export const submitFacebookPage = async (
  */
 export const verifyFacebookSubmission = async (
   facebookPageId: string,
-  accessToken: string
+  accessToken: string,
 ): Promise<boolean> => {
   try {
     const params = new URLSearchParams({
@@ -136,12 +130,9 @@ export const verifyFacebookSubmission = async (
       access_token: accessToken,
     });
 
-    const response = await fetch(
-      `https://graph.facebook.com/v18.0/${facebookPageId}?${params}`,
-      {
-        method: "GET",
-      }
-    );
+    const response = await fetch(`https://graph.facebook.com/v18.0/${facebookPageId}?${params}`, {
+      method: "GET",
+    });
 
     if (!response.ok) {
       return false;
@@ -160,8 +151,7 @@ export const verifyFacebookSubmission = async (
     }
 
     // Verify at least one business data field is present
-    const hasContactInfo =
-      !!page.phone || !!page.website || !!page.about || !!page.email;
+    const hasContactInfo = !!page.phone || !!page.website || !!page.about || !!page.email;
 
     return hasContactInfo;
   } catch {
@@ -174,19 +164,16 @@ export const verifyFacebookSubmission = async (
  */
 export const getInstagramBusiness = async (
   facebookPageId: string,
-  accessToken: string
+  accessToken: string,
 ): Promise<string | null> => {
   const params = new URLSearchParams({
     fields: "instagram_business_account",
     access_token: accessToken,
   });
 
-  const response = await fetch(
-    `https://graph.facebook.com/v18.0/${facebookPageId}?${params}`,
-    {
-      method: "GET",
-    }
-  );
+  const response = await fetch(`https://graph.facebook.com/v18.0/${facebookPageId}?${params}`, {
+    method: "GET",
+  });
 
   if (!response.ok) {
     return null;
@@ -202,11 +189,7 @@ export const getInstagramBusiness = async (
 export const FacebookSubmissionSchema = {
   facebookPageId: v.optional(v.string()),
   instagramBusinessId: v.optional(v.string()),
-  verificationStatus: v.union(
-    v.literal("pending"),
-    v.literal("verified"),
-    v.literal("failed")
-  ),
+  verificationStatus: v.union(v.literal("pending"), v.literal("verified"), v.literal("failed")),
   lastSyncAt: v.number(),
   apiResponse: v.optional(v.object({})),
 };

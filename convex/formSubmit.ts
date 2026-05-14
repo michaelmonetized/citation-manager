@@ -1,7 +1,7 @@
 "use node";
 
-import { internalAction } from "./_generated/server";
 import { v } from "convex/values";
+import { internalAction } from "./_generated/server";
 
 /**
  * Form Submission Automation via Puppeteer
@@ -66,11 +66,7 @@ export const submitFormDirectory = internalAction({
       const puppeteer = require("puppeteer");
 
       // Route to appropriate handler
-      const result = await submitToFormDirectory(
-        puppeteer,
-        args.directoryKey,
-        args.locationData
-      );
+      const result = await submitToFormDirectory(puppeteer, args.directoryKey, args.locationData);
 
       return {
         directoryKey: args.directoryKey,
@@ -79,8 +75,7 @@ export const submitFormDirectory = internalAction({
         ...result,
       };
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
 
       return {
         success: false,
@@ -99,7 +94,7 @@ export const submitFormDirectory = internalAction({
 async function submitToFormDirectory(
   puppeteer: any,
   directoryKey: string,
-  locationData: FormSubmissionData
+  locationData: FormSubmissionData,
 ): Promise<{ success: boolean; error?: string }> {
   const browser = await puppeteer.launch({ headless: true });
 
@@ -132,7 +127,7 @@ async function submitToFormDirectory(
  */
 async function submitCitySearch(
   browser: any,
-  data: FormSubmissionData
+  data: FormSubmissionData,
 ): Promise<{ success: boolean; error?: string }> {
   const page = await browser.newPage();
 
@@ -170,10 +165,7 @@ async function submitCitySearch(
     await page.waitForNavigation({ waitUntil: "networkidle2", timeout: 10000 });
 
     // Check for success indicator
-    const confirmationText = await page.$eval(
-      "body",
-      (el: HTMLElement) => el.innerText
-    );
+    const confirmationText = await page.$eval("body", (el: HTMLElement) => el.innerText);
     if (confirmationText.includes("success") || confirmationText.includes("submitted")) {
       return { success: true };
     }
@@ -195,7 +187,7 @@ async function submitCitySearch(
  */
 async function submitYellowPagesForm(
   _browser: any,
-  _data: FormSubmissionData
+  _data: FormSubmissionData,
 ): Promise<{ success: boolean; error?: string }> {
   // Placeholder: implement similar to CitySearch
   return {
@@ -209,7 +201,7 @@ async function submitYellowPagesForm(
  */
 async function submitMapquest(
   _browser: any,
-  _data: FormSubmissionData
+  _data: FormSubmissionData,
 ): Promise<{ success: boolean; error?: string }> {
   // Placeholder
   return {
@@ -223,7 +215,7 @@ async function submitMapquest(
  */
 async function submitDexKnows(
   _browser: any,
-  _data: FormSubmissionData
+  _data: FormSubmissionData,
 ): Promise<{ success: boolean; error?: string }> {
   // Placeholder
   return {
@@ -237,7 +229,7 @@ async function submitDexKnows(
  */
 async function submitThumbTack(
   _browser: any,
-  _data: FormSubmissionData
+  _data: FormSubmissionData,
 ): Promise<{ success: boolean; error?: string }> {
   // Placeholder
   return {

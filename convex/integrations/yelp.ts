@@ -64,7 +64,7 @@ export const mapLocationToYelpFormat = (locationData: {
 export const searchYelpBusiness = async (
   businessName: string,
   city: string,
-  apiKey: string
+  apiKey: string,
 ): Promise<string | null> => {
   const params = new URLSearchParams({
     term: businessName,
@@ -96,7 +96,7 @@ export const searchYelpBusiness = async (
  */
 export const submitYelpBusiness = async (
   businessData: YelpBusinessData,
-  apiKey: string
+  apiKey: string,
 ): Promise<{ yelpId: string; success: boolean }> => {
   // Search for existing business by name + location
   const yelpId = await searchYelpBusiness(businessData.name, businessData.city, apiKey);
@@ -105,7 +105,7 @@ export const submitYelpBusiness = async (
     // Business not found in Yelp's database yet
     throw new Error(
       `Yelp business not found. The business must exist on Yelp first. ` +
-      `Create a listing at https://business.yelp.com/ or contact Yelp Support.`
+        `Create a listing at https://business.yelp.com/ or contact Yelp Support.`,
     );
   }
 
@@ -124,10 +124,7 @@ export const submitYelpBusiness = async (
  * NOTE: The is_claimed field reflects SMB claims via Yelp's dashboard.
  * Partner API claims require polling the partner claim status endpoint.
  */
-export const verifyYelpSubmission = async (
-  yelpId: string,
-  apiKey: string
-): Promise<boolean> => {
+export const verifyYelpSubmission = async (yelpId: string, apiKey: string): Promise<boolean> => {
   try {
     const response = await fetch(`https://api.yelp.com/v3/businesses/${yelpId}`, {
       method: "GET",
@@ -153,11 +150,7 @@ export const verifyYelpSubmission = async (
  */
 export const YelpSubmissionSchema = {
   yelpBusinessId: v.optional(v.string()),
-  verificationStatus: v.union(
-    v.literal("pending"),
-    v.literal("verified"),
-    v.literal("failed")
-  ),
+  verificationStatus: v.union(v.literal("pending"), v.literal("verified"), v.literal("failed")),
   lastSyncAt: v.number(),
   apiResponse: v.optional(v.object({})),
 };

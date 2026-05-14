@@ -1,6 +1,5 @@
-import { mutation, query } from "./_generated/server";
-import { MutationCtx, QueryCtx } from "./_generated/server";
 import { v } from "convex/values";
+import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
 import { getUserFromAuth } from "./auth";
 
 /**
@@ -18,7 +17,7 @@ export const bulkSubmit = mutation({
     args: {
       locationId: string;
       directoryIds: string[];
-    }
+    },
   ) => {
     const user = await getUserFromAuth(ctx);
     if (!user) throw new Error("Not authenticated");
@@ -100,11 +99,13 @@ export const getSubmissionStatus = query({
 
     return {
       total: submissions.length,
-      ...statusCounts,
-      completionPercentage: Math.round(
-        ((statusCounts.submitted + statusCounts.verified) / submissions.length) *
-          100
-      ),
+      pending: statusCounts.pending,
+      submitted: statusCounts.submitted,
+      verified: statusCounts.verified,
+      failed: statusCounts.failed,
+      completionPercentage: submissions.length
+        ? Math.round(((statusCounts.submitted + statusCounts.verified) / submissions.length) * 100)
+        : 0,
     };
   },
 });
@@ -120,7 +121,7 @@ export const updateSubmissionStatus = mutation({
       v.literal("pending"),
       v.literal("submitted"),
       v.literal("verified"),
-      v.literal("failed")
+      v.literal("failed"),
     ),
     errorMessage: v.optional(v.string()),
   },
@@ -130,7 +131,7 @@ export const updateSubmissionStatus = mutation({
       submissionId: string;
       status: "pending" | "submitted" | "verified" | "failed";
       errorMessage?: string;
-    }
+    },
   ) => {
     const submission = await ctx.db.get(args.submissionId as any);
     if (!submission) throw new Error("Submission not found");
@@ -199,7 +200,7 @@ export const createSubmission = mutation({
       directoryUrl: string;
       category: string;
       isFree: boolean;
-    }
+    },
   ) => {
     const user = await getUserFromAuth(ctx);
     if (!user) throw new Error("Not authenticated");
@@ -253,7 +254,7 @@ export const approveSubmission = mutation({
       submissionId: string;
       approved: boolean;
       rejectionReason?: string;
-    }
+    },
   ) => {
     const user = await getUserFromAuth(ctx);
     if (!user) throw new Error("Not authenticated");

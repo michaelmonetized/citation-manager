@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface User {
   email: string;
@@ -18,12 +18,12 @@ export default function DashboardPage() {
       try {
         const token = localStorage.getItem("convex_auth_token");
         const userEmail = localStorage.getItem("convex_user_email");
-        
+
         if (!token || !userEmail) {
           router.push("/sign-in");
           return;
         }
-        
+
         setUser({ email: userEmail });
       } catch (error) {
         console.error("Auth check error:", error);
@@ -32,7 +32,7 @@ export default function DashboardPage() {
         setIsLoading(false);
       }
     };
-    
+
     checkAuth();
   }, [router]);
 
@@ -53,9 +53,7 @@ export default function DashboardPage() {
               <h1 className="text-2xl font-bold">Citation Manager</h1>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-gray-600">
-                {user.email}
-              </span>
+              <span className="text-gray-600">{user.email}</span>
             </div>
           </div>
         </div>
@@ -63,17 +61,21 @@ export default function DashboardPage() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <Link href="/locations" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition">
+          <Link
+            href="/locations"
+            className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition"
+          >
             <h2 className="text-xl font-semibold mb-4">📍 Manage Locations</h2>
-            <p className="text-gray-600 mb-4">
-              Add and manage your business locations.
-            </p>
+            <p className="text-gray-600 mb-4">Add and manage your business locations.</p>
             <span className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
               View Locations →
             </span>
           </Link>
 
-          <Link href="/submit" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition">
+          <Link
+            href="/submit"
+            className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition"
+          >
             <h2 className="text-xl font-semibold mb-4">📤 Submit to Directories</h2>
             <p className="text-gray-600 mb-4">
               Submit your business to 100+ directories instantly.
@@ -83,7 +85,10 @@ export default function DashboardPage() {
             </span>
           </Link>
 
-          <Link href="/directories" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition">
+          <Link
+            href="/directories"
+            className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition"
+          >
             <h2 className="text-xl font-semibold mb-4">📚 Browse Directories</h2>
             <p className="text-gray-600 mb-4">
               Explore 100+ business directories for your industry.
@@ -93,7 +98,10 @@ export default function DashboardPage() {
             </span>
           </Link>
 
-          <Link href="/submissions" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition">
+          <Link
+            href="/submissions"
+            className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition"
+          >
             <h2 className="text-xl font-semibold mb-4">✅ Submission Status</h2>
             <p className="text-gray-600 mb-4">
               Track submissions and verification status in real-time.

@@ -1,6 +1,5 @@
-import { query, mutation } from "./_generated/server";
-import { QueryCtx, MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
+import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
 
 export const listDirectories = query({
   args: {
@@ -14,16 +13,16 @@ export const listDirectories = query({
       category?: string;
       onlyFree?: boolean;
       limit?: number;
-    }
+    },
   ) => {
     const allDirs = await ctx.db.query("directories").collect();
 
     let filtered = allDirs;
-    
+
     if (args.category) {
       filtered = filtered.filter((d) => d.category === args.category);
     }
-    
+
     if (args.onlyFree) {
       filtered = filtered.filter((d) => d.isFree);
     }
@@ -55,7 +54,7 @@ export const listTopDirectories = query({
 /**
  * Bulk seed directories from JSON array
  * Used to load directories.json into Convex during initialization
- * 
+ *
  * @param directories Array of directory objects from data/directories.json
  * @returns Count of directories inserted
  */
@@ -71,14 +70,14 @@ export const seedDirectories = mutation({
           v.literal("form"),
           v.literal("manual"),
           v.literal("email"),
-          v.literal("phone")
+          v.literal("phone"),
         ),
         apiAvailable: v.boolean(),
         apiDocsUrl: v.optional(v.string()),
         category: v.string(),
         isFree: v.boolean(),
         estimatedMonthlyViews: v.optional(v.number()),
-      })
+      }),
     ),
     clearExisting: v.optional(v.boolean()),
   },
@@ -97,7 +96,7 @@ export const seedDirectories = mutation({
         estimatedMonthlyViews?: number;
       }>;
       clearExisting?: boolean;
-    }
+    },
   ) => {
     if (args.clearExisting) {
       const existing = await ctx.db.query("directories").collect();

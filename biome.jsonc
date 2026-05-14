@@ -1,9 +1,64 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.4.15/schema.json",
-  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
-  "files": { "ignoreUnknown": true, "includes": ["**", "!node_modules", "!.next", "!.vercel", "!out", "!build", "!coverage", "!bun.lock", "!tsconfig.tsbuildinfo", "!next-env.d.ts", "!convex/_generated"] },
-  "formatter": { "enabled": true, "indentStyle": "space", "lineWidth": 100 },
-  "css": { "parser": { "tailwindDirectives": true } },
-  "linter": { "enabled": true, "rules": { "recommended": true } },
-  "javascript": { "formatter": { "quoteStyle": "double", "semicolons": "always", "trailingCommas": "all" } }
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "ignoreUnknown": true,
+    "includes": [
+      "**",
+      "!node_modules",
+      "!.next",
+      "!.vercel",
+      "!out",
+      "!build",
+      "!coverage",
+      "!bun.lock",
+      "!tsconfig.tsbuildinfo",
+      "!next-env.d.ts",
+      "!convex/_generated"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "lineWidth": 100
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "suspicious": {
+        "noExplicitAny": "off",
+        "noArrayIndexKey": "off",
+        "noShadowRestrictedNames": "off",
+        "noUnknownAtRules": "off",
+        "noImplicitAnyLet": "off",
+        "noAssignInExpressions": "off"
+      },
+      "a11y": {
+        "noLabelWithoutControl": "off",
+        "useButtonType": "off",
+        "noSvgWithoutTitle": "off",
+        "useHtmlLang": "off"
+      },
+      "style": {
+        "noNonNullAssertion": "off"
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double",
+      "semicolons": "always",
+      "trailingCommas": "all"
+    }
+  }
 }

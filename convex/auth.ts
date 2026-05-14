@@ -1,5 +1,4 @@
-import { query } from "./_generated/server";
-import { QueryCtx } from "./_generated/server";
+import { type QueryCtx, query } from "./_generated/server";
 
 /**
  * Helper to get current user from auth context
@@ -7,7 +6,7 @@ import { QueryCtx } from "./_generated/server";
  */
 export const getUserFromAuth = async (ctx: QueryCtx) => {
   const identity = await ctx.auth.getUserIdentity();
-  if (!identity || !identity.email) return null;
+  if (!identity?.email) return null;
 
   // Find user by email
   const user = await ctx.db

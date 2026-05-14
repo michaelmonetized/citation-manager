@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useMutation, useQuery } from "convex/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { api } from "@/convex/_generated/api";
 
 export default function SubmitPage() {
   const router = useRouter();
@@ -76,12 +76,8 @@ export default function SubmitPage() {
         <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-8">
           {/* Location Selection */}
           <div className="mb-8">
-            <label className="block text-lg font-semibold mb-4">
-              Select Location
-            </label>
-            {locations === undefined && (
-              <p className="text-gray-600">Loading locations...</p>
-            )}
+            <label className="block text-lg font-semibold mb-4">Select Location</label>
+            {locations === undefined && <p className="text-gray-600">Loading locations...</p>}
             {locations && locations.length === 0 && (
               <p className="text-red-600">
                 No locations found.{" "}
@@ -111,16 +107,17 @@ export default function SubmitPage() {
             <label className="block text-lg font-semibold mb-4">
               Select Directories ({selectedDirectories.size} selected)
             </label>
-            {directories === undefined && (
-              <p className="text-gray-600">Loading directories...</p>
-            )}
+            {directories === undefined && <p className="text-gray-600">Loading directories...</p>}
             {directories && directories.length === 0 && (
               <p className="text-red-600">No directories available</p>
             )}
             {directories && directories.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto border border-gray-200 rounded-lg p-4">
                 {directories.map((dir: any) => (
-                  <label key={dir._id} className="flex items-start gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                  <label
+                    key={dir._id}
+                    className="flex items-start gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded"
+                  >
                     <input
                       type="checkbox"
                       checked={selectedDirectories.has(dir._id)}

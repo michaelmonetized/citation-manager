@@ -9,8 +9,7 @@ export default defineSchema({
     company: v.optional(v.string()),
     createdAt: v.number(),
     updatedAt: v.optional(v.number()),
-  })
-    .index("by_email", ["email"]),
+  }).index("by_email", ["email"]),
 
   locations: defineTable({
     userEmail: v.string(),
@@ -27,6 +26,32 @@ export default defineSchema({
     .index("by_userEmail", ["userEmail"])
     .index("by_businessName", ["businessName"]),
 
+  company: defineTable({
+    userEmail: v.string(),
+    name: v.string(),
+    contactEmail: v.string(),
+    phone: v.string(),
+    website: v.optional(v.string()),
+    logoStorageId: v.optional(v.id("_storage")),
+  }).index("by_userEmail", ["userEmail"]),
+
+  address: defineTable({
+    companyId: v.id("company"),
+    street: v.string(),
+    city: v.string(),
+    state: v.string(),
+    zip: v.string(),
+    country: v.optional(v.string()),
+    isPrimary: v.boolean(),
+  }).index("by_companyId", ["companyId"]),
+
+  serviceArea: defineTable({
+    companyId: v.id("company"),
+    city: v.optional(v.string()),
+    county: v.optional(v.string()),
+    state: v.string(),
+  }).index("by_companyId", ["companyId"]),
+
   directories: defineTable({
     name: v.string(),
     url: v.string(),
@@ -37,7 +62,7 @@ export default defineSchema({
       v.literal("form"),
       v.literal("manual"),
       v.literal("email"),
-      v.literal("phone")
+      v.literal("phone"),
     ),
     apiAvailable: v.boolean(),
     apiDocsUrl: v.optional(v.string()),
@@ -54,7 +79,7 @@ export default defineSchema({
       v.literal("pending"),
       v.literal("submitted"),
       v.literal("verified"),
-      v.literal("failed")
+      v.literal("failed"),
     ),
     errorMessage: v.optional(v.string()),
     createdAt: v.number(),
@@ -78,11 +103,7 @@ export default defineSchema({
     category: v.string(),
     isFree: v.boolean(),
     submittedBy: v.string(),
-    status: v.union(
-      v.literal("pending"),
-      v.literal("approved"),
-      v.literal("rejected")
-    ),
+    status: v.union(v.literal("pending"), v.literal("approved"), v.literal("rejected")),
     rejectionReason: v.optional(v.string()),
     reviewedBy: v.optional(v.string()),
     reviewedAt: v.optional(v.number()),

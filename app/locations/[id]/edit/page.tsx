@@ -1,15 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useQuery, useMutation } from "convex/react";
-import { useRouter, useParams } from "next/navigation";
-import { api } from "@/convex/_generated/api";
+import { useMutation, useQuery } from "convex/react";
 import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
 
 export default function EditLocationPage() {
   const router = useRouter();
   const params = useParams();
-  const locationId = params.id as string;
+  const locationId = params.id as Id<"locations">;
 
   const location = useQuery(api.locations.getLocation, { locationId });
   const updateLocation = useMutation(api.locations.updateLocation);
@@ -179,7 +180,10 @@ export default function EditLocationPage() {
           >
             {loading ? "Updating..." : "Update Location"}
           </button>
-          <Link href="/locations" className="flex-1 bg-gray-200 text-gray-800 py-2 rounded font-medium text-center">
+          <Link
+            href="/locations"
+            className="flex-1 bg-gray-200 text-gray-800 py-2 rounded font-medium text-center"
+          >
             Cancel
           </Link>
         </div>

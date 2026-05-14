@@ -1,6 +1,6 @@
-import { query, mutation } from "./_generated/server";
-import { QueryCtx, MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
+import type { Doc } from "./_generated/dataModel";
+import { type MutationCtx, mutation, type QueryCtx, query } from "./_generated/server";
 import { getUserFromAuth } from "./auth";
 
 export const listLocations = query({
@@ -36,7 +36,7 @@ export const createLocation = mutation({
       city: string;
       state: string;
       zipCode: string;
-    }
+    },
   ) => {
     const user = await getUserFromAuth(ctx);
     if (!user) throw new Error("Not authenticated");
@@ -68,7 +68,7 @@ export const getLocation = query({
     if (!location) throw new Error("Location not found");
     if ((location as any).userEmail !== user.email) throw new Error("Unauthorized");
 
-    return location;
+    return location as Doc<"locations">;
   },
 });
 

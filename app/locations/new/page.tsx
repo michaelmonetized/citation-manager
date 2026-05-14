@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import { useMutation } from "convex/react";
-import { useRouter } from "next/navigation";
-import { api } from "@/convex/_generated/api";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { api } from "@/convex/_generated/api";
 
 export default function CreateLocationPage() {
   const router = useRouter();
@@ -138,7 +138,10 @@ export default function CreateLocationPage() {
           >
             {loading ? "Creating..." : "Create Location"}
           </button>
-          <Link href="/locations" className="flex-1 bg-gray-200 text-gray-800 py-2 rounded font-medium text-center">
+          <Link
+            href="/locations"
+            className="flex-1 bg-gray-200 text-gray-800 py-2 rounded font-medium text-center"
+          >
             Cancel
           </Link>
         </div>
