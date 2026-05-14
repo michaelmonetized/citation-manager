@@ -9,20 +9,20 @@
 ## Architecture Decision
 
 ### Library Evaluation
+
 - **Puppeteer** ✅ SELECTED
   - Pros: Headless Chrome, stable, widely used, good form automation
   - Cons: Heavy (~150MB), resource-intensive
   - Cost: Fits within Fly.io worker budget
-  
 - **Playwright** (alternative)
   - Pros: Multiple browser support, fast
   - Cons: Overkill for this use case
-  
 - **Selenium** (alternative)
   - Pros: Industry standard
   - Cons: Slower, heavier setup
 
 ### Job Queue
+
 - **Fly.io Machines** ✅ SELECTED
   - Start worker VM → submit forms → cleanup
   - Pay per second (cost-efficient)
@@ -34,7 +34,9 @@
 ## Implementation Phases
 
 ### Phase 2C.1: Form Handler (Puppeteer)
+
 **Deliverables:**
+
 - [ ] Form auto-fill engine (name, address, phone, website)
 - [ ] Submit handlers for 5 major directories:
   1. CitySearch (form-based)
@@ -48,7 +50,9 @@
 **File:** `convex/formSubmit.ts`
 
 ### Phase 2C.2: Job Queue
+
 **Deliverables:**
+
 - [ ] Fly.io worker setup (env vars, secrets)
 - [ ] Job dispatcher (Convex action → Fly.io POST)
 - [ ] Status polling (check job completion)
@@ -57,7 +61,9 @@
 **File:** `lib/flyio.ts`
 
 ### Phase 2C.3: Directory Extension
+
 **Deliverables:**
+
 - [ ] Classify remaining 850 directories by form structure
 - [ ] Add form metadata to `data/directories.json` (selectors, fields)
 - [ ] Update seedDirectories() to include form info
@@ -65,7 +71,9 @@
 **File:** `data/directories.json` (extended)
 
 ### Phase 2C.4: Integration & Testing
+
 **Deliverables:**
+
 - [ ] Wire up bulkSubmit → form submission pipeline
 - [ ] Test on 5 directories (live)
 - [ ] Error handling + retry
@@ -78,6 +86,7 @@
 ## Priority: High-Traffic Directories
 
 **Focus first (80% of submissions):**
+
 1. CitySearch (high traffic, form-based)
 2. YellowPages form submission
 3. Mapquest
@@ -90,13 +99,13 @@ These 5 account for ~40% of all directory submissions historically.
 
 ## Risk Mitigation
 
-| Risk | Mitigation |
-|------|-----------|
-| Form selectors break | Screenshot on error, manual review queue |
-| Rate limiting | Add delays between submissions (2-5s) |
-| Captcha | Skip on captcha detected, log for manual review |
-| Browser crashes | Retry up to 3 times, timeout protection |
-| Cost overrun | Monitor Fly.io spend, set budget alerts |
+| Risk                 | Mitigation                                      |
+| -------------------- | ----------------------------------------------- |
+| Form selectors break | Screenshot on error, manual review queue        |
+| Rate limiting        | Add delays between submissions (2-5s)           |
+| Captcha              | Skip on captcha detected, log for manual review |
+| Browser crashes      | Retry up to 3 times, timeout protection         |
+| Cost overrun         | Monitor Fly.io spend, set budget alerts         |
 
 ---
 
@@ -104,7 +113,7 @@ These 5 account for ~40% of all directory submissions historically.
 
 **Stage 1:** Manual testing on 5 directories  
 **Stage 2:** Enable for beta users (opt-in)  
-**Stage 3:** Full rollout to all users  
+**Stage 3:** Full rollout to all users
 
 **Rollback:** Disable form automation, fallback to API-only (100 directories)
 

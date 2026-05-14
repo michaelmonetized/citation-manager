@@ -1,6 +1,6 @@
 /**
  * Authentication Configuration
- * 
+ *
  * PHASE 2B: Auth is disabled for testing
  * In production, this will use Clerk authentication
  */

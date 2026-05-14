@@ -38,7 +38,7 @@ const generateGoogleJWT = (): string => {
   if (!serviceAccountJson) {
     throw new Error(
       "GOOGLE_SERVICE_ACCOUNT_JSON environment variable not set. " +
-      "See .env.example for setup instructions."
+        "See .env.example for setup instructions.",
     );
   }
 
@@ -48,12 +48,14 @@ const generateGoogleJWT = (): string => {
     // import jwt from 'jsonwebtoken';
     // const account = JSON.parse(serviceAccountJson);
     // return jwt.sign({ scope: 'https://www.googleapis.com/auth/business.manage' }, account.private_key, { algorithm: 'RS256' });
-    
+
     // For now, return a placeholder that would be replaced
     const account = JSON.parse(serviceAccountJson);
     return `Bearer ${account.type}:${account.project_id}`;
   } catch (error) {
-    throw new Error("Failed to parse GOOGLE_SERVICE_ACCOUNT_JSON: " + String(error));
+    throw new Error(
+      "Failed to parse GOOGLE_SERVICE_ACCOUNT_JSON: " + String(error),
+    );
   }
 };
 
@@ -73,7 +75,7 @@ const getGoogleAccessToken = (): string => {
   } catch {
     throw new Error(
       "GOOGLE_ACCESS_TOKEN environment variable not set, and GOOGLE_SERVICE_ACCOUNT_JSON invalid. " +
-      "Provide either a valid access token or service account JSON. See .env.example."
+        "Provide either a valid access token or service account JSON. See .env.example.",
     );
   }
 };
@@ -108,10 +110,10 @@ export const mapLocationToGoogleFormat = (locationData: {
 /**
  * Retry logic with exponential backoff
  */
-const retryWithBackoff = async <T,>(
+const retryWithBackoff = async <T>(
   fn: () => Promise<T>,
   maxRetries = 3,
-  initialDelayMs = 1000
+  initialDelayMs = 1000,
 ): Promise<T> => {
   let lastError: Error | null = null;
 
@@ -120,15 +122,18 @@ const retryWithBackoff = async <T,>(
       return await fn();
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
-      
+
       // Don't retry on auth errors
-      if (lastError.message.includes("401") || lastError.message.includes("403")) {
+      if (
+        lastError.message.includes("401") ||
+        lastError.message.includes("403")
+      ) {
         throw lastError;
       }
 
       if (attempt < maxRetries - 1) {
         const delayMs = initialDelayMs * Math.pow(2, attempt);
-        await new Promise(resolve => setTimeout(resolve, delayMs));
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
       }
     }
   }
@@ -150,7 +155,7 @@ export const submitGoogleBusiness = async (
     city: string;
     state: string;
     zipCode: string;
-  }
+  },
 ): Promise<{ googleLocationId: string; success: boolean; error?: string }> => {
   try {
     const accessToken = getGoogleAccessToken();
@@ -166,13 +171,13 @@ export const submitGoogleBusiness = async (
             "Content-Type": "application/json",
           },
           body: JSON.stringify(formattedData),
-        }
+        },
       );
 
       if (!response.ok) {
         const error = await response.text();
         const message = `Google Business submission failed (${response.status}): ${error}`;
-        
+
         // Return structured error for user display
         if (response.status === 400) {
           throw new Error(`Invalid location data: ${error}`);
@@ -181,7 +186,7 @@ export const submitGoogleBusiness = async (
         } else if (response.status === 401 || response.status === 403) {
           throw new Error("Authentication failed - check API credentials");
         }
-        
+
         throw new Error(message);
       }
 
@@ -207,7 +212,7 @@ export const submitGoogleBusiness = async (
  */
 export const verifyGoogleBusinessSubmission = async (
   accountId: string,
-  googleLocationId: string
+  googleLocationId: string,
 ): Promise<{
   verified: boolean;
   status?: string;
@@ -215,7 +220,7 @@ export const verifyGoogleBusinessSubmission = async (
 }> => {
   try {
     const accessToken = getGoogleAccessToken();
-    
+
     const response = await retryWithBackoff(async () => {
       return await fetch(
         `https://mybusiness.googleapis.com/v4/accounts/${accountId}/locations/${googleLocationId}`,
@@ -224,7 +229,7 @@ export const verifyGoogleBusinessSubmission = async (
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
-        }
+        },
       );
     });
 
@@ -252,7 +257,8 @@ export const verifyGoogleBusinessSubmission = async (
       };
     }
 
-    const verificationStatus = location.verificationStatus?.status || "UNVERIFIED";
+    const verificationStatus =
+      location.verificationStatus?.status || "UNVERIFIED";
     const isVerified = verificationStatus === "VERIFIED";
 
     return {
@@ -277,7 +283,7 @@ export const GoogleSubmissionSchema = {
   verificationStatus: v.union(
     v.literal("pending"),
     v.literal("verified"),
-    v.literal("failed")
+    v.literal("failed"),
   ),
   lastSyncAt: v.number(),
   apiResponse: v.optional(v.object({})),

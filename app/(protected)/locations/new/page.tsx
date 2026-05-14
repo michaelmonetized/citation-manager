@@ -42,7 +42,9 @@ export default function CreateLocationPage() {
 
       router.push("/locations");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create location");
+      setError(
+        err instanceof Error ? err.message : "Failed to create location",
+      );
       setLoading(false);
     }
   };
@@ -53,7 +55,9 @@ export default function CreateLocationPage() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Business Name *</label>
+          <label className="block text-sm font-medium mb-1">
+            Business Name *
+          </label>
           <input
             type="text"
             required
@@ -138,7 +142,10 @@ export default function CreateLocationPage() {
           >
             {loading ? "Creating..." : "Create Location"}
           </button>
-          <Link href="/locations" className="flex-1 bg-gray-200 text-gray-800 py-2 rounded font-medium text-center">
+          <Link
+            href="/locations"
+            className="flex-1 bg-gray-200 text-gray-800 py-2 rounded font-medium text-center"
+          >
             Cancel
           </Link>
         </div>

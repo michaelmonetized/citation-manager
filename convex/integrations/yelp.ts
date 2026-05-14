@@ -61,10 +61,10 @@ export const mapLocationToYelpFormat = (locationData: {
 /**
  * Rate limiting helper with exponential backoff
  */
-const retryWithBackoff = async <T,>(
+const retryWithBackoff = async <T>(
   fn: () => Promise<T>,
   maxRetries = 3,
-  initialDelayMs = 1000
+  initialDelayMs = 1000,
 ): Promise<T> => {
   let lastError: Error | null = null;
 
@@ -73,15 +73,18 @@ const retryWithBackoff = async <T,>(
       return await fn();
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
-      
+
       // Don't retry on auth errors
-      if (lastError.message.includes("401") || lastError.message.includes("403")) {
+      if (
+        lastError.message.includes("401") ||
+        lastError.message.includes("403")
+      ) {
         throw lastError;
       }
 
       if (attempt < maxRetries - 1) {
         const delayMs = initialDelayMs * Math.pow(2, attempt);
-        await new Promise(resolve => setTimeout(resolve, delayMs));
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
       }
     }
   }
@@ -95,7 +98,7 @@ const retryWithBackoff = async <T,>(
 export const searchYelpBusiness = async (
   businessName: string,
   city: string,
-  apiKey: string
+  apiKey: string,
 ): Promise<string | null> => {
   if (!apiKey) {
     throw new Error("YELP_API_KEY environment variable not set");
@@ -109,12 +112,15 @@ export const searchYelpBusiness = async (
 
   try {
     const data = await retryWithBackoff(async () => {
-      const response = await fetch(`https://api.yelp.com/v3/businesses/search?${params}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
+      const response = await fetch(
+        `https://api.yelp.com/v3/businesses/search?${params}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+          },
         },
-      });
+      );
 
       if (!response.ok) {
         if (response.status === 429) {
@@ -145,15 +151,20 @@ export const searchYelpBusiness = async (
  */
 export const submitYelpBusiness = async (
   businessData: YelpBusinessData,
-  apiKey: string
+  apiKey: string,
 ): Promise<{ yelpId: string; success: boolean; error?: string }> => {
   try {
     // Search for existing business by name + location
-    const yelpId = await searchYelpBusiness(businessData.name, businessData.city, apiKey);
+    const yelpId = await searchYelpBusiness(
+      businessData.name,
+      businessData.city,
+      apiKey,
+    );
 
     if (!yelpId) {
       // Business not found in Yelp's database yet
-      const errorMsg = `Yelp business not found. The business must exist on Yelp first. ` +
+      const errorMsg =
+        `Yelp business not found. The business must exist on Yelp first. ` +
         `Create a listing at https://business.yelp.com/ or contact Yelp Support.`;
       return {
         yelpId: "",
@@ -187,7 +198,7 @@ export const submitYelpBusiness = async (
  */
 export const verifyYelpSubmission = async (
   yelpId: string,
-  apiKey: string
+  apiKey: string,
 ): Promise<{
   verified: boolean;
   claimed?: boolean;
@@ -202,12 +213,15 @@ export const verifyYelpSubmission = async (
     }
 
     const business = await retryWithBackoff(async () => {
-      const response = await fetch(`https://api.yelp.com/v3/businesses/${yelpId}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
+      const response = await fetch(
+        `https://api.yelp.com/v3/businesses/${yelpId}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+          },
         },
-      });
+      );
 
       if (!response.ok) {
         if (response.status === 429) {
@@ -243,7 +257,7 @@ export const YelpSubmissionSchema = {
   verificationStatus: v.union(
     v.literal("pending"),
     v.literal("verified"),
-    v.literal("failed")
+    v.literal("failed"),
   ),
   lastSyncAt: v.number(),
   apiResponse: v.optional(v.object({})),

@@ -69,7 +69,7 @@ export const submitFormDirectory = internalAction({
       const result = await submitToFormDirectory(
         puppeteer,
         args.directoryKey,
-        args.locationData
+        args.locationData,
       );
 
       return {
@@ -99,7 +99,7 @@ export const submitFormDirectory = internalAction({
 async function submitToFormDirectory(
   puppeteer: any,
   directoryKey: string,
-  locationData: FormSubmissionData
+  locationData: FormSubmissionData,
 ): Promise<{ success: boolean; error?: string }> {
   const browser = await puppeteer.launch({ headless: true });
 
@@ -132,7 +132,7 @@ async function submitToFormDirectory(
  */
 async function submitCitySearch(
   browser: any,
-  data: FormSubmissionData
+  data: FormSubmissionData,
 ): Promise<{ success: boolean; error?: string }> {
   const page = await browser.newPage();
 
@@ -172,9 +172,12 @@ async function submitCitySearch(
     // Check for success indicator
     const confirmationText = await page.$eval(
       "body",
-      (el: HTMLElement) => el.innerText
+      (el: HTMLElement) => el.innerText,
     );
-    if (confirmationText.includes("success") || confirmationText.includes("submitted")) {
+    if (
+      confirmationText.includes("success") ||
+      confirmationText.includes("submitted")
+    ) {
       return { success: true };
     }
 
@@ -195,7 +198,7 @@ async function submitCitySearch(
  */
 async function submitYellowPagesForm(
   _browser: any,
-  _data: FormSubmissionData
+  _data: FormSubmissionData,
 ): Promise<{ success: boolean; error?: string }> {
   // Placeholder: implement similar to CitySearch
   return {
@@ -209,7 +212,7 @@ async function submitYellowPagesForm(
  */
 async function submitMapquest(
   _browser: any,
-  _data: FormSubmissionData
+  _data: FormSubmissionData,
 ): Promise<{ success: boolean; error?: string }> {
   // Placeholder
   return {
@@ -223,7 +226,7 @@ async function submitMapquest(
  */
 async function submitDexKnows(
   _browser: any,
-  _data: FormSubmissionData
+  _data: FormSubmissionData,
 ): Promise<{ success: boolean; error?: string }> {
   // Placeholder
   return {
@@ -237,7 +240,7 @@ async function submitDexKnows(
  */
 async function submitThumbTack(
   _browser: any,
-  _data: FormSubmissionData
+  _data: FormSubmissionData,
 ): Promise<{ success: boolean; error?: string }> {
   // Placeholder
   return {

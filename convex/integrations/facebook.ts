@@ -64,10 +64,10 @@ export const mapLocationToFacebookFormat = (locationData: {
 /**
  * Rate limiting helper with exponential backoff
  */
-const retryWithBackoff = async <T,>(
+const retryWithBackoff = async <T>(
   fn: () => Promise<T>,
   maxRetries = 3,
-  initialDelayMs = 1000
+  initialDelayMs = 1000,
 ): Promise<T> => {
   let lastError: Error | null = null;
 
@@ -76,15 +76,18 @@ const retryWithBackoff = async <T,>(
       return await fn();
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
-      
+
       // Don't retry on auth errors
-      if (lastError.message.includes("401") || lastError.message.includes("403")) {
+      if (
+        lastError.message.includes("401") ||
+        lastError.message.includes("403")
+      ) {
         throw lastError;
       }
 
       if (attempt < maxRetries - 1) {
         const delayMs = initialDelayMs * Math.pow(2, attempt);
-        await new Promise(resolve => setTimeout(resolve, delayMs));
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
       }
     }
   }
@@ -98,7 +101,7 @@ const retryWithBackoff = async <T,>(
 export const searchFacebookPage = async (
   businessName: string,
   city: string,
-  accessToken: string
+  accessToken: string,
 ): Promise<string | null> => {
   if (!accessToken) {
     throw new Error("FACEBOOK_ACCESS_TOKEN environment variable not set");
@@ -117,7 +120,7 @@ export const searchFacebookPage = async (
         `https://graph.facebook.com/v18.0/search?${params}`,
         {
           method: "GET",
-        }
+        },
       );
 
       if (!response.ok) {
@@ -146,7 +149,7 @@ export const searchFacebookPage = async (
 export const submitFacebookPage = async (
   pageId: string,
   pageData: FacebookPageData,
-  accessToken: string
+  accessToken: string,
 ): Promise<{ facebookPageId: string; success: boolean; error?: string }> => {
   try {
     if (!accessToken) {
@@ -170,7 +173,7 @@ export const submitFacebookPage = async (
             "Content-Type": "application/json",
           },
           body: JSON.stringify(pageData),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -205,7 +208,7 @@ export const submitFacebookPage = async (
  */
 export const verifyFacebookSubmission = async (
   facebookPageId: string,
-  accessToken: string
+  accessToken: string,
 ): Promise<{
   verified: boolean;
   hasContactInfo?: boolean;
@@ -229,7 +232,7 @@ export const verifyFacebookSubmission = async (
         `https://graph.facebook.com/v18.0/${facebookPageId}?${params}`,
         {
           method: "GET",
-        }
+        },
       );
 
       if (!response.ok) {
@@ -279,7 +282,7 @@ export const verifyFacebookSubmission = async (
  */
 export const getInstagramBusiness = async (
   facebookPageId: string,
-  accessToken: string
+  accessToken: string,
 ): Promise<{ instagramId: string | null; error?: string }> => {
   try {
     if (!accessToken) {
@@ -299,7 +302,7 @@ export const getInstagramBusiness = async (
         `https://graph.facebook.com/v18.0/${facebookPageId}?${params}`,
         {
           method: "GET",
-        }
+        },
       );
 
       if (!response.ok) {
@@ -308,10 +311,14 @@ export const getInstagramBusiness = async (
         } else if (response.status === 429) {
           throw new Error("Rate limited - please try again later");
         }
-        throw new Error(`Failed to get Instagram business (${response.status})`);
+        throw new Error(
+          `Failed to get Instagram business (${response.status})`,
+        );
       }
 
-      return (await response.json()) as { instagram_business_account?: { id: string } };
+      return (await response.json()) as {
+        instagram_business_account?: { id: string };
+      };
     });
 
     return {
@@ -335,7 +342,7 @@ export const FacebookSubmissionSchema = {
   verificationStatus: v.union(
     v.literal("pending"),
     v.literal("verified"),
-    v.literal("failed")
+    v.literal("failed"),
   ),
   lastSyncAt: v.number(),
   apiResponse: v.optional(v.object({})),

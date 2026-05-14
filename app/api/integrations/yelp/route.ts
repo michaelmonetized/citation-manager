@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     if (!locationId || !directoryId) {
       return NextResponse.json(
         { error: "Missing locationId or directoryId" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     console.error("Yelp submission error:", error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Unknown error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -46,7 +46,7 @@ export async function PUT(request: NextRequest) {
     if (!submissionId || !yelpId) {
       return NextResponse.json(
         { error: "Missing submissionId or yelpId" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -61,7 +61,7 @@ export async function PUT(request: NextRequest) {
     console.error("Yelp verification error:", error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Unknown error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

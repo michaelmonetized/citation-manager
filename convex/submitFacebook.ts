@@ -48,7 +48,7 @@ export const submitFacebook = mutation({
       const existingPageId = await searchFacebookPage(
         location.businessName,
         location.city,
-        facebookAccessToken
+        facebookAccessToken,
       );
 
       if (!existingPageId) {
@@ -58,7 +58,8 @@ export const submitFacebook = mutation({
           locationId: args.locationId,
           directoryId: args.directoryId,
           status: "failed",
-          errorMessage: "Facebook page not found. Create one at https://www.facebook.com/pages/",
+          errorMessage:
+            "Facebook page not found. Create one at https://www.facebook.com/pages/",
           createdAt: Date.now(),
         });
 
@@ -84,7 +85,7 @@ export const submitFacebook = mutation({
       const result = await submitFacebookPage(
         existingPageId,
         facebookPageData,
-        facebookAccessToken
+        facebookAccessToken,
       );
 
       if (!result.success) {
@@ -107,7 +108,7 @@ export const submitFacebook = mutation({
       // Get linked Instagram Business Account (if any)
       const instagramResult = await getInstagramBusiness(
         existingPageId,
-        facebookAccessToken
+        facebookAccessToken,
       );
 
       // Record successful submission
@@ -139,7 +140,8 @@ export const submitFacebook = mutation({
         pageUrl: `https://www.facebook.com/${existingPageId}`,
       };
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
 
       // Record failed submission
       const submissionId = await ctx.db.insert("submissions", {
@@ -183,7 +185,10 @@ export const verifyFacebook = mutation({
     }
 
     // Verify with Facebook API
-    const result = await verifyFacebookSubmission(args.facebookPageId, facebookAccessToken);
+    const result = await verifyFacebookSubmission(
+      args.facebookPageId,
+      facebookAccessToken,
+    );
 
     if (result.verified) {
       // Update submission status to verified

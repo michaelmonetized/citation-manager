@@ -13,8 +13,8 @@ export default function EditLocationPage() {
   const locationId = params.id as string;
 
   const updateLocation = useMutation(api.locations.updateLocation);
-  const location = useQuery(api.locations.getLocation, { 
-    locationId: locationId as Id<"locations"> 
+  const location = useQuery(api.locations.getLocation, {
+    locationId: locationId as Id<"locations">,
   }) as any;
 
   const [name, setName] = useState("");
@@ -63,7 +63,9 @@ export default function EditLocationPage() {
 
       router.push("/locations");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update location");
+      setError(
+        err instanceof Error ? err.message : "Failed to update location",
+      );
       setLoading(false);
     }
   };
@@ -93,7 +95,9 @@ export default function EditLocationPage() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Business Name *</label>
+          <label className="block text-sm font-medium mb-1">
+            Business Name *
+          </label>
           <input
             type="text"
             required
@@ -178,7 +182,10 @@ export default function EditLocationPage() {
           >
             {loading ? "Saving..." : "Save Changes"}
           </button>
-          <Link href="/locations" className="flex-1 bg-gray-200 text-gray-800 py-2 rounded font-medium text-center">
+          <Link
+            href="/locations"
+            className="flex-1 bg-gray-200 text-gray-800 py-2 rounded font-medium text-center"
+          >
             Cancel
           </Link>
         </div>

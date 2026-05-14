@@ -27,13 +27,20 @@ export const submitLocationToDirectory = action({
     const { submissionId, directoryName, locationData } = args;
 
     try {
-      let result: { success: boolean; error?: string; googleLocationId?: string };
+      let result: {
+        success: boolean;
+        error?: string;
+        googleLocationId?: string;
+      };
 
       // Route to appropriate API based on directory
-      if (directoryName.includes("Google") || directoryName.includes("Google Business")) {
+      if (
+        directoryName.includes("Google") ||
+        directoryName.includes("Google Business")
+      ) {
         result = await submitGoogleBusiness(
           process.env.GOOGLE_ACCOUNT_ID || "",
-          locationData
+          locationData,
         );
       } else if (directoryName.includes("Yelp")) {
         result = await submitToYelp(locationData);
@@ -60,8 +67,9 @@ export const submitLocationToDirectory = action({
 
       return result;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
-      
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+
       // Mark submission as failed
       await ctx.runMutation("submissions:updateSubmissionStatus" as any, {
         submissionId,
@@ -95,11 +103,14 @@ async function submitToYelp(locationData: {
   try {
     // Yelp's partner API requires business agreement
     // For MVP, we'll prepare the data but note that direct submission requires partnership
-    console.log("Yelp submission prepared (requires business partnership agreement):", {
-      businessName: locationData.businessName,
-      phone: locationData.phone,
-      address: `${locationData.address}, ${locationData.city}, ${locationData.state} ${locationData.zipCode}`,
-    });
+    console.log(
+      "Yelp submission prepared (requires business partnership agreement):",
+      {
+        businessName: locationData.businessName,
+        phone: locationData.phone,
+        address: `${locationData.address}, ${locationData.city}, ${locationData.state} ${locationData.zipCode}`,
+      },
+    );
 
     return {
       success: true, // Mark as submitted for manual followup
@@ -140,13 +151,14 @@ async function submitToFacebook(locationData: {
 
     // In production, call Facebook Graph API:
     // POST https://graph.facebook.com/v18.0/{page-id} with pageData
-    
+
     console.log("Facebook submission prepared:", pageData);
     return { success: true };
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Facebook submission failed",
+      error:
+        error instanceof Error ? error.message : "Facebook submission failed",
     };
   }
 }

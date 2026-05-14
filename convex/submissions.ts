@@ -18,7 +18,7 @@ export const bulkSubmit = mutation({
     args: {
       locationId: string;
       directoryIds: string[];
-    }
+    },
   ) => {
     const user = await getUserFromAuth(ctx);
     if (!user) throw new Error("Not authenticated");
@@ -26,7 +26,8 @@ export const bulkSubmit = mutation({
     // Verify user owns this location
     const location = await ctx.db.get(args.locationId as any);
     if (!location) throw new Error("Location not found");
-    if ((location as any).userEmail !== user.email) throw new Error("Unauthorized");
+    if ((location as any).userEmail !== user.email)
+      throw new Error("Unauthorized");
 
     // Create submission records for each directory
     const submissionIds: string[] = [];
@@ -47,18 +48,42 @@ export const bulkSubmit = mutation({
 
       // Dispatch submission task based on directory API availability
       const directoryName = (directory as any).name || "";
-      
+
       // Route to appropriate API handler
-      if ((directory as any).apiType === "google" || directoryName.includes("Google")) {
+      if (
+        (directory as any).apiType === "google" ||
+        directoryName.includes("Google")
+      ) {
         // Schedule Google Business Profile submission
         // Note: In production, use Convex scheduled functions or webhooks
-        await scheduleGoogleSubmission(ctx, submissionId as any, args.locationId as any, location);
-      } else if ((directory as any).apiType === "yelp" || directoryName.includes("Yelp")) {
+        await scheduleGoogleSubmission(
+          ctx,
+          submissionId as any,
+          args.locationId as any,
+          location,
+        );
+      } else if (
+        (directory as any).apiType === "yelp" ||
+        directoryName.includes("Yelp")
+      ) {
         // Schedule Yelp submission
-        await scheduleYelpSubmission(ctx, submissionId as any, args.locationId as any, location);
-      } else if ((directory as any).apiType === "facebook" || directoryName.includes("Facebook")) {
+        await scheduleYelpSubmission(
+          ctx,
+          submissionId as any,
+          args.locationId as any,
+          location,
+        );
+      } else if (
+        (directory as any).apiType === "facebook" ||
+        directoryName.includes("Facebook")
+      ) {
         // Schedule Facebook submission
-        await scheduleFacebookSubmission(ctx, submissionId as any, args.locationId as any, location);
+        await scheduleFacebookSubmission(
+          ctx,
+          submissionId as any,
+          args.locationId as any,
+          location,
+        );
       }
       // Other directories marked as submitted without API integration
       // (manual submission via dashboard or batch export)
@@ -76,7 +101,7 @@ async function scheduleGoogleSubmission(
   ctx: MutationCtx,
   submissionId: string,
   locationId: string,
-  location: any
+  location: any,
 ) {
   try {
     // For MVP: attempt immediate submission with retry logic
@@ -109,7 +134,7 @@ async function scheduleYelpSubmission(
   ctx: MutationCtx,
   submissionId: string,
   locationId: string,
-  location: any
+  location: any,
 ) {
   try {
     const yelpApiKey = process.env.YELP_API_KEY;
@@ -138,7 +163,7 @@ async function scheduleFacebookSubmission(
   ctx: MutationCtx,
   submissionId: string,
   locationId: string,
-  location: any
+  location: any,
 ) {
   try {
     const facebookToken = process.env.FACEBOOK_ACCESS_TOKEN;
@@ -172,11 +197,14 @@ export const getLocationSubmissions = query({
     // Verify user owns this location
     const location = await ctx.db.get(args.locationId as any);
     if (!location) throw new Error("Location not found");
-    if ((location as any).userEmail !== user.email) throw new Error("Unauthorized");
+    if ((location as any).userEmail !== user.email)
+      throw new Error("Unauthorized");
 
     return await ctx.db
       .query("submissions")
-      .withIndex("by_locationId", (q) => q.eq("locationId", args.locationId as any))
+      .withIndex("by_locationId", (q) =>
+        q.eq("locationId", args.locationId as any),
+      )
       .collect();
   },
 });
@@ -193,11 +221,14 @@ export const getSubmissionStatus = query({
     // Verify user owns this location
     const location = await ctx.db.get(args.locationId as any);
     if (!location) throw new Error("Location not found");
-    if ((location as any).userEmail !== user.email) throw new Error("Unauthorized");
+    if ((location as any).userEmail !== user.email)
+      throw new Error("Unauthorized");
 
     const submissions = await ctx.db
       .query("submissions")
-      .withIndex("by_locationId", (q) => q.eq("locationId", args.locationId as any))
+      .withIndex("by_locationId", (q) =>
+        q.eq("locationId", args.locationId as any),
+      )
       .collect();
 
     const statusCounts: Record<string, number> = {
@@ -218,8 +249,9 @@ export const getSubmissionStatus = query({
       total: submissions.length,
       ...statusCounts,
       completionPercentage: Math.round(
-        ((statusCounts.submitted + statusCounts.verified) / submissions.length) *
-          100
+        ((statusCounts.submitted + statusCounts.verified) /
+          submissions.length) *
+          100,
       ),
     };
   },
@@ -236,7 +268,7 @@ export const updateSubmissionStatus = mutation({
       v.literal("pending"),
       v.literal("submitted"),
       v.literal("verified"),
-      v.literal("failed")
+      v.literal("failed"),
     ),
     errorMessage: v.optional(v.string()),
   },
@@ -246,7 +278,7 @@ export const updateSubmissionStatus = mutation({
       submissionId: string;
       status: "pending" | "submitted" | "verified" | "failed";
       errorMessage?: string;
-    }
+    },
   ) => {
     const submission = await ctx.db.get(args.submissionId as any);
     if (!submission) throw new Error("Submission not found");
@@ -285,7 +317,8 @@ export const getSubmissionDetail = query({
 
     const location = await ctx.db.get((submission as any).locationId as any);
     if (!location) throw new Error("Location not found");
-    if ((location as any).userEmail !== user.email) throw new Error("Unauthorized");
+    if ((location as any).userEmail !== user.email)
+      throw new Error("Unauthorized");
 
     const directory = await ctx.db.get((submission as any).directoryId as any);
 

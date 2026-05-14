@@ -8,20 +8,25 @@ import Link from "next/link";
 export default function SubmitPage() {
   const [showAll, setShowAll] = useState(false);
   const locations = useQuery(api.locations.listLocations);
-  const directories = useQuery(api.directories.listTopDirectories, { limit: showAll ? 1000 : 50 });
+  const directories = useQuery(api.directories.listTopDirectories, {
+    limit: showAll ? 1000 : 50,
+  });
   const bulkSubmit = useMutation(api.submissions.bulkSubmit);
 
   const [selectedLocationId, setSelectedLocationId] = useState<string>("");
   const [selectedDirs, setSelectedDirs] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
+  const [status, setStatus] = useState<"idle" | "submitting" | "success">(
+    "idle",
+  );
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [submissionCount, setSubmissionCount] = useState(0);
-  
+
   // Fetch submission status after submission
-  const submissionStatus = useQuery(api.submissions.getSubmissionStatus, 
-    selectedLocationId ? { locationId: selectedLocationId as any } : "skip"
+  const submissionStatus = useQuery(
+    api.submissions.getSubmissionStatus,
+    selectedLocationId ? { locationId: selectedLocationId as any } : "skip",
   );
 
   const handleDirToggle = (dirId: string) => {
@@ -34,9 +39,10 @@ export default function SubmitPage() {
     setSelectedDirs(newSet);
   };
 
-  const filteredDirectories = directories?.filter((dir) =>
-    dir.name.toLowerCase().includes(searchTerm.toLowerCase())
-  ) || [];
+  const filteredDirectories =
+    directories?.filter((dir) =>
+      dir.name.toLowerCase().includes(searchTerm.toLowerCase()),
+    ) || [];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,7 +95,10 @@ export default function SubmitPage() {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h1 className="text-3xl font-bold mb-8">Submit to Directories</h1>
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-8">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white rounded-lg shadow p-8"
+        >
           {/* Location Select */}
           <div className="mb-8">
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -138,7 +147,10 @@ export default function SubmitPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto p-4 border rounded-md bg-gray-50">
               {filteredDirectories && filteredDirectories.length > 0 ? (
                 filteredDirectories.map((dir: any) => (
-                  <label key={dir._id} className="flex items-center gap-2 cursor-pointer">
+                  <label
+                    key={dir._id}
+                    className="flex items-center gap-2 cursor-pointer"
+                  >
                     <input
                       type="checkbox"
                       checked={selectedDirs.has(dir._id)}
@@ -154,11 +166,14 @@ export default function SubmitPage() {
                   </label>
                 ))
               ) : (
-                <p className="col-span-2 text-gray-500 text-sm">No directories match your search</p>
+                <p className="col-span-2 text-gray-500 text-sm">
+                  No directories match your search
+                </p>
               )}
             </div>
             <p className="text-sm text-gray-600 mt-2">
-              Selected: {selectedDirs.size} director{selectedDirs.size !== 1 ? "ies" : "y"}
+              Selected: {selectedDirs.size} director
+              {selectedDirs.size !== 1 ? "ies" : "y"}
             </p>
           </div>
 
@@ -171,36 +186,49 @@ export default function SubmitPage() {
 
           {status === "success" && (
             <div className="p-3 bg-green-50 border border-green-200 rounded text-green-700 text-sm mb-4">
-              ✅ Successfully submitted to {submissionCount} director{submissionCount !== 1 ? "ies" : "y"}!
+              ✅ Successfully submitted to {submissionCount} director
+              {submissionCount !== 1 ? "ies" : "y"}!
             </div>
           )}
 
           {/* Submission Status Overview */}
           {selectedLocationId && submissionStatus && (
             <div className="p-4 bg-blue-50 border border-blue-200 rounded mb-6">
-              <h3 className="font-semibold text-blue-900 mb-2">Submission Status</h3>
+              <h3 className="font-semibold text-blue-900 mb-2">
+                Submission Status
+              </h3>
               <div className="grid grid-cols-4 gap-4 text-sm">
                 <div>
-                  <span className="text-blue-600 font-bold">{(submissionStatus as any).total}</span>
+                  <span className="text-blue-600 font-bold">
+                    {(submissionStatus as any).total}
+                  </span>
                   <p className="text-blue-700">Total</p>
                 </div>
                 <div>
-                  <span className="text-yellow-600 font-bold">{(submissionStatus as any).pending}</span>
+                  <span className="text-yellow-600 font-bold">
+                    {(submissionStatus as any).pending}
+                  </span>
                   <p className="text-yellow-700">Pending</p>
                 </div>
                 <div>
-                  <span className="text-blue-600 font-bold">{(submissionStatus as any).submitted}</span>
+                  <span className="text-blue-600 font-bold">
+                    {(submissionStatus as any).submitted}
+                  </span>
                   <p className="text-blue-700">Submitted</p>
                 </div>
                 <div>
-                  <span className="text-green-600 font-bold">{(submissionStatus as any).verified}</span>
+                  <span className="text-green-600 font-bold">
+                    {(submissionStatus as any).verified}
+                  </span>
                   <p className="text-green-700">Verified</p>
                 </div>
               </div>
               <div className="mt-3 bg-white rounded overflow-hidden">
-                <div 
+                <div
                   className="bg-green-500 h-2"
-                  style={{ width: `${(submissionStatus as any).completionPercentage}%` }}
+                  style={{
+                    width: `${(submissionStatus as any).completionPercentage}%`,
+                  }}
                 />
               </div>
               <p className="text-xs text-blue-600 mt-2">
@@ -215,7 +243,9 @@ export default function SubmitPage() {
             disabled={loading || !selectedLocationId || selectedDirs.size === 0}
             className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 disabled:bg-gray-400 font-medium"
           >
-            {loading ? "Submitting..." : `Submit to ${selectedDirs.size} Directories`}
+            {loading
+              ? "Submitting..."
+              : `Submit to ${selectedDirs.size} Directories`}
           </button>
         </form>
       </main>

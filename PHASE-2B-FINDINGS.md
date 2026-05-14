@@ -8,6 +8,7 @@
 ## Current State Assessment
 
 ### ✅ What's Built & Ready
+
 1. **Frontend Pages Exist**
    - `/app/submit/page.tsx` — Submit form with location selector + directory checkboxes + bulk selection
    - `/app/submissions/page.tsx` — Dashboard showing submission status + counts + progress bar
@@ -37,31 +38,38 @@
 ## 🚨 CRITICAL BLOCKER: Authentication
 
 ### The Problem
+
 Pages at `/app/submit` and `/app/submissions` are **not protected** and call Convex queries without authentication.
 
 When navigating to `/submit`, we get:
+
 ```
 [CONVEX Q(locations:listLocations)] Not authenticated
 Uncaught Error: Not authenticated
 ```
 
 ### Root Cause
+
 - `convex/locations.ts` uses `getUserFromAuth()` which requires `ctx.auth.getUserIdentity()`
 - But no authentication middleware/provider is configured on the frontend
 - No route protection (no `/app/(protected)` directory)
 - No Convex auth setup (no `convex/auth.config.ts`)
 
 ### Why This Matters
-Phase 2B task description said: *"Build /app/(protected)/submit/page.tsx"*
+
+Phase 2B task description said: _"Build /app/(protected)/submit/page.tsx"_
 
 But the actual implementation skipped:
+
 1. ✗ Route group for protection (`(protected)`)
 2. ✗ Auth middleware
 3. ✗ Convex auth configuration
 4. ✗ Session management
 
 ### What's Required to Fix
+
 **Option A: Add Clerk Auth (Recommended)**
+
 - Install `@clerk/nextjs` + Clerk provider
 - Wrap Convex client with Clerk auth token
 - Add ClerkMiddleware to Next.js
@@ -69,12 +77,14 @@ But the actual implementation skipped:
 - ~2 hours to implement
 
 **Option B: Implement Custom Auth (Current Path)**
+
 - Convex auth.config.ts with session tokens
 - JWT tokens stored in cookies
 - Custom auth middleware
 - ~3 hours to implement
 
 **Option C: Skip Auth for Phase 2B (Testing Only)**
+
 - Remove auth checks from Convex queries temporarily
 - Test API routes directly (don't require auth)
 - Re-add auth in Phase 2C before production
@@ -89,6 +99,7 @@ Since fixing auth is out of scope for Phase 2B (which is "Manual Testing & Front
 ### Direct API Route Testing (No Auth Required)
 
 The API routes accept:
+
 ```bash
 POST /api/integrations/google
 {
@@ -123,7 +134,7 @@ submissions: defineTable({
     v.literal("pending"),
     v.literal("submitted"),
     v.literal("verified"),
-    v.literal("failed")
+    v.literal("failed"),
   ),
   errorMessage: v.optional(v.string()),
   createdAt: v.number(),
@@ -131,7 +142,7 @@ submissions: defineTable({
   verifiedAt: v.optional(v.number()),
 })
   .index("by_locationId", ["locationId"])
-  .index("by_directoryId", ["directoryId"])
+  .index("by_directoryId", ["directoryId"]);
 ```
 
 **This is ready.** No schema changes needed.
@@ -141,6 +152,7 @@ submissions: defineTable({
 ## Directory Data (Current State)
 
 From the code:
+
 - Locations: Created via `/api/seed-directories` endpoint
 - Directories: 958 total, loaded via `convex/directories.ts`
 - Both should be populated in dev environment
@@ -152,16 +164,19 @@ From the code:
 ## API Key Status
 
 ### Google Business Profile
+
 - **Status:** ❓ Unknown (need to check .env)
 - **Error Handling:** ✅ Present (throws meaningful errors)
 - **Fallback:** ✅ Returns `{ success: false, error: "..." }` on missing credentials
 
 ### Yelp Business API
+
 - **Status:** ❓ Unknown (need to check .env)
 - **Error Handling:** ✅ Present
 - **Fallback:** ✅ Returns error object on missing credentials
 
 ### Facebook Graph API
+
 - **Status:** ❓ Unknown (need to check .env)
 - **Error Handling:** ✅ Present
 - **Fallback:** ✅ Returns error object on missing credentials
@@ -173,6 +188,7 @@ From the code:
 ## Revised Phase 2B Deliverables
 
 ### ✅ Delivered
+
 1. Submit page UI (fully built, responsive, feature-complete)
 2. Submissions dashboard UI (fully built, responsive, feature-complete)
 3. API routes (fully built, properly typed, error-handled)
@@ -180,10 +196,12 @@ From the code:
 5. Integration libraries (fully built, retry logic included)
 
 ### ⚠️ Partially Delivered
+
 1. **Authentication** — Pages exist but are not protected; no auth middleware
 2. **API Credentials** — Integration files reference env vars; unclear if set
 
 ### 🔄 In Progress
+
 1. Manual smoke testing (blocked by auth + API key verification)
 
 ---
@@ -191,16 +209,19 @@ From the code:
 ## Decisions to Make
 
 ### Decision 1: Fix Authentication?
+
 - **In Scope?** Task says "Manual Testing", not "Fix Auth"
 - **Recommendation:** Document as blocker, note requires Clerk/custom auth implementation
 - **Impact:** Cannot test UI without auth; can test API routes
 
 ### Decision 2: Proceed Without Auth Fix?
+
 - **Approach:** Test API routes via curl/Postman, skip frontend UI testing
 - **Recommendation:** Yes — this unblocks Phase 2B deliverables assessment
 - **Output:** Test report showing "API routes work, UI blocked by auth"
 
 ### Decision 3: Test Without Real API Keys?
+
 - **Approach:** Mock responses or test error paths
 - **Recommendation:** Test both happy path (with real keys) and error path (missing keys)
 - **Output:** Documentation of what's broken vs. what's missing
@@ -212,11 +233,13 @@ From the code:
 **Current state:** NO
 
 **Why:**
+
 1. Pages exist but are not protected (violates spec: `/app/(protected)/...`)
 2. Auth system incomplete (throws errors on page load)
 3. API keys not configured (API calls will fail)
 
 **What's needed before PR:**
+
 1. ✅ Frontend code quality — GOOD
 2. ✅ API route quality — GOOD
 3. ✅ Integration code quality — GOOD
@@ -237,15 +260,14 @@ From the code:
 
 ## Time Estimates
 
-| Task | Effort | Blocker |
-|------|--------|---------|
-| Add Clerk auth | 2-3 hours | YES (needed for Phase 2B completion) |
-| Fix route protection | 1 hour | YES (required by spec) |
-| Set API credentials | 1 hour | YES (needed for smoke testing) |
-| Complete smoke testing | 2 hours | Depends on above |
-| Deploy to staging | 30 mins | Depends on above |
+| Task                   | Effort    | Blocker                              |
+| ---------------------- | --------- | ------------------------------------ |
+| Add Clerk auth         | 2-3 hours | YES (needed for Phase 2B completion) |
+| Fix route protection   | 1 hour    | YES (required by spec)               |
+| Set API credentials    | 1 hour    | YES (needed for smoke testing)       |
+| Complete smoke testing | 2 hours   | Depends on above                     |
+| Deploy to staging      | 30 mins   | Depends on above                     |
 
 **Total to completion:** 6.5 hours
 
 ---
-

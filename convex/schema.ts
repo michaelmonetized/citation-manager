@@ -5,12 +5,13 @@ export default defineSchema({
   users: defineTable({
     email: v.string(),
     password: v.string(), // Argon2id hashed password (see convex/users.ts)
-    plan: v.optional(v.union(v.literal("free"), v.literal("pro"), v.literal("enterprise"))),
+    plan: v.optional(
+      v.union(v.literal("free"), v.literal("pro"), v.literal("enterprise")),
+    ),
     company: v.optional(v.string()),
     createdAt: v.number(),
     updatedAt: v.optional(v.number()),
-  })
-    .index("by_email", ["email"]),
+  }).index("by_email", ["email"]),
 
   locations: defineTable({
     userEmail: v.string(),
@@ -37,7 +38,7 @@ export default defineSchema({
       v.literal("form"),
       v.literal("manual"),
       v.literal("email"),
-      v.literal("phone")
+      v.literal("phone"),
     ),
     apiAvailable: v.boolean(),
     apiDocsUrl: v.optional(v.string()),
@@ -54,7 +55,7 @@ export default defineSchema({
       v.literal("pending"),
       v.literal("submitted"),
       v.literal("verified"),
-      v.literal("failed")
+      v.literal("failed"),
     ),
     errorMessage: v.optional(v.string()),
     createdAt: v.number(),

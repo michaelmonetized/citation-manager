@@ -1,6 +1,9 @@
 import { mutation } from "./_generated/server";
 import { v } from "convex/values";
-import { submitGoogleBusiness, verifyGoogleBusinessSubmission } from "./integrations/googleBusiness";
+import {
+  submitGoogleBusiness,
+  verifyGoogleBusinessSubmission,
+} from "./integrations/googleBusiness";
 
 /**
  * Submit location to Google Business Profile API
@@ -75,7 +78,8 @@ export const submitGoogle = mutation({
       status: "submitted",
       submissionId,
       googleLocationId: result.googleLocationId,
-      message: "Successfully submitted to Google Business Profile. Verification may take 1-3 business days.",
+      message:
+        "Successfully submitted to Google Business Profile. Verification may take 1-3 business days.",
     };
   },
 });
@@ -99,7 +103,7 @@ export const verifyGoogle = mutation({
     // Verify with Google API
     const result = await verifyGoogleBusinessSubmission(
       args.googleAccountId,
-      args.googleLocationId
+      args.googleLocationId,
     );
 
     if (result.verified) {

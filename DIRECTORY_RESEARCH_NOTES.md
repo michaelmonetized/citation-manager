@@ -5,6 +5,7 @@
 **Goal:** Aggregate 958 verified business directories (per Bright Local, Moz Local, Text Local, Uberall benchmarks)
 
 **Approach:**
+
 1. Prioritize by traffic authority (Moz DA, estimated monthly views)
 2. Categorize by submission method (API, form, email, phone)
 3. Identify free vs. paid directories
@@ -15,7 +16,9 @@
 ## Top 50 Directories (Research Required)
 
 ### Already Complete (1-20)
+
 See `/data/directories.json` for full details:
+
 1. Google Business Profile
 2. Yelp
 3. Apple Maps
@@ -40,6 +43,7 @@ See `/data/directories.json` for full details:
 ### Next 30 (21-50) — Research Required
 
 **21-25: Review Platforms + Aggregators**
+
 - Angi (formerly Angie's List) — https://www.angi.com
   - Category: Review platform (home services)
   - Traffic: 200K+ monthly
@@ -71,6 +75,7 @@ See `/data/directories.json` for full details:
   - Free: Yes (API available)
 
 **26-30: Maps + Navigation**
+
 - Google Maps (distinct from Business Profile) — https://maps.google.com
   - Category: Search aggregator
   - Traffic: 1M+ monthly
@@ -102,6 +107,7 @@ See `/data/directories.json` for full details:
   - Free: Yes
 
 **31-35: Local Service Directories**
+
 - Angi Services — https://www.angieslist.com
   - Category: Local services
   - Traffic: 150K+ monthly
@@ -133,6 +139,7 @@ See `/data/directories.json` for full details:
   - Free: Yes (basic)
 
 **36-40: Accommodation + Travel**
+
 - Airbnb — https://www.airbnb.com
   - Category: Vacation rental platform
   - Traffic: 1M+ monthly
@@ -164,6 +171,7 @@ See `/data/directories.json` for full details:
   - Free: No (commission-based)
 
 **41-45: Food + Dining**
+
 - OpenTable — https://www.opentable.com
   - Category: Restaurant reservations
   - Traffic: 300K+ monthly
@@ -195,6 +203,7 @@ See `/data/directories.json` for full details:
   - Free: No (commission-based)
 
 **46-50: B2B + Professional Services**
+
 - LinkedIn (Company Pages - premium) — https://www.linkedin.com/company/
   - Category: Professional network
   - Traffic: 300K+ monthly
@@ -230,6 +239,7 @@ See `/data/directories.json` for full details:
 ## Next Phase: 51-100 Categories
 
 **Industry-Specific Directories (Golf, Healthcare, Education, etc.):**
+
 - PGA Tour Directory
 - USGA Courses Directory
 - Healthgrades.com
@@ -237,11 +247,13 @@ See `/data/directories.json` for full details:
 - Education.com
 
 **Regional + State Directories:**
+
 - State-level business registries (all 50)
 - Chamber of Commerce (1000+ nationwide)
 - Local newspaper business sections
 
 **Niche + Aggregators:**
+
 - Business.com (web directory)
 - Yellowbook (directory listings)
 - LocalStack (local directory)
@@ -275,6 +287,7 @@ See `/data/directories.json` for full details:
 ## Revenue Opportunity
 
 **Tier-based submission limits:**
+
 - Free: Top 10 directories
 - Pro ($29/mo): Top 100 directories
 - Enterprise ($99/mo): All 958 directories + custom integrations

@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     if (!locationId || !directoryId) {
       return NextResponse.json(
         { error: "Missing locationId or directoryId" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     console.error("Google submission error:", error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Unknown error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -47,7 +47,7 @@ export async function PUT(request: NextRequest) {
     if (!submissionId || !googleAccountId || !googleLocationId) {
       return NextResponse.json(
         { error: "Missing required parameters" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -63,7 +63,7 @@ export async function PUT(request: NextRequest) {
     console.error("Google verification error:", error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Unknown error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

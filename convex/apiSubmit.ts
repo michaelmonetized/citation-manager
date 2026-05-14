@@ -1,8 +1,15 @@
 import { internalAction } from "./_generated/server";
 import { v } from "convex/values";
-import { submitGoogleBusiness, verifyGoogleBusinessSubmission } from "./integrations/googleBusiness";
+import {
+  submitGoogleBusiness,
+  verifyGoogleBusinessSubmission,
+} from "./integrations/googleBusiness";
 import { submitYelpBusiness, verifyYelpSubmission } from "./integrations/yelp";
-import { searchFacebookPage, submitFacebookPage, verifyFacebookSubmission } from "./integrations/facebook";
+import {
+  searchFacebookPage,
+  submitFacebookPage,
+  verifyFacebookSubmission,
+} from "./integrations/facebook";
 
 /**
  * Internal action to submit a location to a specific directory API
@@ -38,13 +45,13 @@ export const submitToDirectory = internalAction({
 
         if (!googleAccountId) {
           throw new Error(
-            "GOOGLE_ACCOUNT_ID or GOOGLE_BUSINESS_ACCOUNT_ID not configured"
+            "GOOGLE_ACCOUNT_ID or GOOGLE_BUSINESS_ACCOUNT_ID not configured",
           );
         }
 
         const submission = await submitGoogleBusiness(
           googleAccountId,
-          args.locationData
+          args.locationData,
         );
 
         result = {
@@ -71,7 +78,7 @@ export const submitToDirectory = internalAction({
             website: args.locationData.website,
             categories: [{ alias: "local_services" }],
           },
-          yelpApiKey
+          yelpApiKey,
         );
 
         result = {
@@ -89,12 +96,12 @@ export const submitToDirectory = internalAction({
         const pageId = await searchFacebookPage(
           args.locationData.businessName,
           args.locationData.city,
-          facebookToken
+          facebookToken,
         );
 
         if (!pageId) {
           throw new Error(
-            "Facebook page not found. Must create page manually first."
+            "Facebook page not found. Must create page manually first.",
           );
         }
 
@@ -110,7 +117,7 @@ export const submitToDirectory = internalAction({
             zip: args.locationData.zipCode,
             country: "US",
           },
-          facebookToken
+          facebookToken,
         );
 
         result = {
@@ -121,7 +128,7 @@ export const submitToDirectory = internalAction({
       } else {
         // Unknown directory key - skip (caller should validate)
         throw new Error(
-          `Unknown directory key: ${args.directoryKey}. Must be "google", "yelp", or "facebook".`
+          `Unknown directory key: ${args.directoryKey}. Must be "google", "yelp", or "facebook".`,
         );
       }
 
@@ -160,13 +167,13 @@ export const verifySubmissionStatus = internalAction({
 
         if (!googleAccountId) {
           throw new Error(
-            "GOOGLE_ACCOUNT_ID or GOOGLE_BUSINESS_ACCOUNT_ID not configured"
+            "GOOGLE_ACCOUNT_ID or GOOGLE_BUSINESS_ACCOUNT_ID not configured",
           );
         }
 
         const googleResult = await verifyGoogleBusinessSubmission(
           googleAccountId,
-          args.apiId
+          args.apiId,
         );
         verified = googleResult.verified;
       } else if (args.directoryKey === "yelp") {
@@ -183,12 +190,12 @@ export const verifySubmissionStatus = internalAction({
         }
         const facebookResult = await verifyFacebookSubmission(
           args.apiId,
-          facebookToken
+          facebookToken,
         );
         verified = facebookResult.verified;
       } else {
         throw new Error(
-          `Unknown directory key: ${args.directoryKey}. Must be "google", "yelp", or "facebook".`
+          `Unknown directory key: ${args.directoryKey}. Must be "google", "yelp", or "facebook".`,
         );
       }
 

@@ -5,6 +5,7 @@ This guide walks through the final steps to launch citation-manager Phase 1 MVP.
 ## Prerequisites
 
 Before starting, ensure you have:
+
 1. ✅ Node.js 18+ installed
 2. ✅ Bun installed (`curl -fsSL https://bun.sh/install | bash`)
 3. ✅ GitHub CLI (`gh`) authenticated
@@ -144,6 +145,7 @@ npm run start
 ## Monitoring & Status
 
 ### Check Convex Cloud Dashboard
+
 ```bash
 # Open Convex dashboard
 npx convex dashboard
@@ -156,6 +158,7 @@ npx convex dashboard
 ```
 
 ### Run Lint & Type Checks
+
 ```bash
 npm run lint           # Linter (0 warnings target)
 npm run type-check    # TypeScript strict mode
@@ -165,6 +168,7 @@ npm run build         # Full build
 ## Troubleshooting
 
 ### Error: "Cannot find module 'convex'"
+
 ```bash
 # Regenerate Convex types
 npx convex push
@@ -172,6 +176,7 @@ bun install
 ```
 
 ### Error: "NEXT_PUBLIC_CONVEX_URL not set"
+
 ```bash
 # Ensure .env.local is populated
 cat .env.local | grep NEXT_PUBLIC_CONVEX_URL
@@ -182,9 +187,11 @@ npx convex dev
 ```
 
 ### Error: "No address provided to ConvexReactClient"
+
 Same as above — missing NEXT_PUBLIC_CONVEX_URL in .env.local
 
 ### Build failing on deployment
+
 ```bash
 # Ensure all dependencies are installed
 bun install
@@ -199,26 +206,31 @@ npm run build
 ## What's Shipped (Phase 1 MVP)
 
 ✅ **Authentication**
+
 - Passwordless signup/login with Convex Auth
 - Session management
 - Protected routes
 
 ✅ **Dashboard**
+
 - Client overview
 - Location management
 - Submission tracking
 
 ✅ **Location Management**
+
 - Create/edit/delete locations
 - Store NAP (Name, Address, Phone)
 - Track business details (website, hours, category)
 
 ✅ **Submissions**
+
 - Track which directories each location was submitted to
 - Status tracking (pending, submitted, verified, failed)
 - Audit logs
 
 ✅ **Directory API Integrations**
+
 - Google Business Profile (skeleton, ready for API key)
 - BrightLocal (skeleton, ready for API key)
 - Foundation for Yelp, Facebook, LinkedIn (Phase 2)
@@ -241,5 +253,5 @@ npm run build
 
 ---
 
-*Citation Manager Phase 1 MVP — Ready for Production Launch*  
-*Updated: 2026-03-24 by Rusty P. Shackelford*
+_Citation Manager Phase 1 MVP — Ready for Production Launch_  
+_Updated: 2026-03-24 by Rusty P. Shackelford_

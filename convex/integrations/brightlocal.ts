@@ -47,7 +47,7 @@ const getBrightLocalApiKey = (): string => {
   if (!key) {
     throw new Error(
       "BRIGHTLOCAL_API_KEY environment variable not set. " +
-      "Get your API key from https://www.brightlocal.com/account/api"
+        "Get your API key from https://www.brightlocal.com/account/api",
     );
   }
   return key;
@@ -75,7 +75,8 @@ export const mapLocationToBrightLocalFormat = (locationData: {
     country_code: "US",
     phone: locationData.phone,
     website: locationData.website,
-    business_hours: locationData.businessHours as BrightLocalLocation["business_hours"],
+    business_hours:
+      locationData.businessHours as BrightLocalLocation["business_hours"],
   };
 };
 
@@ -94,26 +95,29 @@ export const submitBrightLocalCampaign = async (
     state: string;
     zipCode: string;
     businessHours?: Record<string, string>;
-  }
+  },
 ): Promise<{ campaignId: number; success: boolean }> => {
   const apiKey = getBrightLocalApiKey();
   const formattedData = mapLocationToBrightLocalFormat(locationData);
 
-  const response = await fetch("https://api.brightlocal.com/rest/v4/campaigns/create", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
+  const response = await fetch(
+    "https://api.brightlocal.com/rest/v4/campaigns/create",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...formattedData,
+        account_id: accountId,
+        // Submit to all available directories
+        submission_method: "all",
+        // Auto-publish once created (ready for submission)
+        publish_immediately: false,
+      }),
     },
-    body: JSON.stringify({
-      ...formattedData,
-      account_id: accountId,
-      // Submit to all available directories
-      submission_method: "all",
-      // Auto-publish once created (ready for submission)
-      publish_immediately: false,
-    }),
-  });
+  );
 
   if (!response.ok) {
     const error = await response.text();
@@ -123,7 +127,9 @@ export const submitBrightLocalCampaign = async (
   const result = (await response.json()) as BrightLocalCampaignResponse;
 
   if (!result.success || !result.campaign_id) {
-    throw new Error(`BrightLocal API error: ${result.message || "Unknown error"}`);
+    throw new Error(
+      `BrightLocal API error: ${result.message || "Unknown error"}`,
+    );
   }
 
   return { campaignId: result.campaign_id, success: true };
@@ -134,7 +140,7 @@ export const submitBrightLocalCampaign = async (
  * Call this after campaign is created and verified
  */
 export const publishBrightLocalCampaign = async (
-  campaignId: number
+  campaignId: number,
 ): Promise<{ success: boolean; publishedAt: number }> => {
   const apiKey = getBrightLocalApiKey();
 
@@ -143,10 +149,10 @@ export const publishBrightLocalCampaign = async (
     {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${apiKey}`,
+        Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
-    }
+    },
   );
 
   if (!response.ok) {
@@ -166,7 +172,7 @@ export const publishBrightLocalCampaign = async (
  * Get campaign status (check submission progress)
  */
 export const getBrightLocalCampaignStatus = async (
-  campaignId: number
+  campaignId: number,
 ): Promise<{
   status: "created" | "published" | "in_progress" | "completed" | "failed";
   directoriesSubmitted: number;
@@ -181,9 +187,9 @@ export const getBrightLocalCampaignStatus = async (
     {
       method: "GET",
       headers: {
-        "Authorization": `Bearer ${apiKey}`,
+        Authorization: `Bearer ${apiKey}`,
       },
-    }
+    },
   );
 
   if (!response.ok) {
@@ -221,15 +227,17 @@ export const getBrightLocalCampaignStatus = async (
  */
 export const getBrightLocalDirectorySubmissions = async (
   campaignId: number,
-  limit: number = 50
-): Promise<Array<{
-  directoryName: string;
-  directoryId: number;
-  status: "submitted" | "verified" | "failed" | "pending";
-  submittedAt?: number;
-  verifiedAt?: number;
-  url?: string;
-}>> => {
+  limit: number = 50,
+): Promise<
+  Array<{
+    directoryName: string;
+    directoryId: number;
+    status: "submitted" | "verified" | "failed" | "pending";
+    submittedAt?: number;
+    verifiedAt?: number;
+    url?: string;
+  }>
+> => {
   const apiKey = getBrightLocalApiKey();
 
   const response = await fetch(
@@ -237,9 +245,9 @@ export const getBrightLocalDirectorySubmissions = async (
     {
       method: "GET",
       headers: {
-        "Authorization": `Bearer ${apiKey}`,
+        Authorization: `Bearer ${apiKey}`,
       },
-    }
+    },
   );
 
   if (!response.ok) {
@@ -281,7 +289,7 @@ export const BrightLocalSubmissionSchema = {
     v.literal("published"),
     v.literal("in_progress"),
     v.literal("completed"),
-    v.literal("failed")
+    v.literal("failed"),
   ),
   directoriesSubmitted: v.number(),
   directoriesVerified: v.number(),

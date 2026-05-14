@@ -41,9 +41,7 @@ export default function AuthPage() {
       // Redirect to dashboard after successful auth
       router.push("/dashboard");
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Authentication failed"
-      );
+      setError(err instanceof Error ? err.message : "Authentication failed");
     } finally {
       setLoading(false);
     }

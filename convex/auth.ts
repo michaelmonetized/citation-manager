@@ -4,7 +4,7 @@ import { QueryCtx } from "./_generated/server";
 /**
  * Helper to get current user from auth context
  * For use in mutations/queries
- * 
+ *
  * In development mode (when auth.getUserIdentity returns null),
  * returns the test user without creating
  */

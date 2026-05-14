@@ -42,4 +42,3 @@ This document tracks Phase 2B execution: manual testing + frontend integration f
 - [ ] Staging smoke test (est. 15 min)
 
 **ETA for completion:** ~3 hours from start
-

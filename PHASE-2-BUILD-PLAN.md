@@ -3,6 +3,7 @@
 ## Current State (Phase 1: 70% MVP)
 
 ### What Works Today ✅
+
 - **3 free directory APIs fully operational:**
   - Google Business Profile (500K submissions possible)
   - Yelp (300K submissions possible)
@@ -12,6 +13,7 @@
 - **Database schema fully supports all Phase 2 APIs** (no changes needed)
 
 ### Technology Stack
+
 - Next.js 16 + React 19 (frontend)
 - Convex (backend, multi-tenant)
 - Vercel (hosting)
@@ -22,9 +24,11 @@
 ## Phase 2: Three Parallel Workstreams
 
 ### 🟢 Workstream 1: Free Directory APIs (2 weeks)
+
 **Owner:** [Assign senior frontend/backend engineer]
 
 #### Deliverables
+
 1. **Apple Maps Integration**
    - Effort: LOW (1-2 days)
    - Files to create: 2 (mutation + endpoint)
@@ -44,6 +48,7 @@
    - Foundation for Phase 3 form-based directories
 
 #### Success Criteria
+
 - [ ] Apple Maps: submit + verify endpoints working
 - [ ] Bing Places: OAuth flow + API integration complete
 - [ ] Playwright framework: test form submission (mock directory)
@@ -51,14 +56,17 @@
 - [ ] Unit tests for each integration
 
 #### Blockers
+
 - None (all APIs are public/free)
 
 ---
 
 ### 🔴 Workstream 2: High-ROI Aggregators (3 weeks)
+
 **Owner:** [Assign lead backend engineer]
 
 #### Deliverables
+
 1. **BrightLocal Integration** ⚠️ CRITICAL PATH
    - Effort: MEDIUM-HIGH (3-4 days)
    - Files to create/complete: 2 (finish stubbed mutation, create endpoint)
@@ -81,6 +89,7 @@
    - Not on critical path; can defer to Phase 2.5
 
 #### Success Criteria
+
 - [ ] BrightLocal: campaign creation + status polling working
 - [ ] Yext: knowledge API integration complete
 - [ ] Both support real-time verification
@@ -89,6 +98,7 @@
 - [ ] Integration tests for campaign polling
 
 #### Blockers
+
 - ⚠️ **BrightLocal API key not yet obtained** — **BLOCKING FACTOR #1**
   - Unblock: Contact account manager, request API key
   - Timeline: ~1 day to receive
@@ -103,9 +113,11 @@
 ---
 
 ### 🟡 Workstream 3: Production Infrastructure (2 weeks, can start Week 1)
+
 **Owner:** [Assign DevOps/infrastructure engineer]
 
 #### Deliverables
+
 1. **Rate Limiting Module**
    - Effort: MEDIUM (2-3 days)
    - Implementation: Token bucket algorithm
@@ -128,6 +140,7 @@
    - **Nice-to-have for Phase 2, required for Phase 3**
 
 #### Success Criteria
+
 - [ ] Rate limiter: tested with burst submissions (no API bans)
 - [ ] Verification poller: running cron job, status updates visible in dashboard
 - [ ] NAP validation: working in submission form, shows errors before API call
@@ -135,6 +148,7 @@
 - [ ] Monitoring: Alerts on rate limit blocks, API timeouts
 
 #### Blockers
+
 - None (all infrastructure-only)
 
 ---
@@ -164,6 +178,7 @@ Week 6:     [Testing, docs, launch prep ————]
 ## File Changes Required
 
 ### Files to Create (New)
+
 ```
 convex/
 ├── submitAppleMaps.ts              # Apple Maps mutation
@@ -187,6 +202,7 @@ tests/
 ```
 
 ### Files to Update (Existing)
+
 ```
 convex/
 ├── submitBrightLocal.ts            # FILL IN (currently stubbed with TODO comment)
@@ -200,6 +216,7 @@ app/
 ```
 
 ### No Breaking Changes ✅
+
 - Current schema supports all Phase 2 integrations
 - API endpoint pattern established (no refactoring needed)
 - Error handling consistent (just copy pattern)
@@ -209,6 +226,7 @@ app/
 ## Critical Dependencies & Blockers
 
 ### Blocking Issue #1: BrightLocal API Key ⚠️ **ACTION REQUIRED TODAY**
+
 - **Status:** Not obtained yet
 - **Owner:** [Michael / Operations]
 - **Action:** Contact BrightLocal account manager, request API key
@@ -218,6 +236,7 @@ app/
 - **Fallback:** Implement free APIs first (Phase 2A) while waiting
 
 ### Blocking Issue #2: LinkedIn App Approval ⚠️ **ACTION REQUIRED THIS WEEK**
+
 - **Status:** Not applied yet (approval takes 1-2 weeks)
 - **Owner:** [Michael / Ops]
 - **Action:** Apply for LinkedIn developer app approval now
@@ -226,6 +245,7 @@ app/
 - **Fallback:** Manual workflow (guide users to claim on LinkedIn.com)
 
 ### Blocking Issue #3: Microsoft Azure App (Non-blocking, but required for Bing)
+
 - **Status:** Not set up yet
 - **Owner:** [DevOps]
 - **Action:** Create Azure app, get Client ID + Secret
@@ -255,7 +275,7 @@ spawn_agent({
   ],
   dependencies: ["Microsoft Azure app ready"],
   success_criteria: ["All endpoints tested", "Integration tests pass"],
-})
+});
 
 // Phase 2B: Critical path
 spawn_agent({
@@ -273,7 +293,7 @@ spawn_agent({
   dependencies: ["BrightLocal API key obtained"],
   success_criteria: ["458 dirs submitted in 1 call", "Polling works"],
   blocking: true,
-})
+});
 
 // Phase 2C: Infrastructure (parallel)
 spawn_agent({
@@ -286,21 +306,21 @@ spawn_agent({
     "convex/napValidation.ts",
   ],
   dependencies: ["None"],
-  success_criteria: ["Rate limiter: no API bans", "Poller: auto-verification works"],
-})
+  success_criteria: [
+    "Rate limiter: no API bans",
+    "Poller: auto-verification works",
+  ],
+});
 
 // Testing & QA
 spawn_agent({
   role: "qa-engineer",
   task: "Full Phase 2 QA + load testing",
   duration: "1 week",
-  deliverables: [
-    "tests/ (comprehensive test suite)",
-    "load-test-report.md",
-  ],
+  deliverables: ["tests/ (comprehensive test suite)", "load-test-report.md"],
   dependencies: ["All Phase 2A + 2B implementations done"],
   success_criteria: ["0 API bans under load", "All integrations tested"],
-})
+});
 ```
 
 ---
@@ -308,6 +328,7 @@ spawn_agent({
 ## Success Metrics
 
 ### Phase 2A Completion (Week 2)
+
 - [ ] Apple Maps: 2+ locations submitted & verified
 - [ ] Bing Places: 2+ locations submitted & verified
 - [ ] Playwright framework: test form submission working
@@ -315,6 +336,7 @@ spawn_agent({
 - [ ] Dashboard: shows all 5 directory statuses (Google, Yelp, Facebook, Apple, Bing)
 
 ### Phase 2B Completion (Week 5)
+
 - [ ] BrightLocal: 458 directories submitted in 1 API call
 - [ ] Yext: 400+ directories submitted in 1 API call
 - [ ] Verification polling: automated, updates every 6 hours
@@ -322,6 +344,7 @@ spawn_agent({
 - [ ] Dashboard: shows multi-directory aggregation
 
 ### Phase 2 Launch (Week 7)
+
 - [ ] Rate limiter: tested with 1000 submissions/day (no API bans)
 - [ ] NAP validation: prevents invalid submissions
 - [ ] Load test: passes at 2000 submissions/day
@@ -332,21 +355,22 @@ spawn_agent({
 
 ## Effort Breakdown (in days)
 
-| Task | Effort | Owner |
-|------|--------|-------|
-| Apple Maps (submit + verify) | 2 days | Backend |
-| Bing Places (submit + verify + OAuth) | 3 days | Backend |
-| Playwright framework | 2 days | Backend |
-| BrightLocal (complete implementation) | 4 days | Backend |
-| Yext (submit + verify) | 3 days | Backend |
-| Rate limiter | 2 days | DevOps |
-| Verification poller | 1.5 days | Backend |
-| NAP validation | 3 days | Backend |
-| Tests + QA | 5 days | QA |
-| Docs + integration guide | 2 days | Tech Writer |
-| **Total** | **28 days** | **6 weeks (1 team)** |
+| Task                                  | Effort      | Owner                |
+| ------------------------------------- | ----------- | -------------------- |
+| Apple Maps (submit + verify)          | 2 days      | Backend              |
+| Bing Places (submit + verify + OAuth) | 3 days      | Backend              |
+| Playwright framework                  | 2 days      | Backend              |
+| BrightLocal (complete implementation) | 4 days      | Backend              |
+| Yext (submit + verify)                | 3 days      | Backend              |
+| Rate limiter                          | 2 days      | DevOps               |
+| Verification poller                   | 1.5 days    | Backend              |
+| NAP validation                        | 3 days      | Backend              |
+| Tests + QA                            | 5 days      | QA                   |
+| Docs + integration guide              | 2 days      | Tech Writer          |
+| **Total**                             | **28 days** | **6 weeks (1 team)** |
 
 If running in parallel with 3 engineers:
+
 - **Phase 2A (Backend):** 7 days = ~1 week
 - **Phase 2B (Backend):** 7 days = ~1 week
 - **Infrastructure (DevOps):** 6 days = ~1 week (parallel)
@@ -358,6 +382,7 @@ If running in parallel with 3 engineers:
 ## Decision Gate Checklist
 
 Before launching Phase 2 build:
+
 - [ ] BrightLocal API key obtained (unblock Phase 2B)
 - [ ] Microsoft Azure app created (for Bing OAuth)
 - [ ] LinkedIn app approval applied (don't wait, do in parallel)
@@ -370,13 +395,13 @@ Before launching Phase 2 build:
 
 ## Red Flags to Watch
 
-| Flag | Action |
-|------|--------|
+| Flag                                          | Action                                                                    |
+| --------------------------------------------- | ------------------------------------------------------------------------- |
 | BrightLocal API key not received after 3 days | Escalate to account manager, prepare fallback (individual directory APIs) |
-| Rate limit blocks in staging | Reduce burst test load, increase rate limiter token bucket |
-| LinkedIn approval denied | Use manual workflow, defer to Phase 2.5 |
-| Playwright form breaks on directory update | Set up automated testing, create rapid response plan |
-| API errors on production launch | Fallback to "pending verification" state, manual admin review |
+| Rate limit blocks in staging                  | Reduce burst test load, increase rate limiter token bucket                |
+| LinkedIn approval denied                      | Use manual workflow, defer to Phase 2.5                                   |
+| Playwright form breaks on directory update    | Set up automated testing, create rapid response plan                      |
+| API errors on production launch               | Fallback to "pending verification" state, manual admin review             |
 
 ---
 

@@ -54,6 +54,7 @@ verifications
 ## API Endpoints (Convex Queries & Mutations)
 
 ### Queries
+
 - `listLocations()` — Get all locations for authenticated user
 - `getLocation(locationId)` — Get single location with auth check
 - `listDirectories(category?, onlyFree?, limit?)` — Browse directories with filtering
@@ -61,6 +62,7 @@ verifications
 - `listTopDirectories(limit?)` — Top-ranked directories (default 50)
 
 ### Mutations
+
 - `createLocation(businessName, address, phone, website?, city, state, zipCode)` — Add location
 - `deleteLocation(locationId)` — Delete location
 - (Future) `bulkSubmit(locationId, directoryIds[])` — Submit to multiple directories

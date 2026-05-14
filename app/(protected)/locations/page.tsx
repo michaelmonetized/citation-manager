@@ -39,20 +39,28 @@ export default function LocationsPage() {
         state,
         zipCode,
       });
-      setSubmitStatus("✅ Location saved! Add another or submit to directories.");
+      setSubmitStatus(
+        "✅ Location saved! Add another or submit to directories.",
+      );
       setName("");
       setAddress("");
       setPhone("");
       setWebsite("");
     } catch (err) {
-      setSubmitStatus(`❌ Error: ${err instanceof Error ? err.message : "Failed to save"}`);
+      setSubmitStatus(
+        `❌ Error: ${err instanceof Error ? err.message : "Failed to save"}`,
+      );
     } finally {
       setLoading(false);
     }
   };
 
   const handleDeleteLocation = async (locationId: Id<"locations">) => {
-    if (!confirm("Are you sure you want to delete this location? This action cannot be undone.")) {
+    if (
+      !confirm(
+        "Are you sure you want to delete this location? This action cannot be undone.",
+      )
+    ) {
       return;
     }
 
@@ -62,7 +70,9 @@ export default function LocationsPage() {
     try {
       await deleteLocation({ locationId });
     } catch (err) {
-      setDeleteError(err instanceof Error ? err.message : "Failed to delete location");
+      setDeleteError(
+        err instanceof Error ? err.message : "Failed to delete location",
+      );
       setDeleteLoading(null);
     }
   };
@@ -71,7 +81,9 @@ export default function LocationsPage() {
     <div className="min-h-screen bg-slate-50">
       <nav className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-slate-900">Citation Manager</h1>
+          <h1 className="text-2xl font-bold text-slate-900">
+            Citation Manager
+          </h1>
           <Link href="/dashboard" className="text-blue-600 hover:text-blue-700">
             ← Dashboard
           </Link>
@@ -212,8 +224,13 @@ export default function LocationsPage() {
             )}
             <div className="space-y-4">
               {locations.map((loc: any) => (
-                <div key={loc._id} className="border border-slate-200 rounded-lg p-4">
-                  <div className="font-semibold text-slate-900">{loc.businessName}</div>
+                <div
+                  key={loc._id}
+                  className="border border-slate-200 rounded-lg p-4"
+                >
+                  <div className="font-semibold text-slate-900">
+                    {loc.businessName}
+                  </div>
                   <div className="text-sm text-slate-600 mt-2">
                     {loc.address}, {loc.city}, {loc.state} {loc.zipCode}
                   </div>

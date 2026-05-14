@@ -17,11 +17,12 @@ export default function DashboardPage() {
     const checkAuth = async () => {
       try {
         // Phase 2B: Allow bypass auth for testing
-        const bypassAuth = process.env.NEXT_PUBLIC_PHASE2B_BYPASS_AUTH === "true";
-        
+        const bypassAuth =
+          process.env.NEXT_PUBLIC_PHASE2B_BYPASS_AUTH === "true";
+
         const token = localStorage.getItem("convex_auth_token");
         const userEmail = localStorage.getItem("convex_user_email");
-        
+
         if (!token || !userEmail) {
           if (bypassAuth) {
             // Auto-login as test user in Phase 2B
@@ -45,7 +46,7 @@ export default function DashboardPage() {
         setIsLoading(false);
       }
     };
-    
+
     checkAuth();
   }, [router]);
 
@@ -66,9 +67,7 @@ export default function DashboardPage() {
               <h1 className="text-2xl font-bold">Citation Manager</h1>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-gray-600">
-                {user.email}
-              </span>
+              <span className="text-gray-600">{user.email}</span>
             </div>
           </div>
         </div>
@@ -76,7 +75,10 @@ export default function DashboardPage() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <Link href="/locations" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition">
+          <Link
+            href="/locations"
+            className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition"
+          >
             <h2 className="text-xl font-semibold mb-4">📍 Manage Locations</h2>
             <p className="text-gray-600 mb-4">
               Add and manage your business locations.
@@ -86,8 +88,13 @@ export default function DashboardPage() {
             </span>
           </Link>
 
-          <Link href="/submit" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition">
-            <h2 className="text-xl font-semibold mb-4">📤 Submit to Directories</h2>
+          <Link
+            href="/submit"
+            className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition"
+          >
+            <h2 className="text-xl font-semibold mb-4">
+              📤 Submit to Directories
+            </h2>
             <p className="text-gray-600 mb-4">
               Submit your business to 100+ directories instantly.
             </p>
@@ -96,8 +103,13 @@ export default function DashboardPage() {
             </span>
           </Link>
 
-          <Link href="/directories" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition">
-            <h2 className="text-xl font-semibold mb-4">📚 Browse Directories</h2>
+          <Link
+            href="/directories"
+            className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition"
+          >
+            <h2 className="text-xl font-semibold mb-4">
+              📚 Browse Directories
+            </h2>
             <p className="text-gray-600 mb-4">
               Explore 100+ business directories for your industry.
             </p>
@@ -106,7 +118,10 @@ export default function DashboardPage() {
             </span>
           </Link>
 
-          <Link href="/submissions" className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition">
+          <Link
+            href="/submissions"
+            className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition"
+          >
             <h2 className="text-xl font-semibold mb-4">✅ Submission Status</h2>
             <p className="text-gray-600 mb-4">
               Track submissions and verification status in real-time.

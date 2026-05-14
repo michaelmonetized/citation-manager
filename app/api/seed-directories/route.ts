@@ -10,7 +10,7 @@ import { NextResponse } from "next/server";
 export async function POST() {
   try {
     const client = new ConvexHttpClient(
-      process.env.NEXT_PUBLIC_CONVEX_URL || ""
+      process.env.NEXT_PUBLIC_CONVEX_URL || "",
     );
 
     const result = await client.mutation(api.directories.seedFromFile, {
@@ -25,7 +25,7 @@ export async function POST() {
         success: false,
         error: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

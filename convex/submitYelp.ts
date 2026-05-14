@@ -49,7 +49,7 @@ export const submitYelp = mutation({
         country: "US",
         website: location.website,
       },
-      yelpApiKey
+      yelpApiKey,
     );
 
     if (!result.success) {
@@ -92,7 +92,8 @@ export const submitYelp = mutation({
       status: "submitted",
       submissionId,
       yelpId: result.yelpId,
-      message: "Successfully found Yelp listing. Claim it via Yelp Business Manager or contact Yelp Support.",
+      message:
+        "Successfully found Yelp listing. Claim it via Yelp Business Manager or contact Yelp Support.",
       claimUrl: `https://business.yelp.com/claim/${result.yelpId}`,
     };
   },

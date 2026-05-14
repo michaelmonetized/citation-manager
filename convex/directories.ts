@@ -15,16 +15,16 @@ export const listDirectories = query({
       category?: string;
       onlyFree?: boolean;
       limit?: number;
-    }
+    },
   ) => {
     const allDirs = await ctx.db.query("directories").collect();
 
     let filtered = allDirs;
-    
+
     if (args.category) {
       filtered = filtered.filter((d) => d.category === args.category);
     }
-    
+
     if (args.onlyFree) {
       filtered = filtered.filter((d) => d.isFree);
     }
@@ -49,14 +49,16 @@ export const listTopDirectories = query({
   handler: async (ctx: QueryCtx, args: { limit?: number }) => {
     const limit = args.limit ?? 50;
     const allDirs = await ctx.db.query("directories").collect();
-    return allDirs.sort((a, b) => (a.rank ?? 999) - (b.rank ?? 999)).slice(0, limit);
+    return allDirs
+      .sort((a, b) => (a.rank ?? 999) - (b.rank ?? 999))
+      .slice(0, limit);
   },
 });
 
 /**
  * Bulk seed directories from JSON array
  * Used to load directories.json into Convex during initialization
- * 
+ *
  * @param directories Array of directory objects from data/directories.json
  * @returns Count of directories inserted
  */
@@ -72,14 +74,14 @@ export const seedDirectories = mutation({
           v.literal("form"),
           v.literal("manual"),
           v.literal("email"),
-          v.literal("phone")
+          v.literal("phone"),
         ),
         apiAvailable: v.boolean(),
         apiDocsUrl: v.optional(v.string()),
         category: v.string(),
         isFree: v.boolean(),
         estimatedMonthlyViews: v.optional(v.number()),
-      })
+      }),
     ),
     clearExisting: v.optional(v.boolean()),
   },
@@ -98,7 +100,7 @@ export const seedDirectories = mutation({
         estimatedMonthlyViews?: number;
       }>;
       clearExisting?: boolean;
-    }
+    },
   ) => {
     if (args.clearExisting) {
       const existing = await ctx.db.query("directories").collect();
@@ -133,10 +135,7 @@ export const seedDirectories = mutation({
  */
 export const seedFromFile = mutation({
   args: { clearExisting: v.optional(v.boolean()) },
-  handler: async (
-    ctx: MutationCtx,
-    args: { clearExisting?: boolean }
-  ) => {
+  handler: async (ctx: MutationCtx, args: { clearExisting?: boolean }) => {
     // Clear existing if requested
     if (args.clearExisting) {
       const existing = await ctx.db.query("directories").collect();

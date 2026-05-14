@@ -11,6 +11,7 @@
 **What works:** Everything except the final API integration step.
 
 **What's needed:** Choose between:
+
 1. **Option A:** Ship Google Maps Phase 1 MVP NOW (no BrightLocal credentials needed)
 2. **Option B:** Wait for BrightLocal credentials, then add both
 
@@ -21,6 +22,7 @@
 ## What's Shipped ✅
 
 ### Authentication & User Management
+
 - [x] Convex Auth signup/login (email + password)
 - [x] Auth page (`/auth`) fully functional
 - [x] Protected routes (dashboard, locations, directories, submissions)
@@ -28,6 +30,7 @@
 - [x] Session persistence working
 
 ### Business Location Management
+
 - [x] Create locations (businessName, address, phone, website, city, state, zipCode)
 - [x] List locations (`/locations`)
 - [x] Location form validation (all fields required except website)
@@ -35,6 +38,7 @@
 - [x] User-scoped queries (only see your own locations)
 
 ### Directory Management
+
 - [x] 958-directory registry seeded (`directories.json` → Convex DB)
 - [x] Directory list with ranking + metadata
 - [x] Top 50 directories browsable (`/directories`)
@@ -42,6 +46,7 @@
 - [x] Search-friendly directory names indexed
 
 ### Submission System
+
 - [x] Bulk submission UI (`/submit`)
 - [x] Location + directory multi-select form
 - [x] Submission tracking database schema (with status states)
@@ -50,6 +55,7 @@
 - [x] User-scoped submission queries
 
 ### Infrastructure
+
 - [x] TypeScript strict mode (zero implicit `any`)
 - [x] Error boundaries on all protected pages
 - [x] Convex schema + indexes optimized
@@ -67,12 +73,14 @@
 **What to build:** When user clicks "Submit", actually call Google Business Profile API.
 
 **Scope:**
+
 1. Get Google API key from Google Cloud Console (free tier available)
 2. Call Google Business Profile API for each location
 3. Store submission status in database
 4. Show verification link in UI
 
 **Files to modify:**
+
 - `convex/submitGoogle.ts` (currently a stub, 15 lines → 40 lines)
 - `convex/submissions.ts` (add Google API call logic)
 - `.env.local` (add `GOOGLE_BUSINESS_PROFILE_API_KEY`)
@@ -82,6 +90,7 @@
 **Effort:** Low
 
 **Why this first:**
+
 - Unblocks shipping without waiting for BrightLocal credentials
 - Google is the #1 most important directory (affects local SEO immediately)
 - Can add BrightLocal later (Phase 2)
@@ -98,6 +107,7 @@
 **Current status:** Code skeleton ready, just needs API calls
 
 **Why wait?**
+
 - BrightLocal aggregates 100+ directories automatically
 - "One API call, submit to 100+ directories"
 - Higher ROI per API integration
@@ -107,13 +117,13 @@
 
 ## Decision Matrix
 
-| | Option A (Google Maps) | Option B (BrightLocal) |
-|---|---|---|
-| **Ship today?** | ✅ YES | ❌ NO (waiting for creds) |
-| **Revenue impact** | High (most important directory) | Very High (100+ directories) |
-| **Time to ship** | 1-2 hours | 1-2 hours (after creds) |
-| **Risk** | Low (well-documented API) | Low (straightforward API) |
-| **Next steps** | Add BrightLocal in Phase 2 | Would still need Google + others in Phase 2 |
+|                    | Option A (Google Maps)          | Option B (BrightLocal)                      |
+| ------------------ | ------------------------------- | ------------------------------------------- |
+| **Ship today?**    | ✅ YES                          | ❌ NO (waiting for creds)                   |
+| **Revenue impact** | High (most important directory) | Very High (100+ directories)                |
+| **Time to ship**   | 1-2 hours                       | 1-2 hours (after creds)                     |
+| **Risk**           | Low (well-documented API)       | Low (straightforward API)                   |
+| **Next steps**     | Add BrightLocal in Phase 2      | Would still need Google + others in Phase 2 |
 
 ---
 
@@ -168,6 +178,7 @@
 None. This is ready to ship the moment you choose an option.
 
 **External dependencies:**
+
 - Google Business Profile API key (if Option A)
 - BrightLocal API credentials (if Option B)
 - Vercel linking (optional, for deployment)
@@ -197,5 +208,5 @@ None. This is ready to ship the moment you choose an option.
 
 ---
 
-*Created by Rusty P. Shackelford*  
-*Ready to ship. Awaiting decision.*
+_Created by Rusty P. Shackelford_  
+_Ready to ship. Awaiting decision._

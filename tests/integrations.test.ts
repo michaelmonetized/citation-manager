@@ -44,7 +44,10 @@ describe("Google Business Profile Integration", () => {
     delete process.env.GOOGLE_ACCESS_TOKEN;
 
     try {
-      const result = await submitGoogleBusiness("test-account-id", testLocation);
+      const result = await submitGoogleBusiness(
+        "test-account-id",
+        testLocation,
+      );
       expect(result.success).toBe(false);
       expect(result.error).toBeDefined();
     } finally {
@@ -58,7 +61,7 @@ describe("Google Business Profile Integration", () => {
   it("handles verification errors gracefully", async () => {
     const result = await verifyGoogleBusinessSubmission(
       "invalid-account",
-      "invalid-location-id"
+      "invalid-location-id",
     );
     expect(result.verified).toBe(false);
     expect(result.error).toBeDefined();
@@ -82,7 +85,7 @@ describe("Yelp Business Integration", () => {
     try {
       const result = await submitYelpBusiness(
         mapLocationToYelpFormat(testLocation),
-        ""
+        "",
       );
       expect(result.success).toBe(false);
       expect(result.error).toBeDefined();
@@ -98,7 +101,7 @@ describe("Yelp Business Integration", () => {
       await searchYelpBusiness(
         testLocation.businessName,
         testLocation.city,
-        "invalid-key"
+        "invalid-key",
       );
       // Should return null or throw, either is valid
     } catch (error) {
@@ -131,7 +134,7 @@ describe("Facebook Graph API Integration", () => {
       const result = await submitFacebookPage(
         "test-page-id",
         mapLocationToFacebookFormat(testLocation),
-        ""
+        "",
       );
       expect(result.success).toBe(false);
       expect(result.error).toBeDefined();
@@ -147,7 +150,7 @@ describe("Facebook Graph API Integration", () => {
       await searchFacebookPage(
         testLocation.businessName,
         testLocation.city,
-        "invalid-token"
+        "invalid-token",
       );
       // Should return null or throw
     } catch (error) {
@@ -174,14 +177,14 @@ describe("Integration Error Handling", () => {
     // and returned as user-facing error messages
     const googleResult = await submitGoogleBusiness(
       "test-account",
-      testLocation
+      testLocation,
     );
     if (!googleResult.success && googleResult.error) {
       const error = googleResult.error.toLowerCase();
       expect(
         error.includes("configured") ||
           error.includes("failed") ||
-          error.includes("rate")
+          error.includes("rate"),
       ).toBe(true);
     }
   });
@@ -189,7 +192,7 @@ describe("Integration Error Handling", () => {
   it("all APIs provide user-friendly error messages", async () => {
     const yelpResult = await submitYelpBusiness(
       mapLocationToYelpFormat(testLocation),
-      ""
+      "",
     );
     if (!yelpResult.success && yelpResult.error) {
       // Error should be understandable to non-technical users
