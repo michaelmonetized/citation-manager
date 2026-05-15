@@ -11,9 +11,7 @@ const directoriesPath = path.join(__dirname, "../data/directories.json");
 // Load directories
 const directories = JSON.parse(fs.readFileSync(directoriesPath, "utf-8"));
 
-console.log(
-  `📊 Loaded ${directories.length} directories from data/directories.json`,
-);
+console.log(`📊 Loaded ${directories.length} directories from data/directories.json`);
 console.log(`🌱 Seeding into Convex...\n`);
 
 // Create a local client for testing
@@ -21,8 +19,7 @@ console.log(`🌱 Seeding into Convex...\n`);
 // For now, we'll call it directly from Convex CLI
 
 // Since convex run doesn't support complex args, we'll use the API directly
-const convexUrl =
-  process.env.CONVEX_URL || "https://citation-manager.convex.cloud";
+const convexUrl = process.env.CONVEX_URL || "https://citation-manager.convex.cloud";
 const deployKey = process.env.CONVEX_DEPLOY_KEY;
 
 if (!deployKey) {
@@ -63,9 +60,7 @@ if (!response.ok) {
 const result = await response.json();
 console.log(`\n✅ Seed completed!`);
 console.log(`   Inserted: ${result.inserted || result?.data?.inserted || "?"}`);
-console.log(
-  `   Total: ${result.total || result?.data?.total || directories.length}`,
-);
+console.log(`   Total: ${result.total || result?.data?.total || directories.length}`);
 
 if ((result.inserted || result?.data?.inserted) === directories.length) {
   console.log(`\n🎉 SUCCESS: All ${directories.length} directories seeded!`);

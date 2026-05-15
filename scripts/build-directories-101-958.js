@@ -438,8 +438,7 @@ const newDirectories = [
     url: "https://www.michigan.gov/sos",
     submissionMethod: "form",
     apiAvailable: true,
-    apiDocsUrl:
-      "https://www.michigan.gov/sos/0,4670,7-127-1633_1635---,00.html",
+    apiDocsUrl: "https://www.michigan.gov/sos/0,4670,7-127-1633_1635---,00.html",
     category: "business_registry",
     isFree: true,
     estimatedMonthlyViews: 40000,
@@ -899,9 +898,7 @@ for (let i = 0; i < allDirectories.length; i++) {
   // Check required fields
   for (const field of requiredFields) {
     if (!(field in dir)) {
-      console.error(
-        `❌ Entry ${i + 1} (rank ${dir.rank}) missing field: ${field}`,
-      );
+      console.error(`❌ Entry ${i + 1} (rank ${dir.rank}) missing field: ${field}`);
       isValid = false;
     }
   }
@@ -931,9 +928,5 @@ console.log(`✅ All ${allDirectories.length} entries validated successfully`);
 
 // Write to file
 fs.writeFileSync(directoriesPath, JSON.stringify(allDirectories, null, 2));
-console.log(
-  `\n✅ Saved ${allDirectories.length} directories to data/directories.json`,
-);
-console.log(
-  `📈 Progress: Entries 1-180 complete. Entries 181-958 still needed.`,
-);
+console.log(`\n✅ Saved ${allDirectories.length} directories to data/directories.json`);
+console.log(`📈 Progress: Entries 1-180 complete. Entries 181-958 still needed.`);

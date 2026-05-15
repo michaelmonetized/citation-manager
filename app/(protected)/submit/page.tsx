@@ -16,9 +16,7 @@ export default function SubmitPage() {
   const [selectedLocationId, setSelectedLocationId] = useState<string>("");
   const [selectedDirs, setSelectedDirs] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState<"idle" | "submitting" | "success">(
-    "idle",
-  );
+  const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [submissionCount, setSubmissionCount] = useState(0);
@@ -40,9 +38,7 @@ export default function SubmitPage() {
   };
 
   const filteredDirectories =
-    directories?.filter((dir) =>
-      dir.name.toLowerCase().includes(searchTerm.toLowerCase()),
-    ) || [];
+    directories?.filter((dir) => dir.name.toLowerCase().includes(searchTerm.toLowerCase())) || [];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,10 +91,7 @@ export default function SubmitPage() {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h1 className="text-3xl font-bold mb-8">Submit to Directories</h1>
 
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white rounded-lg shadow p-8"
-        >
+        <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-8">
           {/* Location Select */}
           <div className="mb-8">
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -147,10 +140,7 @@ export default function SubmitPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto p-4 border rounded-md bg-gray-50">
               {filteredDirectories && filteredDirectories.length > 0 ? (
                 filteredDirectories.map((dir: any) => (
-                  <label
-                    key={dir._id}
-                    className="flex items-center gap-2 cursor-pointer"
-                  >
+                  <label key={dir._id} className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={selectedDirs.has(dir._id)}
@@ -159,16 +149,12 @@ export default function SubmitPage() {
                     />
                     <span className="text-sm">
                       {dir.name}
-                      <span className="text-gray-500 text-xs ml-1">
-                        (#{dir.rank})
-                      </span>
+                      <span className="text-gray-500 text-xs ml-1">(#{dir.rank})</span>
                     </span>
                   </label>
                 ))
               ) : (
-                <p className="col-span-2 text-gray-500 text-sm">
-                  No directories match your search
-                </p>
+                <p className="col-span-2 text-gray-500 text-sm">No directories match your search</p>
               )}
             </div>
             <p className="text-sm text-gray-600 mt-2">
@@ -194,14 +180,10 @@ export default function SubmitPage() {
           {/* Submission Status Overview */}
           {selectedLocationId && submissionStatus && (
             <div className="p-4 bg-blue-50 border border-blue-200 rounded mb-6">
-              <h3 className="font-semibold text-blue-900 mb-2">
-                Submission Status
-              </h3>
+              <h3 className="font-semibold text-blue-900 mb-2">Submission Status</h3>
               <div className="grid grid-cols-4 gap-4 text-sm">
                 <div>
-                  <span className="text-blue-600 font-bold">
-                    {(submissionStatus as any).total}
-                  </span>
+                  <span className="text-blue-600 font-bold">{(submissionStatus as any).total}</span>
                   <p className="text-blue-700">Total</p>
                 </div>
                 <div>
@@ -243,9 +225,7 @@ export default function SubmitPage() {
             disabled={loading || !selectedLocationId || selectedDirs.size === 0}
             className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 disabled:bg-gray-400 font-medium"
           >
-            {loading
-              ? "Submitting..."
-              : `Submit to ${selectedDirs.size} Directories`}
+            {loading ? "Submitting..." : `Submit to ${selectedDirs.size} Directories`}
           </button>
         </form>
       </main>

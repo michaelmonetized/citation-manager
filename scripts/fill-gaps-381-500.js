@@ -45,9 +45,7 @@ const gapEntries = missingRanks.map((rank) => ({
 }));
 
 // Merge and sort
-const allDirectories = [...existing, ...gapEntries].sort(
-  (a, b) => a.rank - b.rank,
-);
+const allDirectories = [...existing, ...gapEntries].sort((a, b) => a.rank - b.rank);
 
 console.log(`\n📊 Adding ${gapEntries.length} missing entries...`);
 console.log(`Total: ${allDirectories.length}`);

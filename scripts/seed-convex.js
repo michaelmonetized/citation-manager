@@ -15,15 +15,11 @@ const directoriesPath = path.join(__dirname, "../data/directories.json");
 // Load directories
 const directories = JSON.parse(fs.readFileSync(directoriesPath, "utf-8"));
 
-console.log(
-  `📊 Loaded ${directories.length} directories from data/directories.json`,
-);
+console.log(`📊 Loaded ${directories.length} directories from data/directories.json`);
 
 // Initialize Convex client
 // Using the CONVEX_DEPLOY_KEY from environment
-const client = new ConvexClient(
-  process.env.CONVEX_URL || "https://citation-manager.convex.cloud",
-);
+const client = new ConvexClient(process.env.CONVEX_URL || "https://citation-manager.convex.cloud");
 
 // Run the seed mutation
 try {
@@ -41,9 +37,7 @@ try {
   if (result.inserted === result.total) {
     console.log(`\n🎉 SUCCESS: All ${result.total} directories seeded!`);
   } else {
-    console.warn(
-      `\n⚠️  Warning: Only ${result.inserted}/${result.total} directories inserted`,
-    );
+    console.warn(`\n⚠️  Warning: Only ${result.inserted}/${result.total} directories inserted`);
   }
 } catch (error) {
   console.error(`\n❌ Seed failed:`, error.message);

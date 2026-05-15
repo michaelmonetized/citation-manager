@@ -63,9 +63,7 @@ export default function EditLocationPage() {
 
       router.push("/locations");
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to update location",
-      );
+      setError(err instanceof Error ? err.message : "Failed to update location");
       setLoading(false);
     }
   };
@@ -95,9 +93,7 @@ export default function EditLocationPage() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-1">
-            Business Name *
-          </label>
+          <label className="block text-sm font-medium mb-1">Business Name *</label>
           <input
             type="text"
             required

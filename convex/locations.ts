@@ -66,8 +66,7 @@ export const getLocation = query({
 
     const location = await ctx.db.get(args.locationId as any);
     if (!location) throw new Error("Location not found");
-    if ((location as any).userEmail !== user.email)
-      throw new Error("Unauthorized");
+    if ((location as any).userEmail !== user.email) throw new Error("Unauthorized");
 
     return location;
   },
@@ -102,8 +101,7 @@ export const updateLocation = mutation({
 
     const location = await ctx.db.get(args.locationId as any);
     if (!location) throw new Error("Location not found");
-    if ((location as any).userEmail !== user.email)
-      throw new Error("Unauthorized");
+    if ((location as any).userEmail !== user.email) throw new Error("Unauthorized");
 
     await ctx.db.patch(args.locationId as any, {
       businessName: args.businessName,
@@ -128,8 +126,7 @@ export const deleteLocation = mutation({
 
     const location = await ctx.db.get(args.locationId as any);
     if (!location) throw new Error("Location not found");
-    if ((location as any).userEmail !== user.email)
-      throw new Error("Unauthorized");
+    if ((location as any).userEmail !== user.email) throw new Error("Unauthorized");
 
     await ctx.db.delete(args.locationId as any);
     return { success: true };

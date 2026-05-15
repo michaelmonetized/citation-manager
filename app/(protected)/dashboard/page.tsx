@@ -17,8 +17,7 @@ export default function DashboardPage() {
     const checkAuth = async () => {
       try {
         // Phase 2B: Allow bypass auth for testing
-        const bypassAuth =
-          process.env.NEXT_PUBLIC_PHASE2B_BYPASS_AUTH === "true";
+        const bypassAuth = process.env.NEXT_PUBLIC_PHASE2B_BYPASS_AUTH === "true";
 
         const token = localStorage.getItem("convex_auth_token");
         const userEmail = localStorage.getItem("convex_user_email");
@@ -80,9 +79,7 @@ export default function DashboardPage() {
             className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition"
           >
             <h2 className="text-xl font-semibold mb-4">📍 Manage Locations</h2>
-            <p className="text-gray-600 mb-4">
-              Add and manage your business locations.
-            </p>
+            <p className="text-gray-600 mb-4">Add and manage your business locations.</p>
             <span className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
               View Locations →
             </span>
@@ -92,9 +89,7 @@ export default function DashboardPage() {
             href="/submit"
             className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition"
           >
-            <h2 className="text-xl font-semibold mb-4">
-              📤 Submit to Directories
-            </h2>
+            <h2 className="text-xl font-semibold mb-4">📤 Submit to Directories</h2>
             <p className="text-gray-600 mb-4">
               Submit your business to 100+ directories instantly.
             </p>
@@ -107,9 +102,7 @@ export default function DashboardPage() {
             href="/directories"
             className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition"
           >
-            <h2 className="text-xl font-semibold mb-4">
-              📚 Browse Directories
-            </h2>
+            <h2 className="text-xl font-semibold mb-4">📚 Browse Directories</h2>
             <p className="text-gray-600 mb-4">
               Explore 100+ business directories for your industry.
             </p>

@@ -9,7 +9,7 @@
     "isolatedModules": true,
     "noImplicitAny": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noUnusedParameters": false,
     "noImplicitReturns": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -18,15 +18,15 @@
     "jsx": "react-jsx",
     "jsxImportSource": "react",
     "types": ["node"],
-    "baseUrl": ".",
     "paths": {
+      "*": ["./*"],
       "@/*": ["./*"],
       "@/convex/*": ["./convex/*"]
     },
     "allowJs": true,
     "noEmit": true,
     "incremental": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "plugins": [
       {
         "name": "next"

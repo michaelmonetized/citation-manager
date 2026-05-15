@@ -53,9 +53,7 @@ const generateGoogleJWT = (): string => {
     const account = JSON.parse(serviceAccountJson);
     return `Bearer ${account.type}:${account.project_id}`;
   } catch (error) {
-    throw new Error(
-      "Failed to parse GOOGLE_SERVICE_ACCOUNT_JSON: " + String(error),
-    );
+    throw new Error("Failed to parse GOOGLE_SERVICE_ACCOUNT_JSON: " + String(error));
   }
 };
 
@@ -124,10 +122,7 @@ const retryWithBackoff = async <T>(
       lastError = error instanceof Error ? error : new Error(String(error));
 
       // Don't retry on auth errors
-      if (
-        lastError.message.includes("401") ||
-        lastError.message.includes("403")
-      ) {
+      if (lastError.message.includes("401") || lastError.message.includes("403")) {
         throw lastError;
       }
 
@@ -257,8 +252,7 @@ export const verifyGoogleBusinessSubmission = async (
       };
     }
 
-    const verificationStatus =
-      location.verificationStatus?.status || "UNVERIFIED";
+    const verificationStatus = location.verificationStatus?.status || "UNVERIFIED";
     const isVerified = verificationStatus === "VERIFIED";
 
     return {
@@ -280,11 +274,7 @@ export const verifyGoogleBusinessSubmission = async (
 export const GoogleSubmissionSchema = {
   googleAccountId: v.string(),
   googleLocationId: v.optional(v.string()),
-  verificationStatus: v.union(
-    v.literal("pending"),
-    v.literal("verified"),
-    v.literal("failed"),
-  ),
+  verificationStatus: v.union(v.literal("pending"), v.literal("verified"), v.literal("failed")),
   lastSyncAt: v.number(),
   apiResponse: v.optional(v.object({})),
 };

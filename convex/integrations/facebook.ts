@@ -78,10 +78,7 @@ const retryWithBackoff = async <T>(
       lastError = error instanceof Error ? error : new Error(String(error));
 
       // Don't retry on auth errors
-      if (
-        lastError.message.includes("401") ||
-        lastError.message.includes("403")
-      ) {
+      if (lastError.message.includes("401") || lastError.message.includes("403")) {
         throw lastError;
       }
 
@@ -116,12 +113,9 @@ export const searchFacebookPage = async (
 
   try {
     const data = await retryWithBackoff(async () => {
-      const response = await fetch(
-        `https://graph.facebook.com/v18.0/search?${params}`,
-        {
-          method: "GET",
-        },
-      );
+      const response = await fetch(`https://graph.facebook.com/v18.0/search?${params}`, {
+        method: "GET",
+      });
 
       if (!response.ok) {
         if (response.status === 429) {
@@ -165,16 +159,13 @@ export const submitFacebookPage = async (
     });
 
     await retryWithBackoff(async () => {
-      const response = await fetch(
-        `https://graph.facebook.com/v18.0/${pageId}?${params}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(pageData),
+      const response = await fetch(`https://graph.facebook.com/v18.0/${pageId}?${params}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify(pageData),
+      });
 
       if (!response.ok) {
         const error = await response.text();
@@ -228,12 +219,9 @@ export const verifyFacebookSubmission = async (
     });
 
     const page = await retryWithBackoff(async () => {
-      const response = await fetch(
-        `https://graph.facebook.com/v18.0/${facebookPageId}?${params}`,
-        {
-          method: "GET",
-        },
-      );
+      const response = await fetch(`https://graph.facebook.com/v18.0/${facebookPageId}?${params}`, {
+        method: "GET",
+      });
 
       if (!response.ok) {
         if (response.status === 404) {
@@ -261,8 +249,7 @@ export const verifyFacebookSubmission = async (
     }
 
     // Verify at least one business data field is present
-    const hasContactInfo =
-      !!page.phone || !!page.website || !!page.about || !!page.email;
+    const hasContactInfo = !!page.phone || !!page.website || !!page.about || !!page.email;
 
     return {
       verified: true,
@@ -298,12 +285,9 @@ export const getInstagramBusiness = async (
     });
 
     const result = await retryWithBackoff(async () => {
-      const response = await fetch(
-        `https://graph.facebook.com/v18.0/${facebookPageId}?${params}`,
-        {
-          method: "GET",
-        },
-      );
+      const response = await fetch(`https://graph.facebook.com/v18.0/${facebookPageId}?${params}`, {
+        method: "GET",
+      });
 
       if (!response.ok) {
         if (response.status === 404) {
@@ -311,9 +295,7 @@ export const getInstagramBusiness = async (
         } else if (response.status === 429) {
           throw new Error("Rate limited - please try again later");
         }
-        throw new Error(
-          `Failed to get Instagram business (${response.status})`,
-        );
+        throw new Error(`Failed to get Instagram business (${response.status})`);
       }
 
       return (await response.json()) as {
@@ -339,11 +321,7 @@ export const getInstagramBusiness = async (
 export const FacebookSubmissionSchema = {
   facebookPageId: v.optional(v.string()),
   instagramBusinessId: v.optional(v.string()),
-  verificationStatus: v.union(
-    v.literal("pending"),
-    v.literal("verified"),
-    v.literal("failed"),
-  ),
+  verificationStatus: v.union(v.literal("pending"), v.literal("verified"), v.literal("failed")),
   lastSyncAt: v.number(),
   apiResponse: v.optional(v.object({})),
 };

@@ -17,10 +17,7 @@ export async function POST(request: NextRequest) {
     const { email, password, mode } = await request.json();
 
     if (!email || !password) {
-      return NextResponse.json(
-        { error: "Email and password required" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Email and password required" }, { status: 400 });
     }
 
     // Validate password strength
@@ -100,10 +97,7 @@ export async function POST(request: NextRequest) {
         );
       }
     } else {
-      return NextResponse.json(
-        { error: "Invalid mode (signup or login)" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Invalid mode (signup or login)" }, { status: 400 });
     }
   } catch (error) {
     console.error("Auth error:", error);

@@ -13,10 +13,7 @@ export async function POST(request: NextRequest) {
     const { locationId, directoryId } = await request.json();
 
     if (!locationId || !directoryId) {
-      return NextResponse.json(
-        { error: "Missing locationId or directoryId" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Missing locationId or directoryId" }, { status: 400 });
     }
 
     // Call Convex mutation

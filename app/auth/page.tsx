@@ -50,15 +50,11 @@ export default function AuthPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full bg-white rounded-lg shadow p-8">
-        <h1 className="text-2xl font-bold mb-6 text-center">
-          Citation Manager
-        </h1>
+        <h1 className="text-2xl font-bold mb-6 text-center">Citation Manager</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Email
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Email</label>
             <input
               type="email"
               value={email}
@@ -69,9 +65,7 @@ export default function AuthPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Password
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Password</label>
             <input
               type="password"
               value={password}
@@ -104,9 +98,7 @@ export default function AuthPage() {
           }}
           className="mt-4 w-full text-center text-sm text-blue-600 hover:text-blue-700"
         >
-          {isSignup
-            ? "Already have an account? Sign In"
-            : "Don't have an account? Sign Up"}
+          {isSignup ? "Already have an account? Sign In" : "Don't have an account? Sign Up"}
         </button>
       </div>
     </div>

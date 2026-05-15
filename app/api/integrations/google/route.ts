@@ -13,10 +13,7 @@ export async function POST(request: NextRequest) {
     const { locationId, directoryId } = await request.json();
 
     if (!locationId || !directoryId) {
-      return NextResponse.json(
-        { error: "Missing locationId or directoryId" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Missing locationId or directoryId" }, { status: 400 });
     }
 
     // Call Convex mutation
@@ -41,14 +38,10 @@ export async function POST(request: NextRequest) {
  */
 export async function PUT(request: NextRequest) {
   try {
-    const { submissionId, googleAccountId, googleLocationId } =
-      await request.json();
+    const { submissionId, googleAccountId, googleLocationId } = await request.json();
 
     if (!submissionId || !googleAccountId || !googleLocationId) {
-      return NextResponse.json(
-        { error: "Missing required parameters" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Missing required parameters" }, { status: 400 });
     }
 
     // Call Convex mutation

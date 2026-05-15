@@ -165,14 +165,7 @@ async function runTests() {
 
   // Test 9: Verify dev server responds to all routes
   await test("Dev server handles multiple routes without errors", async () => {
-    const routes = [
-      "/auth",
-      "/dashboard",
-      "/locations",
-      "/submit",
-      "/submissions",
-      "/directories",
-    ];
+    const routes = ["/auth", "/dashboard", "/locations", "/submit", "/submissions", "/directories"];
     for (const route of routes) {
       const response = await fetch(`${BASE_URL}${route}`);
       if (response.status !== 200) {

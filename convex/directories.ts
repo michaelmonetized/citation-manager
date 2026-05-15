@@ -49,9 +49,7 @@ export const listTopDirectories = query({
   handler: async (ctx: QueryCtx, args: { limit?: number }) => {
     const limit = args.limit ?? 50;
     const allDirs = await ctx.db.query("directories").collect();
-    return allDirs
-      .sort((a, b) => (a.rank ?? 999) - (b.rank ?? 999))
-      .slice(0, limit);
+    return allDirs.sort((a, b) => (a.rank ?? 999) - (b.rank ?? 999)).slice(0, limit);
   },
 });
 
@@ -162,12 +160,7 @@ export const seedFromFile = mutation({
         rank: dir.rank,
         name: dir.name,
         url: dir.url,
-        submissionMethod: dir.submissionMethod as
-          | "api"
-          | "form"
-          | "manual"
-          | "email"
-          | "phone",
+        submissionMethod: dir.submissionMethod as "api" | "form" | "manual" | "email" | "phone",
         apiAvailable: dir.apiAvailable,
         apiDocsUrl: dir.apiDocsUrl,
         category: dir.category,

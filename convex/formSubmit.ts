@@ -66,11 +66,7 @@ export const submitFormDirectory = internalAction({
       const puppeteer = require("puppeteer");
 
       // Route to appropriate handler
-      const result = await submitToFormDirectory(
-        puppeteer,
-        args.directoryKey,
-        args.locationData,
-      );
+      const result = await submitToFormDirectory(puppeteer, args.directoryKey, args.locationData);
 
       return {
         directoryKey: args.directoryKey,
@@ -79,8 +75,7 @@ export const submitFormDirectory = internalAction({
         ...result,
       };
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
 
       return {
         success: false,
@@ -170,14 +165,8 @@ async function submitCitySearch(
     await page.waitForNavigation({ waitUntil: "networkidle2", timeout: 10000 });
 
     // Check for success indicator
-    const confirmationText = await page.$eval(
-      "body",
-      (el: HTMLElement) => el.innerText,
-    );
-    if (
-      confirmationText.includes("success") ||
-      confirmationText.includes("submitted")
-    ) {
+    const confirmationText = await page.$eval("body", (el: HTMLElement) => el.innerText);
+    if (confirmationText.includes("success") || confirmationText.includes("submitted")) {
       return { success: true };
     }
 

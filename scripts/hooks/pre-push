@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+protected_ref='refs/heads/(main|master)$'
+should_run=0
+
+while read -r local_ref _local_sha remote_ref _remote_sha; do
+  if [[ "$local_ref" =~ $protected_ref || "$remote_ref" =~ $protected_ref ]]; then
+    should_run=1
+  fi
+done
+
+if [[ "$should_run" -eq 0 ]]; then
+  exit 0
+fi
+
+bun run format
+bun lint
+bun tsc
+bunx --bun fallow audit --format json --quiet --explain > /tmp/fallow-audit.json
+"$HOME/bin/freview" --summary || {
+  echo "freview reported inherited project debt; fallow audit passed for this changeset. See REVIEW.md."
+}

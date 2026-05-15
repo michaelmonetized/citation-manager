@@ -22,25 +22,24 @@ export default function SubmissionsPage() {
     : null;
 
   const getStatusBadge = (status: string) => {
-    const badges: Record<string, { bg: string; text: string; label: string }> =
-      {
-        pending: {
-          bg: "bg-yellow-100",
-          text: "text-yellow-800",
-          label: "Pending",
-        },
-        submitted: {
-          bg: "bg-blue-100",
-          text: "text-blue-800",
-          label: "Submitted",
-        },
-        verified: {
-          bg: "bg-green-100",
-          text: "text-green-800",
-          label: "Verified",
-        },
-        failed: { bg: "bg-red-100", text: "text-red-800", label: "Failed" },
-      };
+    const badges: Record<string, { bg: string; text: string; label: string }> = {
+      pending: {
+        bg: "bg-yellow-100",
+        text: "text-yellow-800",
+        label: "Pending",
+      },
+      submitted: {
+        bg: "bg-blue-100",
+        text: "text-blue-800",
+        label: "Submitted",
+      },
+      verified: {
+        bg: "bg-green-100",
+        text: "text-green-800",
+        label: "Verified",
+      },
+      failed: { bg: "bg-red-100", text: "text-red-800", label: "Failed" },
+    };
     const badge = badges[status] || badges.pending;
     return (
       <span
@@ -63,16 +62,10 @@ export default function SubmissionsPage() {
           <div className="flex justify-between h-16">
             <div className="flex items-center gap-8">
               <h1 className="text-xl font-bold">Citation Manager</h1>
-              <Link
-                href="/dashboard"
-                className="text-gray-600 hover:text-gray-900"
-              >
+              <Link href="/dashboard" className="text-gray-600 hover:text-gray-900">
                 Dashboard
               </Link>
-              <Link
-                href="/submit"
-                className="text-gray-600 hover:text-gray-900"
-              >
+              <Link href="/submit" className="text-gray-600 hover:text-gray-900">
                 Submit
               </Link>
             </div>
@@ -85,9 +78,7 @@ export default function SubmissionsPage() {
 
         {/* Location Selector */}
         <div className="mb-8 bg-white rounded-lg shadow p-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Select Location
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Select Location</label>
           <select
             value={selectedLocationId}
             onChange={(e) => setSelectedLocationId(e.target.value)}
@@ -96,8 +87,7 @@ export default function SubmissionsPage() {
             <option value="">-- Choose location --</option>
             {locations?.map((loc) => (
               <option key={loc._id} value={loc._id}>
-                {(loc as any).businessName} ({(loc as any).city},{" "}
-                {(loc as any).state})
+                {(loc as any).businessName} ({(loc as any).city}, {(loc as any).state})
               </option>
             ))}
           </select>
@@ -132,10 +122,7 @@ export default function SubmissionsPage() {
                 text: "text-green-700",
               },
             ].map((stat) => (
-              <div
-                key={stat.key}
-                className={`${stat.bg} rounded-lg shadow p-6`}
-              >
+              <div key={stat.key} className={`${stat.bg} rounded-lg shadow p-6`}>
                 <p className={`text-3xl font-bold ${stat.text}`}>
                   {(submissionStatus as any)[stat.key]}
                 </p>
@@ -166,9 +153,7 @@ export default function SubmissionsPage() {
         )}
 
         {/* Submissions List */}
-        {selectedLocationId &&
-        locationSubmissions &&
-        locationSubmissions.length > 0 ? (
+        {selectedLocationId && locationSubmissions && locationSubmissions.length > 0 ? (
           <div className="bg-white rounded-lg shadow overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -186,9 +171,7 @@ export default function SubmissionsPage() {
                     <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">
                       Verified
                     </th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">
-                      Error
-                    </th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Error</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
@@ -197,22 +180,14 @@ export default function SubmissionsPage() {
                       <td className="px-6 py-3 text-sm text-gray-900">
                         {getDirectoryName(sub.directoryId)}
                       </td>
-                      <td className="px-6 py-3 text-sm">
-                        {getStatusBadge(sub.status)}
+                      <td className="px-6 py-3 text-sm">{getStatusBadge(sub.status)}</td>
+                      <td className="px-6 py-3 text-sm text-gray-600">
+                        {sub.submittedAt ? new Date(sub.submittedAt).toLocaleDateString() : "-"}
                       </td>
                       <td className="px-6 py-3 text-sm text-gray-600">
-                        {sub.submittedAt
-                          ? new Date(sub.submittedAt).toLocaleDateString()
-                          : "-"}
+                        {sub.verifiedAt ? new Date(sub.verifiedAt).toLocaleDateString() : "-"}
                       </td>
-                      <td className="px-6 py-3 text-sm text-gray-600">
-                        {sub.verifiedAt
-                          ? new Date(sub.verifiedAt).toLocaleDateString()
-                          : "-"}
-                      </td>
-                      <td className="px-6 py-3 text-sm text-red-600">
-                        {sub.errorMessage || "-"}
-                      </td>
+                      <td className="px-6 py-3 text-sm text-red-600">{sub.errorMessage || "-"}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -223,19 +198,14 @@ export default function SubmissionsPage() {
           <div className="bg-white rounded-lg shadow p-8 text-center">
             <p className="text-gray-600">No submissions for this location</p>
             <p className="text-gray-500 mt-2">
-              <Link
-                href="/submit"
-                className="text-blue-600 hover:text-blue-700"
-              >
+              <Link href="/submit" className="text-blue-600 hover:text-blue-700">
                 Start by submitting to directories
               </Link>
             </p>
           </div>
         ) : (
           <div className="bg-white rounded-lg shadow p-8 text-center">
-            <p className="text-gray-600">
-              Select a location to view submissions
-            </p>
+            <p className="text-gray-600">Select a location to view submissions</p>
           </div>
         )}
       </main>

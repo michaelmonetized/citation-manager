@@ -39,20 +39,13 @@ export const submitToDirectory = internalAction({
       if (args.directoryKey === "google") {
         // Google Business Profile submission
         const googleAccountId =
-          process.env.GOOGLE_ACCOUNT_ID ||
-          process.env.GOOGLE_BUSINESS_ACCOUNT_ID ||
-          "";
+          process.env.GOOGLE_ACCOUNT_ID || process.env.GOOGLE_BUSINESS_ACCOUNT_ID || "";
 
         if (!googleAccountId) {
-          throw new Error(
-            "GOOGLE_ACCOUNT_ID or GOOGLE_BUSINESS_ACCOUNT_ID not configured",
-          );
+          throw new Error("GOOGLE_ACCOUNT_ID or GOOGLE_BUSINESS_ACCOUNT_ID not configured");
         }
 
-        const submission = await submitGoogleBusiness(
-          googleAccountId,
-          args.locationData,
-        );
+        const submission = await submitGoogleBusiness(googleAccountId, args.locationData);
 
         result = {
           success: true,
@@ -100,9 +93,7 @@ export const submitToDirectory = internalAction({
         );
 
         if (!pageId) {
-          throw new Error(
-            "Facebook page not found. Must create page manually first.",
-          );
+          throw new Error("Facebook page not found. Must create page manually first.");
         }
 
         const submission = await submitFacebookPage(
@@ -134,8 +125,7 @@ export const submitToDirectory = internalAction({
 
       return result;
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
       return {
         success: false,
         error: errorMessage,
@@ -161,20 +151,13 @@ export const verifySubmissionStatus = internalAction({
 
       if (args.directoryKey === "google") {
         const googleAccountId =
-          process.env.GOOGLE_ACCOUNT_ID ||
-          process.env.GOOGLE_BUSINESS_ACCOUNT_ID ||
-          "";
+          process.env.GOOGLE_ACCOUNT_ID || process.env.GOOGLE_BUSINESS_ACCOUNT_ID || "";
 
         if (!googleAccountId) {
-          throw new Error(
-            "GOOGLE_ACCOUNT_ID or GOOGLE_BUSINESS_ACCOUNT_ID not configured",
-          );
+          throw new Error("GOOGLE_ACCOUNT_ID or GOOGLE_BUSINESS_ACCOUNT_ID not configured");
         }
 
-        const googleResult = await verifyGoogleBusinessSubmission(
-          googleAccountId,
-          args.apiId,
-        );
+        const googleResult = await verifyGoogleBusinessSubmission(googleAccountId, args.apiId);
         verified = googleResult.verified;
       } else if (args.directoryKey === "yelp") {
         const yelpApiKey = process.env.YELP_API_KEY;
@@ -188,10 +171,7 @@ export const verifySubmissionStatus = internalAction({
         if (!facebookToken) {
           throw new Error("FACEBOOK_ACCESS_TOKEN not configured");
         }
-        const facebookResult = await verifyFacebookSubmission(
-          args.apiId,
-          facebookToken,
-        );
+        const facebookResult = await verifyFacebookSubmission(args.apiId, facebookToken);
         verified = facebookResult.verified;
       } else {
         throw new Error(
@@ -201,8 +181,7 @@ export const verifySubmissionStatus = internalAction({
 
       return { verified, submissionId: args.submissionId };
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
       return { verified: false, error: errorMessage };
     }
   },

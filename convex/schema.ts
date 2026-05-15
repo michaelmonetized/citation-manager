@@ -5,9 +5,7 @@ export default defineSchema({
   users: defineTable({
     email: v.string(),
     password: v.string(), // Argon2id hashed password (see convex/users.ts)
-    plan: v.optional(
-      v.union(v.literal("free"), v.literal("pro"), v.literal("enterprise")),
-    ),
+    plan: v.optional(v.union(v.literal("free"), v.literal("pro"), v.literal("enterprise"))),
     company: v.optional(v.string()),
     createdAt: v.number(),
     updatedAt: v.optional(v.number()),

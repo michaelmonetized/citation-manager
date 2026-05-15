@@ -28,12 +28,7 @@ export const seedDirectories = internalMutation({
         url: dir.url,
         rank: dir.rank,
         category: dir.category,
-        submissionMethod: dir.submissionMethod as
-          | "api"
-          | "form"
-          | "manual"
-          | "email"
-          | "phone",
+        submissionMethod: dir.submissionMethod as "api" | "form" | "manual" | "email" | "phone",
         apiAvailable: dir.apiAvailable,
         apiDocsUrl: dir.apiDocsUrl,
         isFree: dir.isFree,

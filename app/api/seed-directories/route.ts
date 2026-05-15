@@ -9,9 +9,7 @@ import { NextResponse } from "next/server";
  */
 export async function POST() {
   try {
-    const client = new ConvexHttpClient(
-      process.env.NEXT_PUBLIC_CONVEX_URL || "",
-    );
+    const client = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL || "");
 
     const result = await client.mutation(api.directories.seedFromFile, {
       clearExisting: false,

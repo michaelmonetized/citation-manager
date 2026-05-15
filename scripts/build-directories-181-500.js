@@ -1421,6 +1421,4 @@ console.log(`✅ All entries validated successfully`);
 // Write
 fs.writeFileSync(directoriesPath, JSON.stringify(allDirectories, null, 2));
 console.log(`\n✅ Saved ${allDirectories.length} directories`);
-console.log(
-  `📈 Progress: Entries 1-500 complete. Entries 501-958 still needed.`,
-);
+console.log(`📈 Progress: Entries 1-500 complete. Entries 501-958 still needed.`);

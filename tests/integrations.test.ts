@@ -44,10 +44,7 @@ describe("Google Business Profile Integration", () => {
     delete process.env.GOOGLE_ACCESS_TOKEN;
 
     try {
-      const result = await submitGoogleBusiness(
-        "test-account-id",
-        testLocation,
-      );
+      const result = await submitGoogleBusiness("test-account-id", testLocation);
       expect(result.success).toBe(false);
       expect(result.error).toBeDefined();
     } finally {
@@ -59,10 +56,7 @@ describe("Google Business Profile Integration", () => {
   });
 
   it("handles verification errors gracefully", async () => {
-    const result = await verifyGoogleBusinessSubmission(
-      "invalid-account",
-      "invalid-location-id",
-    );
+    const result = await verifyGoogleBusinessSubmission("invalid-account", "invalid-location-id");
     expect(result.verified).toBe(false);
     expect(result.error).toBeDefined();
   });
@@ -83,10 +77,7 @@ describe("Yelp Business Integration", () => {
     delete process.env.YELP_API_KEY;
 
     try {
-      const result = await submitYelpBusiness(
-        mapLocationToYelpFormat(testLocation),
-        "",
-      );
+      const result = await submitYelpBusiness(mapLocationToYelpFormat(testLocation), "");
       expect(result.success).toBe(false);
       expect(result.error).toBeDefined();
     } finally {
@@ -98,11 +89,7 @@ describe("Yelp Business Integration", () => {
 
   it("handles search errors gracefully", async () => {
     try {
-      await searchYelpBusiness(
-        testLocation.businessName,
-        testLocation.city,
-        "invalid-key",
-      );
+      await searchYelpBusiness(testLocation.businessName, testLocation.city, "invalid-key");
       // Should return null or throw, either is valid
     } catch (error) {
       expect(error).toBeDefined();
@@ -147,11 +134,7 @@ describe("Facebook Graph API Integration", () => {
 
   it("handles search errors gracefully", async () => {
     try {
-      await searchFacebookPage(
-        testLocation.businessName,
-        testLocation.city,
-        "invalid-token",
-      );
+      await searchFacebookPage(testLocation.businessName, testLocation.city, "invalid-token");
       // Should return null or throw
     } catch (error) {
       expect(error).toBeDefined();
@@ -175,25 +158,17 @@ describe("Integration Error Handling", () => {
   it("all APIs handle rate limiting gracefully", async () => {
     // This test verifies that rate limiting errors are caught
     // and returned as user-facing error messages
-    const googleResult = await submitGoogleBusiness(
-      "test-account",
-      testLocation,
-    );
+    const googleResult = await submitGoogleBusiness("test-account", testLocation);
     if (!googleResult.success && googleResult.error) {
       const error = googleResult.error.toLowerCase();
       expect(
-        error.includes("configured") ||
-          error.includes("failed") ||
-          error.includes("rate"),
+        error.includes("configured") || error.includes("failed") || error.includes("rate"),
       ).toBe(true);
     }
   });
 
   it("all APIs provide user-friendly error messages", async () => {
-    const yelpResult = await submitYelpBusiness(
-      mapLocationToYelpFormat(testLocation),
-      "",
-    );
+    const yelpResult = await submitYelpBusiness(mapLocationToYelpFormat(testLocation), "");
     if (!yelpResult.success && yelpResult.error) {
       // Error should be understandable to non-technical users
       expect(typeof yelpResult.error).toBe("string");

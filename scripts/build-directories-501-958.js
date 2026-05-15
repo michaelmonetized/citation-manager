@@ -2237,12 +2237,7 @@ finalBatch.push(
 // 851-958: Final batch (108 directories) - Miscellaneous + Global coverage
 const finalMinor = [];
 for (let i = 851; i <= 958; i++) {
-  const categories = [
-    "niche",
-    "business_directory",
-    "local_services",
-    "review_platform",
-  ];
+  const categories = ["niche", "business_directory", "local_services", "review_platform"];
   const submissionMethods = ["form", "api", "manual", "email"];
   const names = [
     `Industry Directory ${i}`,
@@ -2311,7 +2306,5 @@ console.log(`✅ All ${allDirectories.length} entries validated`);
 
 // Write
 fs.writeFileSync(directoriesPath, JSON.stringify(allDirectories, null, 2));
-console.log(
-  `\n✅ Saved ${allDirectories.length} directories to data/directories.json`,
-);
+console.log(`\n✅ Saved ${allDirectories.length} directories to data/directories.json`);
 console.log(`🎉 PHASE 2 COMPLETE: All entries 1-958 now in place!`);

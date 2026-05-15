@@ -75,10 +75,7 @@ const retryWithBackoff = async <T>(
       lastError = error instanceof Error ? error : new Error(String(error));
 
       // Don't retry on auth errors
-      if (
-        lastError.message.includes("401") ||
-        lastError.message.includes("403")
-      ) {
+      if (lastError.message.includes("401") || lastError.message.includes("403")) {
         throw lastError;
       }
 
@@ -112,15 +109,12 @@ export const searchYelpBusiness = async (
 
   try {
     const data = await retryWithBackoff(async () => {
-      const response = await fetch(
-        `https://api.yelp.com/v3/businesses/search?${params}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-          },
+      const response = await fetch(`https://api.yelp.com/v3/businesses/search?${params}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
         },
-      );
+      });
 
       if (!response.ok) {
         if (response.status === 429) {
@@ -155,11 +149,7 @@ export const submitYelpBusiness = async (
 ): Promise<{ yelpId: string; success: boolean; error?: string }> => {
   try {
     // Search for existing business by name + location
-    const yelpId = await searchYelpBusiness(
-      businessData.name,
-      businessData.city,
-      apiKey,
-    );
+    const yelpId = await searchYelpBusiness(businessData.name, businessData.city, apiKey);
 
     if (!yelpId) {
       // Business not found in Yelp's database yet
@@ -213,15 +203,12 @@ export const verifyYelpSubmission = async (
     }
 
     const business = await retryWithBackoff(async () => {
-      const response = await fetch(
-        `https://api.yelp.com/v3/businesses/${yelpId}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-          },
+      const response = await fetch(`https://api.yelp.com/v3/businesses/${yelpId}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
         },
-      );
+      });
 
       if (!response.ok) {
         if (response.status === 429) {
@@ -254,11 +241,7 @@ export const verifyYelpSubmission = async (
  */
 export const YelpSubmissionSchema = {
   yelpBusinessId: v.optional(v.string()),
-  verificationStatus: v.union(
-    v.literal("pending"),
-    v.literal("verified"),
-    v.literal("failed"),
-  ),
+  verificationStatus: v.union(v.literal("pending"), v.literal("verified"), v.literal("failed")),
   lastSyncAt: v.number(),
   apiResponse: v.optional(v.object({})),
 };
