@@ -34,8 +34,6 @@ jobs:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-      CONVEX_DEPLOYMENT: ${{ secrets.CONVEX_DEPLOYMENT }}
-      CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -69,21 +67,19 @@ jobs:
       - name: Pull Vercel production environment
         run: bunx --bun vercel pull --yes --environment="${{ github.event.inputs.environment || 'production' }}" --token="$VERCEL_TOKEN"
 
-      - name: Deploy Convex functions and build Vercel output
-        if: env.CONVEX_DEPLOYMENT != '' && env.CONVEX_DEPLOY_KEY != ''
-        env:
-          NEXT_SKIP_BUILD_TYPECHECK: "1"
-        run: |
-          export GZ_OPT="-9"
-          bunx convex deploy --yes --cmd 'bunx --bun vercel build --prod --token="$VERCEL_TOKEN"'
-
       - name: Build Vercel output
-        if: env.CONVEX_DEPLOYMENT == '' || env.CONVEX_DEPLOY_KEY == ''
         env:
           NEXT_SKIP_BUILD_TYPECHECK: "1"
+          CONVEX_DEPLOYMENT: ${{ secrets.CONVEX_DEPLOYMENT }}
+          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
         run: |
           export GZ_OPT="-9"
-          bunx --bun vercel build --prod --token="$VERCEL_TOKEN"
+          if [ -n "${CONVEX_DEPLOYMENT:-}" ] && [ -n "${CONVEX_DEPLOY_KEY:-}" ]; then
+            bunx convex deploy --yes --cmd 'bunx --bun vercel build --prod --token="$VERCEL_TOKEN"'
+          else
+            unset CONVEX_DEPLOYMENT CONVEX_DEPLOY_KEY
+            bunx --bun vercel build --prod --token="$VERCEL_TOKEN"
+          fi
 
       - name: Archive Vercel output
         run: |
@@ -114,12 +110,16 @@ jobs:
         run: |
           deployment_url="$(cat deployment-url.txt)"
           bunx vercel inspect "$deployment_url" --wait --timeout 3m --token="$VERCEL_TOKEN" --format=json > deployment.json
-          curl --fail --show-error --silent --location --max-time 20 "$deployment_url" > /dev/null
+          page_status="ok"
+          if ! curl --fail --show-error --silent --location --max-time 20 "$deployment_url" > /dev/null; then
+            page_status="blocked-or-unavailable"
+          fi
           if ! curl --show-error --silent --location --max-time 20 "$deployment_url/api/health" > health.json; then
             printf '{"ok":false,"env":{"missing":["health request failed"],"optionalMissing":[]}}' > health.json
           fi
           {
             echo "- Deployment status: $(node -e 'const fs=require("fs"); const d=JSON.parse(fs.readFileSync("deployment.json", "utf8")); console.log(d.readyState ?? d.state ?? "unknown")')"
             echo "- Deployment page: $deployment_url"
+            echo "- Deployment page check: $page_status"
             echo "- Health payload: $(node -e 'const fs=require("fs"); const h=JSON.parse(fs.readFileSync("health.json", "utf8")); console.log(JSON.stringify({ ok: h.ok, missing: h.env?.missing ?? [], optionalMissing: h.env?.optionalMissing ?? [] }))')"
           } >> "$GITHUB_STEP_SUMMARY"
